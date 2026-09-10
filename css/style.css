@@ -225,6 +225,70 @@ body:has(.modal[style*='display:block']) .header-nav {
   gap: 15px;
 }
 
+.overview-details-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.overview-images-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.overview-image-field {
+  min-width: 0;
+  padding: 16px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+}
+
+.overview-image-field > label {
+  display: block;
+  font-weight: 600;
+  color: var(--text-heading);
+}
+
+.overview-image-hint,
+.overview-image-name {
+  color: var(--text-muted);
+  font-size: 0.85em;
+  overflow-wrap: anywhere;
+}
+
+.overview-image-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  padding: 12px;
+  border: 1px dashed var(--border-soft);
+  border-radius: 4px;
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.overview-image-preview img {
+  max-width: 100%;
+  max-height: 360px;
+  object-fit: contain;
+}
+
+.overview-image-field input[type='file'] {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 760px) {
+  .overview-details-grid,
+  .overview-images-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* --- BUTTONS --- */
 button {
   cursor: pointer;

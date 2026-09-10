@@ -154,7 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 3. Listener for metadata changes (auto-save)
   const metaInputs = document.querySelectorAll(
-    '#inputAnalysisName, #inputAuthorName, #inputDescription, #inputIntendedUse'
+    '#inputAnalysisName, #inputAuthorName, #inputDescription, #inputIntendedUse, ' +
+      '#inputProductVariants, #inputFunctions, #inputPotentialMisuseCases'
   );
   metaInputs.forEach((input) => {
     input.addEventListener('change', () => {

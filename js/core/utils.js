@@ -50,6 +50,7 @@ function computeRiskScore(iNorm, kstu) {
 function saveAnalyses() {
   try {
     localStorage.setItem('taraAnalyses', JSON.stringify(analysisData));
+    return true;
   } catch (e) {
     console.error('Speicherfehler:', e);
     if (typeof showToast === 'function') {
@@ -61,6 +62,7 @@ function saveAnalyses() {
       );
     }
   }
+  return false;
 }
 
 // =============================================================
@@ -175,11 +177,17 @@ function saveCurrentAnalysisState() {
   const elName = document.getElementById('inputAnalysisName');
   const elDesc = document.getElementById('inputDescription');
   const elUse = document.getElementById('inputIntendedUse');
+  const elProductVariants = document.getElementById('inputProductVariants');
+  const elFunctions = document.getElementById('inputFunctions');
+  const elPotentialMisuseCases = document.getElementById('inputPotentialMisuseCases');
   const elAuth = document.getElementById('inputAuthorName');
 
   if (elName) analysis.name = elName.value.trim();
   if (elDesc) analysis.description = elDesc.value.trim();
   if (elUse) analysis.intendedUse = elUse.value.trim();
+  if (elProductVariants) analysis.productVariants = elProductVariants.value.trim();
+  if (elFunctions) analysis.functions = elFunctions.value.trim();
+  if (elPotentialMisuseCases) analysis.potentialMisuseCases = elPotentialMisuseCases.value.trim();
   if (elAuth) analysis.metadata.author = elAuth.value.trim();
 }
 

@@ -256,6 +256,11 @@ function createDefaultAnalysis() {
     name: _name,
     description: '',
     intendedUse: '',
+    productVariants: '',
+    functions: '',
+    potentialMisuseCases: '',
+    architectureImage: null,
+    componentsImage: null,
     metadata: {
       version: INITIAL_VERSION,
       author: _author,
