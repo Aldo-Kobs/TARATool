@@ -76,6 +76,9 @@ function fillAnalysisForm(analysis) {
   const elName = document.getElementById('inputAnalysisName');
   const elDesc = document.getElementById('inputDescription');
   const elUse = document.getElementById('inputIntendedUse');
+  const elProductVariants = document.getElementById('inputProductVariants');
+  const elFunctions = document.getElementById('inputFunctions');
+  const elPotentialMisuseCases = document.getElementById('inputPotentialMisuseCases');
   const elAuthor = document.getElementById('inputAuthorName');
   const elMetadata = document.getElementById('analysisMetadata');
 
@@ -83,6 +86,9 @@ function fillAnalysisForm(analysis) {
   if (elName) elName.value = analysis.name;
   if (elDesc) elDesc.value = analysis.description;
   if (elUse) elUse.value = analysis.intendedUse;
+  if (elProductVariants) elProductVariants.value = analysis.productVariants || '';
+  if (elFunctions) elFunctions.value = analysis.functions || '';
+  if (elPotentialMisuseCases) elPotentialMisuseCases.value = analysis.potentialMisuseCases || '';
   if (elAuthor) elAuthor.value = analysis.metadata.author;
 
   if (elMetadata) {
@@ -100,9 +106,114 @@ function fillAnalysisForm(analysis) {
   renderOverview(analysis);
 }
 
+// Image uploads belong to the analysis selected when the file was chosen.
+// Tokens prevent an older read from overwriting a replacement or removal.
+const overviewImageReads = new WeakMap();
+const OVERVIEW_IMAGE_MAX_BYTES = 1024 * 1024;
+
+function isOverviewImage(image) {
+  return (
+    image &&
+    typeof image.name === 'string' &&
+    typeof image.dataUrl === 'string' &&
+    image.dataUrl.length <= Math.ceil(OVERVIEW_IMAGE_MAX_BYTES / 3) * 4 + 32 &&
+    /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(image.dataUrl)
+  );
+}
+
+function renderOverviewImages(analysis) {
+  document.querySelectorAll('[data-overview-image]').forEach((field) => {
+    const key = field.dataset.overviewImage;
+    const saved = analysis[key];
+    const hasImage = !!isOverviewImage(saved);
+    const preview = field.querySelector('img');
+    preview.alt = t(`overview.${key}`);
+    preview.hidden = !hasImage;
+    if (hasImage) {
+      if (preview.getAttribute('src') !== saved.dataUrl) preview.src = saved.dataUrl;
+    } else {
+      preview.removeAttribute('src');
+    }
+    field.querySelector('.overview-image-preview span').hidden = hasImage;
+    field.querySelector('.overview-image-name').textContent = hasImage ? saved.name : '';
+    field.querySelector('[data-image-remove]').disabled = !saved;
+    field.querySelector('input').value = '';
+  });
+}
+
+function storeOverviewImage(analysis, key, image) {
+  const previous = analysis[key];
+  analysis[key] = image;
+  // Roll back a failed save so the preview never claims an image was persisted.
+  if (!saveAnalyses()) analysis[key] = previous;
+  if (getActiveAnalysis() === analysis) renderOverviewImages(analysis);
+}
+
+function initOverviewImageListeners() {
+  document.querySelectorAll('[data-overview-image]').forEach((field) => {
+    const key = field.dataset.overviewImage;
+    const input = field.querySelector('input');
+    input.addEventListener('change', () => {
+      const analysis = getActiveAnalysis();
+      const file = input.files[0];
+      input.value = '';
+      if (!analysis || !file) return;
+
+      let reads = overviewImageReads.get(analysis);
+      if (!reads) {
+        reads = new Map();
+        overviewImageReads.set(analysis, reads);
+      }
+      const token = {};
+      reads.set(key, token);
+      const isCurrent = () => reads.get(key) === token && analysisData.includes(analysis);
+      const fail = (message) => {
+        if (isCurrent()) showToast(t(message), 'error');
+      };
+
+      if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+        fail('overview.imageInvalid');
+        return;
+      }
+      if (file.size > OVERVIEW_IMAGE_MAX_BYTES) {
+        fail('overview.imageTooLarge');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onerror = () => fail('overview.imageReadError');
+      reader.onload = () => {
+        if (!isCurrent()) return;
+        const image = { name: file.name, dataUrl: reader.result };
+        if (!isOverviewImage(image)) {
+          fail('overview.imageInvalid');
+          return;
+        }
+        // Decode before saving: an image MIME type alone does not prove validity.
+        const decoded = new Image();
+        decoded.onerror = () => fail('overview.imageInvalid');
+        decoded.onload = () => {
+          if (isCurrent()) storeOverviewImage(analysis, key, image);
+        };
+        decoded.src = image.dataUrl;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    field.querySelector('[data-image-remove]').addEventListener('click', () => {
+      const analysis = getActiveAnalysis();
+      if (!analysis) return;
+      overviewImageReads.get(analysis)?.delete(key);
+      storeOverviewImage(analysis, key, null);
+    });
+  });
+}
+
 // Extended function for the overview (dashboard)
 function renderOverview(analysis) {
   if (!analysis) return;
+
+  renderOverviewImages(analysis);
 
   // 1. Simple counters
   const elAssetCount = document.getElementById('statAssetCount');
@@ -417,6 +528,13 @@ function createNewAnalysis(e) {
         metadata: { ...(newAnalysis.metadata || {}), version: INITIAL_VERSION, date: today },
         description: newAnalysis.description || '',
         intendedUse: newAnalysis.intendedUse || '',
+        productVariants: newAnalysis.productVariants || '',
+        functions: newAnalysis.functions || '',
+        potentialMisuseCases: newAnalysis.potentialMisuseCases || '',
+        architectureImage: newAnalysis.architectureImage
+          ? { ...newAnalysis.architectureImage }
+          : null,
+        componentsImage: newAnalysis.componentsImage ? { ...newAnalysis.componentsImage } : null,
         assets: JSON.parse(JSON.stringify(newAnalysis.assets || [])),
         damageScenarios: JSON.parse(
           JSON.stringify(
@@ -457,6 +575,7 @@ function createNewAnalysis(e) {
  * Called from the central DOMContentLoaded handler in init.js.
  */
 function initAnalysisCoreListeners() {
+  initOverviewImageListeners();
   const form = document.getElementById('newAnalysisForm');
   const modal = document.getElementById('newAnalysisModal');
   const closeBtn = document.getElementById('closeNewAnalysisModal');

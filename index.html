@@ -159,6 +159,46 @@
                                 <textarea id="inputIntendedUse" rows="3"></textarea>
                             </div>
                         </div>
+                        <div class="overview-details-grid">
+                            <div class="form-group">
+                                <label for="inputProductVariants" data-i18n="overview.productVariants">Produktvarianten</label>
+                                <textarea id="inputProductVariants" rows="4"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputFunctions" data-i18n="overview.functions">Funktionen</label>
+                                <textarea id="inputFunctions" rows="4"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputPotentialMisuseCases" data-i18n="overview.potentialMisuseCases">Potenzielle Fehlanwendungsfälle</label>
+                                <textarea id="inputPotentialMisuseCases" rows="4"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overview-images-grid">
+                        <div class="overview-image-field" data-overview-image="architectureImage">
+                            <label for="inputArchitectureImage" data-i18n="overview.architectureImage">System- oder Produktarchitektur</label>
+                            <p id="architectureImageHint" class="overview-image-hint" data-i18n="overview.architectureHint">Architekturdiagramm des Systems oder Produkts.</p>
+                            <div class="overview-image-preview">
+                                <img hidden alt="System- oder Produktarchitektur">
+                                <span data-i18n="overview.imageEmpty">Noch kein Bild hinzugefügt</span>
+                            </div>
+                            <p class="overview-image-name" aria-live="polite"></p>
+                            <input type="file" id="inputArchitectureImage" accept="image/png,image/jpeg,image/webp" aria-describedby="architectureImageHint architectureImageFormats">
+                            <p id="architectureImageFormats" class="overview-image-hint" data-i18n="overview.imageFormats">PNG, JPEG oder WebP · Max. 1 MB pro Bild. Wählen Sie eine neue Datei, um das Bild zu ersetzen.</p>
+                            <button type="button" class="action-button" data-image-remove disabled data-i18n="overview.imageRemove">Bild entfernen</button>
+                        </div>
+                        <div class="overview-image-field" data-overview-image="componentsImage">
+                            <label for="inputComponentsImage" data-i18n="overview.componentsImage">Interne Komponenten und externe Schnittstellen</label>
+                            <p id="componentsImageHint" class="overview-image-hint" data-i18n="overview.componentsHint">Produktdarstellung mit internen Komponenten und Schnittstellen nach außen.</p>
+                            <div class="overview-image-preview">
+                                <img hidden alt="Interne Komponenten und externe Schnittstellen">
+                                <span data-i18n="overview.imageEmpty">Noch kein Bild hinzugefügt</span>
+                            </div>
+                            <p class="overview-image-name" aria-live="polite"></p>
+                            <input type="file" id="inputComponentsImage" accept="image/png,image/jpeg,image/webp" aria-describedby="componentsImageHint componentsImageFormats">
+                            <p id="componentsImageFormats" class="overview-image-hint" data-i18n="overview.imageFormats">PNG, JPEG oder WebP · Max. 1 MB pro Bild. Wählen Sie eine neue Datei, um das Bild zu ersetzen.</p>
+                            <button type="button" class="action-button" data-image-remove disabled data-i18n="overview.imageRemove">Bild entfernen</button>
+                        </div>
                     </div>
                 </div>
             </div>

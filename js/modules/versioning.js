@@ -104,6 +104,15 @@ window.revertToVersion = (analysisId, version) => {
       analysis.name = entry.state.name;
       analysis.description = entry.state.description;
       analysis.intendedUse = entry.state.intendedUse;
+      analysis.productVariants = entry.state.productVariants || '';
+      analysis.functions = entry.state.functions || '';
+      analysis.potentialMisuseCases = entry.state.potentialMisuseCases || '';
+      analysis.architectureImage = entry.state.architectureImage
+        ? { ...entry.state.architectureImage }
+        : null;
+      analysis.componentsImage = entry.state.componentsImage
+        ? { ...entry.state.componentsImage }
+        : null;
       analysis.assets = entry.state.assets;
 
       analysis.damageScenarios = entry.state.damageScenarios;
@@ -241,6 +250,11 @@ function createNewVersion(comment) {
       metadata: { ...analysis.metadata, version: newVersion, date: today },
       description: analysis.description,
       intendedUse: analysis.intendedUse,
+      productVariants: analysis.productVariants || '',
+      functions: analysis.functions || '',
+      potentialMisuseCases: analysis.potentialMisuseCases || '',
+      architectureImage: analysis.architectureImage ? { ...analysis.architectureImage } : null,
+      componentsImage: analysis.componentsImage ? { ...analysis.componentsImage } : null,
       assets: JSON.parse(JSON.stringify(analysis.assets)),
       damageScenarios: JSON.parse(JSON.stringify(analysis.damageScenarios)),
       impactMatrix: JSON.parse(JSON.stringify(analysis.impactMatrix)),
