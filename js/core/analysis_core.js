@@ -209,6 +209,85 @@ function initOverviewImageListeners() {
   });
 }
 
+// Both pies use the same counts as the dashboard, so each slice represents
+// assessed attack trees, rather than a sum of their numeric risk scores.
+function renderOverviewRiskChart(containerId, distribution, riskCount) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const levels = [
+    ['Kritisch', 'label.critical', '#c0392b'],
+    ['Hoch', 'label.high', '#e67e22'],
+    ['Mittel', 'label.medium', '#f39c12'],
+    ['Niedrig', 'label.low', '#27ae60'],
+  ];
+  const total = Object.values(distribution).reduce((sum, count) => sum + count, 0);
+  const percentage = new Intl.NumberFormat(document.documentElement.lang || 'de', {
+    style: 'percent',
+    maximumFractionDigits: 1,
+  });
+  const body = document.createElement('div');
+  body.className = 'risk-chart-body';
+  const pie = document.createElement('div');
+  pie.className = 'risk-pie';
+  pie.setAttribute('role', 'img');
+  const legend = document.createElement('ul');
+  legend.className = 'risk-chart-legend';
+  const stops = [];
+  const descriptions = [];
+  let cumulative = 0;
+
+  levels.forEach(([level, labelKey, color]) => {
+    const count = distribution[level];
+    const share = total ? count / total : 0;
+    const label = t(labelKey);
+    const formattedShare = percentage.format(share);
+    if (count > 0) {
+      stops.push(
+        `${color} ${(cumulative / total) * 100}% ${((cumulative + count) / total) * 100}%`
+      );
+      cumulative += count;
+    }
+
+    const row = document.createElement('li');
+    const swatch = document.createElement('span');
+    swatch.className = 'risk-chart-swatch';
+    swatch.style.backgroundColor = color;
+    swatch.setAttribute('aria-hidden', 'true');
+    const name = document.createElement('span');
+    name.textContent = label;
+    const value = document.createElement('span');
+    value.className = 'risk-chart-value';
+    value.textContent = `${count} (${formattedShare})`;
+    row.append(swatch, name, value);
+    legend.appendChild(row);
+    descriptions.push(`${label}: ${count} (${formattedShare})`);
+  });
+
+  if (total) {
+    pie.style.background = `conic-gradient(${stops.join(', ')})`;
+  } else {
+    const empty = document.createElement('span');
+    empty.textContent = t('overview.noAssessedRisks');
+    pie.appendChild(empty);
+  }
+  const title = document.getElementById(`${containerId}Title`)?.textContent || '';
+  pie.setAttribute(
+    'aria-label',
+    `${title}: ${total ? descriptions.join(', ') : t('overview.noAssessedRisks')}`
+  );
+  const summary = document.createElement('p');
+  summary.className = 'risk-chart-summary';
+  summary.id = `${containerId}Summary`;
+  summary.textContent = tf('overview.assessedRisks', { n: total });
+  if (riskCount > total) {
+    summary.textContent += ` · ${tf('overview.unassessedRisks', { n: riskCount - total })}`;
+  }
+  pie.setAttribute('aria-describedby', summary.id);
+  body.append(pie, legend);
+  container.replaceChildren(body, summary);
+}
+
 // Extended function for the overview (dashboard)
 function renderOverview(analysis) {
   if (!analysis) return;
@@ -288,6 +367,9 @@ function renderOverview(analysis) {
   if (elRRHigh) elRRHigh.textContent = rrDist['Hoch'];
   if (elRRMed) elRRMed.textContent = rrDist['Mittel'];
   if (elRRLow) elRRLow.textContent = rrDist['Niedrig'];
+
+  renderOverviewRiskChart('unmitigatedRiskChart', dist, risks.length);
+  renderOverviewRiskChart('residualRiskChart', rrDist, risks.length);
 }
 
 // =============================================================
