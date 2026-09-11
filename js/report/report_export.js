@@ -64,6 +64,8 @@
       return;
     }
 
+    if (!validateImpactComments(analysis)) return;
+
     const doc = b.createPdfDoc();
     if (!doc) {
       if (typeof showToast === 'function')
@@ -312,6 +314,20 @@
     } else {
       pdf.addText(L.impactHint, 9, 4.2);
       pdf.addImpactMatrixTable(assets, dsList, impact);
+      pdf.addH2(L.impactComments);
+      const commentRows = assets.flatMap((asset) =>
+        dsList.map((ds) => {
+          const value = String(impact[asset.id]?.[ds.id] || 'N/A');
+          const label = IMPACT_LABELS[value] || value;
+          return [
+            `${asset.id}: ${getLocalizedField(asset, 'name', lang, { fallback: true }) || asset.name || asset.name_en || '-'}`,
+            `${ds.id}: ${getLocalizedField(ds, 'name', lang, { fallback: true }) || ds.name || ds.name_en || '-'}`,
+            value === label ? value : `${value} (${label})`,
+            getImpactComment(analysis, asset.id, ds.id, lang),
+          ];
+        })
+      );
+      pdf.addImpactCommentsTable([L.assets, L.damageType, L.colImpact, L.colComment], commentRows);
     }
 
     // =============================================================

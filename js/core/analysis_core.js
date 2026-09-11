@@ -728,6 +728,7 @@ function createNewAnalysis(e) {
           )
         ),
         impactMatrix: JSON.parse(JSON.stringify(newAnalysis.impactMatrix || {})),
+        impactComments: JSON.parse(JSON.stringify(newAnalysis.impactComments || {})),
         riskEntries: JSON.parse(JSON.stringify(newAnalysis.riskEntries || [])),
         securityGoals: JSON.parse(JSON.stringify(newAnalysis.securityGoals || [])),
         residualRisk: JSON.parse(JSON.stringify(newAnalysis.residualRisk || { leaves: {} })),

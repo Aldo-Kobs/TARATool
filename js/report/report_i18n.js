@@ -89,6 +89,8 @@
       noDs: 'Keine Schadensszenarien definiert.',
       colShort: 'Kurz',
       impactMatrix: 'Schadensauswirkungsmatrix',
+      impactComments: 'Bewertungskommentare',
+      damageType: 'Schadenstyp',
       impactMissing: 'Impact-Matrix kann nicht dargestellt werden (Assets oder Szenarien fehlen).',
       impactHint:
         'Tabelle: Assets (Y-Achse) vs. Schadensszenarien (X-Achse) mit farbiger Bewertung (High/Medium/Low/N/A).',
@@ -192,6 +194,8 @@
       noDs: 'No damage scenarios defined.',
       colShort: 'Short',
       impactMatrix: 'Impact matrix',
+      impactComments: 'Assessment comments',
+      damageType: 'Damage type',
       impactMissing: 'Impact matrix cannot be shown (assets or scenarios missing).',
       impactHint:
         'Table: Assets (Y-axis) vs. damage scenarios (X-axis) with colour-coded rating (High/Medium/Low/N/A).',

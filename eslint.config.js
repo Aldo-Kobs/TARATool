@@ -46,6 +46,8 @@ export default [
         saveAnalyses: 'readonly',
         loadAnalyses: 'readonly',
         getDisplayDamageScenarios: 'readonly',
+        getImpactComment: 'readonly',
+        validateImpactComments: 'readonly',
         getAllDamageScenarioIds: 'readonly',
         escapeHtml: 'readonly',
         showToast: 'readonly',

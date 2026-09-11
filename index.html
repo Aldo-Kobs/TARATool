@@ -428,11 +428,11 @@
     </div>
 
     <!-- Impact Comment Modal -->
-    <div id="impactCommentModal" class="modal" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+    <div id="impactCommentModal" role="dialog" aria-modal="true" aria-labelledby="impactCommentTitle" class="modal" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
         <div class="modal-content" style="width:500px;">
             <span class="close-button" onclick="document.getElementById('impactCommentModal').style.display='none'">&times;</span>
             <h2 id="impactCommentTitle" data-i18n="impact.comment.label">Kommentar</h2>
-            <textarea id="impactCommentText" class="rr-textarea" style="width:100%; min-height:150px; resize:vertical;" placeholder="Kommentar zur Bewertung..." data-i18n-placeholder="impact.comment.ph"></textarea>
+            <textarea id="impactCommentText" required class="rr-textarea" style="width:100%; min-height:150px; resize:vertical;" placeholder="Kommentar zur Bewertung..." data-i18n-placeholder="impact.comment.ph"></textarea>
             <input type="hidden" id="impactCommentAssetId">
             <input type="hidden" id="impactCommentDsId">
             <div style="margin-top:12px; display:flex; justify-content:flex-end; gap:8px;">

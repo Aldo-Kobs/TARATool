@@ -234,6 +234,17 @@ function getAllDamageScenarioIds(analysis) {
   return ids.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
 }
 
+function getImpactComment(analysis, assetId, dsId, lang) {
+  const value = analysis?.impactComments?.[assetId]?.[dsId];
+  if (typeof value === 'string') return value.trim();
+  if (!value || typeof value !== 'object') return '';
+  const localized = getLocalizedField(value, 'text', lang, { fallback: true });
+  return (
+    [localized, value.text, value.text_en].map((text) => String(text || '').trim()).find(Boolean) ||
+    ''
+  );
+}
+
 /**
  * Returns all damage scenarios (default + custom) for the given analysis,
  * sorted naturally. Single source of truth for labels/tooltips in UI and reports.

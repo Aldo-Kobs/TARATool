@@ -199,3 +199,11 @@ def local_storage_data(page: Page) -> list[dict]:
     """Read the persisted analyses from localStorage."""
     raw = page.evaluate("() => localStorage.getItem('taraAnalyses')")
     return json.loads(raw) if raw else []
+
+
+def set_impact_comment(page: Page, text: str, index: int = 0):
+    """Edit a compact matrix cell's comment through its dialog."""
+    page.locator('#dsMatrixContainer .impact-comment-btn').nth(index).click()
+    page.fill('#impactCommentText', text)
+    page.locator('#impactCommentModal .primary-button').click()
+    expect(page.locator('#impactCommentModal')).to_be_hidden()

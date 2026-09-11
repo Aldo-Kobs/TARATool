@@ -118,6 +118,7 @@ window.revertToVersion = (analysisId, version) => {
 
       analysis.damageScenarios = entry.state.damageScenarios;
       analysis.impactMatrix = entry.state.impactMatrix;
+      analysis.impactComments = JSON.parse(JSON.stringify(entry.state.impactComments || {}));
 
       analysis.riskEntries = entry.state.riskEntries;
 
@@ -260,6 +261,7 @@ function createNewVersion(comment) {
       assets: JSON.parse(JSON.stringify(analysis.assets)),
       damageScenarios: JSON.parse(JSON.stringify(analysis.damageScenarios)),
       impactMatrix: JSON.parse(JSON.stringify(analysis.impactMatrix)),
+      impactComments: JSON.parse(JSON.stringify(analysis.impactComments || {})),
       riskEntries: JSON.parse(JSON.stringify(analysis.riskEntries)),
       securityGoals: JSON.parse(JSON.stringify(analysis.securityGoals || [])),
       residualRisk: JSON.parse(JSON.stringify(analysis.residualRisk || { leaves: {} })),

@@ -209,12 +209,12 @@ window.__ASSESSMENT_CONFIG_PRELOAD__ = {
     },
     {
       id: 'DS3',
-      name: 'Verlust von geistigem Eigentum',
-      name_en: 'Loss of intellectual property',
-      short: 'IP loss',
-      short_en: 'IP loss',
-      description: 'Verlust von geistigem Eigentum (Patente, Urheberrechte, etc.).',
-      description_en: 'Loss of intellectual property (patents, copyrights, etc.).',
+      name: 'Betriebsschaden',
+      name_en: 'Operation damage',
+      short: 'Operation',
+      short_en: 'Operation',
+      description: 'Ausfall der Betriebsfunktion der Komponente.',
+      description_en: 'Loss of operation in the component.',
     },
     {
       id: 'DS4',

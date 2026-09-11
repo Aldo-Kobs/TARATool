@@ -51,11 +51,6 @@ function _setLocalizedImpactComment(analysis, assetId, dsId, value) {
   }
 }
 
-function _hasLocalizedImpactComment(analysis, assetId, dsId) {
-  const entry = _impactCommentEntry(analysis, assetId, dsId);
-  return !!(entry && (String(entry.text || '').trim() || String(entry.text_en || '').trim()));
-}
-
 /**
  * Recalculates impact inheritance, worst-case KSTU and risk score
  * for every riskEntry in the given analysis.
@@ -146,11 +141,16 @@ function renderImpactMatrix() {
   const _loc = (obj, field) => {
     if (typeof getLocalizedField !== 'function') return obj?.[field] || '';
     // Standard-DS: plain fallback (kein „(DE)“), Custom: Paren wenn EN fehlt
-    return getLocalizedField(
-      obj,
-      field,
-      undefined,
-      _isDefaultDs(obj) ? { fallback: true } : undefined
+    return (
+      getLocalizedField(
+        obj,
+        field,
+        undefined,
+        _isDefaultDs(obj) ? { fallback: true } : undefined
+      ) ||
+      obj?.[field] ||
+      obj?.[field + '_en'] ||
+      ''
     );
   };
 
@@ -176,81 +176,69 @@ function renderImpactMatrix() {
     return;
   }
 
-  let html = `<h4>${_t('ds.matrixSub')}</h4>`;
-  html += `<p class="muted-hint" style="font-size: 0.9em;">${_t('ds.matrixHint')}</p>`;
+  const total = analysis.assets.length * displayDS.length;
+  const completed = analysis.assets.reduce(
+    (count, asset) =>
+      count + displayDS.filter((ds) => !!getImpactComment(analysis, asset.id, ds.id)).length,
+    0
+  );
+  let html = `<p class="muted-hint">${_t('impact.comment.requiredHint')}</p>`;
+  html += `<p class="impact-comment-progress" aria-live="polite">${tf('impact.comment.progress', { completed, total })}</p>`;
   html += '<div class="impact-matrix-scroll"><table class="impact-matrix-table">';
-
-  html += '<thead><tr>';
-  html += `<th class="asset-col">${typeof t === 'function' ? t('ds.matrix.assetCol') : 'Asset (ID: Name)'}</th>`;
-
+  html += `<thead><tr><th scope="col" class="asset-col">${_t('ds.matrix.assetCol')}</th>`;
   displayDS.forEach((ds) => {
-    const eDsName = escapeHtml(_loc(ds, 'name'));
-    const eDsDesc = escapeHtml(_loc(ds, 'description'));
-    const eDsId = escapeHtml(ds.id);
-    const eDsShort = escapeHtml(_loc(ds, 'short') || ds.short || '');
-    html += `<th class="ds-col" title="${eDsName}: ${eDsDesc}">
-            <div class="vertical-text">${eDsId} (${eDsShort})</div>
-        </th>`;
+    const title = escapeHtml(`${_loc(ds, 'name')}: ${_loc(ds, 'description')}`);
+    html += `<th scope="col" class="ds-col" title="${title}"><div class="vertical-text">${escapeHtml(ds.id)} (${escapeHtml(_loc(ds, 'short'))})</div></th>`;
   });
-
-  html += '</tr></thead>';
-  html += '<tbody>';
-
-  if (!analysis.impactMatrix) analysis.impactMatrix = {};
-
+  html += '</tr></thead><tbody>';
   analysis.assets.forEach((asset) => {
-    if (!analysis.impactMatrix[asset.id]) {
-      analysis.impactMatrix[asset.id] = {};
-    }
-
-    const eAssetId = escapeHtml(asset.id);
-    const eAssetName =
-      typeof localizeParenHtml === 'function'
-        ? localizeParenHtml(_loc(asset, 'name'))
-        : escapeHtml(_loc(asset, 'name'));
-    const eAssetDescriptionTitle = escapeHtml(_loc(asset, 'description') || '');
-
-    html += '<tr>';
-    html += `<td class="asset-col" title="${eAssetDescriptionTitle}"><strong>${eAssetId}: ${eAssetName}</strong></td>`;
-
+    const assetId = escapeHtml(asset.id);
+    html += `<tr><th scope="row" class="asset-col" title="${escapeHtml(_loc(asset, 'description'))}">${assetId}: ${escapeHtml(_loc(asset, 'name'))}</th>`;
     displayDS.forEach((ds) => {
-      const currentScore = analysis.impactMatrix[asset.id][ds.id] || 'N/A';
-      const colorClass = getImpactColorClass(currentScore);
-      const hasComment = _hasLocalizedImpactComment(analysis, asset.id, ds.id);
-      const commentIconClass = hasComment ? 'impact-comment-btn has-comment' : 'impact-comment-btn';
-      const commentTooltip = hasComment
-        ? typeof t === 'function'
-          ? t('impact.comment.edit')
-          : 'Kommentar bearbeiten'
-        : typeof t === 'function'
-          ? t('impact.comment.add')
-          : 'Kommentar hinzufügen';
-
-      html += '<td class="score-cell">';
-      html += '<div class="impact-cell-wrap">';
-      // Build <option> tags dynamically from config
-      const optionsHtml = VALID_IMPACT_VALUES.map((v) => {
-        const lbl = IMPACT_LABELS[v] || v;
-        const display = v === lbl ? v : `${v} (${lbl})`;
-        const sel = currentScore === v ? ' selected' : '';
-        return `<option value="${escapeHtml(v)}"${sel}>${escapeHtml(display)}</option>`;
-      }).join('\n                ');
-      html += `<select 
-                data-asset-id="${eAssetId}" 
-                data-ds-id="${escapeHtml(ds.id)}" 
-                onchange="updateImpactScore('${eAssetId}', '${escapeHtml(ds.id)}', this.value, this)"
-                class="impact-select ${colorClass}">
-                ${optionsHtml}
-            </select>`;
-      html += `<button type="button" class="${commentIconClass}" title="${commentTooltip}" onclick="openImpactComment('${eAssetId}', '${escapeHtml(ds.id)}')"><i class="fas fa-sticky-note"></i></button>`;
-      html += '</div>';
-      html += '</td>';
+      const dsId = escapeHtml(ds.id);
+      const value = String(analysis.impactMatrix?.[asset.id]?.[ds.id] || 'N/A');
+      const comment = getImpactComment(analysis, asset.id, ds.id);
+      const label = `${tf('impact.comment.title', { assetId: asset.id, dsId: ds.id })}: ${_t(comment ? 'impact.comment.edit' : 'impact.comment.required')}`;
+      const options = VALID_IMPACT_VALUES.map((v) => {
+        const name = IMPACT_LABELS[v] || v;
+        return `<option value="${escapeHtml(v)}"${value === v ? ' selected' : ''}>${escapeHtml(v === name ? v : `${v} (${name})`)}</option>`;
+      }).join('');
+      html += `<td class="score-cell"><div class="impact-cell-wrap">
+        <select class="impact-select ${getImpactColorClass(value)}" data-asset-id="${assetId}" data-ds-id="${dsId}"
+          aria-label="${escapeHtml(_t('impact.rating'))}: ${assetId} / ${dsId}">${options}</select>
+        <button type="button" class="impact-comment-btn ${comment ? 'has-comment' : 'needs-comment'}"
+          data-asset-id="${assetId}" data-ds-id="${dsId}" aria-haspopup="dialog"
+          aria-label="${escapeHtml(label)}" title="${escapeHtml(comment || label)}">
+          <span aria-hidden="true">…</span><span class="impact-comment-marker" aria-hidden="true">${comment ? '✓' : '*'}</span>
+        </button>
+      </div></td>`;
     });
     html += '</tr>';
   });
+  dsMatrixContainer.innerHTML = html + '</tbody></table></div>';
+  dsMatrixContainer.querySelectorAll('select').forEach((select) => {
+    select.addEventListener('change', () => {
+      window.updateImpactScore(select.dataset.assetId, select.dataset.dsId, select.value, select);
+    });
+  });
+  dsMatrixContainer.querySelectorAll('.impact-comment-btn').forEach((button) => {
+    button.addEventListener('click', () =>
+      window.openImpactComment(button.dataset.assetId, button.dataset.dsId)
+    );
+  });
+}
 
-  html += '</tbody></table></div>';
-  dsMatrixContainer.innerHTML = html;
+function validateImpactComments(analysis) {
+  for (const asset of analysis.assets || []) {
+    for (const ds of getDisplayDamageScenarios(analysis)) {
+      if (getImpactComment(analysis, asset.id, ds.id)) continue;
+      document.querySelector('[data-tab="tabDamageScenarios"]')?.click();
+      window.openImpactComment(asset.id, ds.id);
+      showToast(tf('impact.comment.requiredFor', { assetId: asset.id, dsId: ds.id }), 'warning');
+      return false;
+    }
+  }
+  return true;
 }
 
 window.openImpactComment = function (assetId, dsId) {
@@ -272,7 +260,8 @@ window.openImpactComment = function (assetId, dsId) {
         ? tf('impact.comment.title', { assetId, dsId })
         : `Kommentar – ${assetId} / ${dsId}`;
   }
-  textEl.value = existing;
+  textEl.value = existing || getImpactComment(analysis, assetId, dsId);
+  textEl.setCustomValidity('');
   if (typeof syncLocalizedInputHint === 'function') {
     syncLocalizedInputHint(textEl, _impactCommentEntry(analysis, assetId, dsId) || {}, 'text', '');
   }
@@ -294,11 +283,21 @@ window.saveImpactComment = function () {
   if (!assetId || !dsId) return;
 
   const comment = (textEl ? textEl.value : '').trim();
+  if (!comment) {
+    textEl?.setCustomValidity(t('impact.comment.required'));
+    textEl?.reportValidity();
+    return;
+  }
+  textEl?.setCustomValidity('');
   _setLocalizedImpactComment(analysis, assetId, dsId, comment);
 
   saveAnalyses();
   if (modal) modal.style.display = 'none';
   renderImpactMatrix();
+  const button = Array.from(dsMatrixContainer.querySelectorAll('.impact-comment-btn')).find(
+    (element) => element.dataset.assetId === assetId && element.dataset.dsId === dsId
+  );
+  button?.focus();
   showToast(
     typeof t === 'function' ? t('impact.comment.saved') : 'Kommentar gespeichert.',
     'success'

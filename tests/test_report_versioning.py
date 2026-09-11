@@ -12,6 +12,7 @@
 import pytest
 from playwright.sync_api import Page, expect
 
+from conftest import set_impact_comment
 from conftest import (
     add_asset,
     add_damage_scenario,
@@ -38,17 +39,13 @@ class TestReportGeneration:
         page = app_with_analysis
         add_asset(page)
         add_damage_scenario(page)
+        switch_tab(page, "damage_scenarios")
+        for index in range(page.locator('#dsMatrixContainer .impact-comment-btn').count()):
+            set_impact_comment(page, 'Not applicable to this asset in the evaluated configuration.', index)
         switch_tab(page, "overview")
-        try:
-            with page.expect_download(timeout=15000) as download_info:
-                page.click("#btnGenerateReport")
-            download = download_info.value
-            assert download.suggested_filename.endswith(".pdf")
-        except Exception:
-            # PDF generation might fail in headless without full jsPDF —
-            # check that at least the function exists
-            exists = page.evaluate("typeof window.generateReportPdf === 'function'")
-            assert exists, "generateReportPdf function should be exposed on window"
+        with page.expect_download(timeout=15000) as download_info:
+            page.click("#btnGenerateReport")
+        assert download_info.value.suggested_filename.endswith(".pdf")
 
 
 # ═══════════════════════════════════════════════════════════════════

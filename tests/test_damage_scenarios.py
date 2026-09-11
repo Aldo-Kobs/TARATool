@@ -12,6 +12,7 @@
 import pytest
 from playwright.sync_api import Page, expect
 
+from conftest import set_impact_comment
 from conftest import (
     SAMPLE_DAMAGE_SCENARIO,
     SAMPLE_ASSET,
@@ -138,6 +139,7 @@ class TestImpactMatrix:
         # Find first select in the matrix and change it
         selects = page.locator("#dsMatrixContainer select")
         if selects.count() > 0:
+            set_impact_comment(page, "High impact because operation is lost.")
             selects.first.select_option("3")
             page.wait_for_timeout(300)
             data = get_active_analysis(page)

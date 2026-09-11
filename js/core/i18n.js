@@ -162,6 +162,14 @@
       'impact.comment.label': 'Kommentar',
       'impact.comment.ph': 'Kommentar zur Bewertung...',
       'impact.comment.saved': 'Kommentar gespeichert.',
+      'impact.scenario': 'Schadenstyp',
+      'impact.rating': 'Schadensauswirkung',
+      'impact.comment.required': 'Kommentar erforderlich',
+      'impact.comment.progress':
+        'Kommentare: {completed}/{total} ausgefüllt. … Kommentar öffnen · * Erforderlich · ✓ Vorhanden',
+      'impact.comment.requiredHint':
+        'Für jedes Asset und jeden Schadenstyp ist ein Kommentar erforderlich, auch bei N/A. Bitte begründen Sie die Bewertung.',
+      'impact.comment.requiredFor': 'Bitte geben Sie einen Kommentar für {assetId} / {dsId} ein.',
       'note.title': 'Notiz',
       'note.title.withLabel': 'Notiz – {label}',
       'note.ph': 'Notiz zum Knoten / zur Auswirkung...',
@@ -556,6 +564,14 @@
       'impact.comment.label': 'Comment',
       'impact.comment.ph': 'Comment on the rating...',
       'impact.comment.saved': 'Comment saved.',
+      'impact.scenario': 'Damage type',
+      'impact.rating': 'Impact',
+      'impact.comment.required': 'Comment required',
+      'impact.comment.progress':
+        'Comments: {completed}/{total} completed. … Open comment · * Required · ✓ Added',
+      'impact.comment.requiredHint':
+        'A comment is required for every asset and damage type, including N/A. Please explain the rating.',
+      'impact.comment.requiredFor': 'Please enter a comment for {assetId} / {dsId}.',
       'note.title': 'Note',
       'note.title.withLabel': 'Note – {label}',
       'note.ph': 'Note on node / impact...',

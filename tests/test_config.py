@@ -16,6 +16,7 @@ import pytest
 from pathlib import Path
 from playwright.sync_api import Page, expect
 
+from conftest import set_impact_comment
 from conftest import (
     APP_URL,
     PROJECT_ROOT,
@@ -427,6 +428,7 @@ class TestImpactMatrixConfig:
         switch_tab(page, "damage_scenarios")
         page.wait_for_timeout(300)
 
+        set_impact_comment(page, "High impact assessment.")
         # Select value "3" and check CSS class
         sel = page.locator("#dsMatrixContainer select").first
         sel.select_option("3")
