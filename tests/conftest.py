@@ -47,7 +47,7 @@ SAMPLE_ANALYSIS = {
 
 SAMPLE_ASSET = {
     "name":            "ECU Gateway",
-    "type":            "Hardware",
+    "type":            "Component",
     "description":     "Central ECU for vehicle network",
     "confidentiality": "III",
     "integrity":       "II",
@@ -140,7 +140,7 @@ def add_asset(page: Page, asset: dict | None = None):
     page.click("#btnAddAsset")
     page.wait_for_selector("#assetModal", state="visible")
     page.fill("#assetName", data["name"])
-    page.fill("#assetType", data.get("type", ""))
+    page.select_option("#assetType", data.get("type", "Component"))
     page.fill("#assetDescription", data.get("description", ""))
     # CIA radio buttons
     for criterion in ("confidentiality", "integrity"):
@@ -149,6 +149,9 @@ def add_asset(page: Page, asset: dict | None = None):
     # "authenticity" is the radio-group name for availability in the UI
     avail = data.get("availability", "I")
     page.click(f'input[name="authenticity"][value="{avail}"]')
+    for criterion in ("authorization", "authentication"):
+        if criterion in data:
+            page.check(f'input[name="{criterion}"][value="{data[criterion]}"]')
     page.click('#assetForm button[type="submit"]')
     page.wait_for_timeout(300)
 

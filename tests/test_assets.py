@@ -40,9 +40,9 @@ class TestAssetCreate:
 
     def test_add_multiple_assets(self, app_with_analysis: Page):
         page = app_with_analysis
-        add_asset(page, {"name": "Asset A", "type": "SW", "description": "",
+        add_asset(page, {"name": "Asset A", "type": "Component", "description": "",
                          "confidentiality": "I", "integrity": "I", "availability": "I"})
-        add_asset(page, {"name": "Asset B", "type": "HW", "description": "",
+        add_asset(page, {"name": "Asset B", "type": "Component", "description": "",
                          "confidentiality": "II", "integrity": "II", "availability": "II"})
         data = get_active_analysis(page)
         assert len(data["assets"]) == 2
@@ -118,9 +118,9 @@ class TestAssetDelete:
         """After deleting an asset, remaining assets are renumbered sequentially and impactMatrix keys follow."""
         page = app_with_analysis
         # Create 3 assets
-        add_asset(page, {"name": "Alpha", "type": "HW"})
-        add_asset(page, {"name": "Beta", "type": "SW"})
-        add_asset(page, {"name": "Gamma", "type": "NET"})
+        add_asset(page, {"name": "Alpha", "type": "Component"})
+        add_asset(page, {"name": "Beta", "type": "Component"})
+        add_asset(page, {"name": "Gamma", "type": "Component"})
 
         # Set impactMatrix values in the live analysis object so the in-memory state is correct
         page.evaluate("""() => {

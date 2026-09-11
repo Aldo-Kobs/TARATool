@@ -283,32 +283,51 @@
                     <label data-i18n="assets.modal.name">Name</label> <input type="text" id="assetName" required>
                 </div>
                 <div class="form-group">
-                    <label data-i18n="assets.modal.type">Typ</label> <input type="text" id="assetType">
+                    <label for="assetType" data-i18n="assets.modal.type">Typ</label>
+                    <select id="assetType" required>
+                        <option value="Component" data-i18n="assets.type.component">Komponente</option>
+                        <option value="Data" data-i18n="assets.type.data">Daten</option>
+                        <option value="Function" data-i18n="assets.type.function">Funktion</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label data-i18n="assets.modal.description">Beschreibung</label> <textarea id="assetDescription" rows="3"></textarea>
                 </div>
-                <fieldset style="border:1px solid #ddd; padding:10px;">
-                    <legend data-i18n="assets.modal.cia">Schutzbedarf (CIA)</legend>
-                    <div class="cia-grid" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
-                        <div>
-                            <label data-i18n="assets.modal.confidentiality">Confidentiality</label><br>
+                <fieldset class="asset-evaluation">
+                    <legend data-i18n="assets.modal.cia">Schutzbedarf (CIA, Autorisierung, Authentifizierung)</legend>
+                    <div class="asset-evaluation-grid">
+                        <fieldset class="asset-evaluation-criterion">
+                            <legend data-i18n="assets.modal.confidentiality">Vertraulichkeit</legend>
                             <label><input type="radio" name="confidentiality" value="I"> I</label>
                             <label><input type="radio" name="confidentiality" value="II"> II</label>
                             <label><input type="radio" name="confidentiality" value="III"> III</label>
-                        </div>
-                        <div>
-                            <label data-i18n="assets.modal.integrity">Integrity</label><br>
+                        </fieldset>
+                        <fieldset class="asset-evaluation-criterion">
+                            <legend data-i18n="assets.modal.integrity">Integrität</legend>
                             <label><input type="radio" name="integrity" value="I"> I</label>
                             <label><input type="radio" name="integrity" value="II"> II</label>
                             <label><input type="radio" name="integrity" value="III"> III</label>
-                        </div>
-                        <div>
-                            <label data-i18n="assets.modal.availability">Availability</label><br>
+                        </fieldset>
+                        <fieldset class="asset-evaluation-criterion">
+                            <legend data-i18n="assets.modal.availability">Verfügbarkeit</legend>
                             <label><input type="radio" name="authenticity" value="I"> I</label>
                             <label><input type="radio" name="authenticity" value="II"> II</label>
                             <label><input type="radio" name="authenticity" value="III"> III</label>
-                        </div>
+                        </fieldset>
+                        <fieldset class="asset-evaluation-criterion">
+                            <legend data-i18n="assets.modal.authorization">Autorisierung</legend>
+                            <label><input type="radio" name="authorization" value="I"> I</label>
+                            <label><input type="radio" name="authorization" value="II"> II</label>
+                            <label><input type="radio" name="authorization" value="III"> III</label>
+                            <label><input type="radio" name="authorization" value="N/A"> <span data-i18n="assets.modal.notApplicable">Nicht zutreffend (N/A)</span></label>
+                        </fieldset>
+                        <fieldset class="asset-evaluation-criterion">
+                            <legend data-i18n="assets.modal.authentication">Authentifizierung</legend>
+                            <label><input type="radio" name="authentication" value="I"> I</label>
+                            <label><input type="radio" name="authentication" value="II"> II</label>
+                            <label><input type="radio" name="authentication" value="III"> III</label>
+                            <label><input type="radio" name="authentication" value="N/A"> <span data-i18n="assets.modal.notApplicable">Nicht zutreffend (N/A)</span></label>
+                        </fieldset>
                     </div>
                 </fieldset>
                 <button type="submit" class="primary-button" style="margin-top:15px;" data-i18n="nav.save">Speichern</button>

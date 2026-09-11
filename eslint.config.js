@@ -73,6 +73,7 @@ export default [
         renderActiveTab: 'readonly',
         // modules/
         renderAssets: 'readonly',
+        getAssetTypeLabel: 'readonly',
         renderDamageScenarios: 'readonly',
         renderImpactMatrix: 'readonly',
         renderRiskAnalysis: 'readonly',

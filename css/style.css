@@ -514,6 +514,42 @@ textarea {
   color: #999;
 }
 
+.asset-evaluation {
+  border: 1px solid var(--border-soft);
+  padding: 12px;
+}
+
+.asset-evaluation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.asset-evaluation-criterion {
+  min-width: 0;
+  margin: 0;
+  padding: 8px;
+  border: 1px solid var(--border-soft);
+}
+
+.asset-evaluation-criterion label {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.asset-criteria-values {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px 12px;
+  margin: 8px 0;
+  font-size: 0.9em;
+}
+
+.asset-criteria-values dd {
+  margin: 0;
+  font-weight: bold;
+}
+
 /* Footer (Buttons) */
 .asset-card-footer {
   margin-top: auto;
