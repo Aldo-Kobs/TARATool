@@ -234,20 +234,23 @@
       pdf.addText(L.noAssets);
     } else {
       pdf.addTable(
-        [L.colId, L.colName, L.colType, 'C', 'I', 'A', L.colSchutz],
+        [L.colId, L.colName, L.colType, 'C', 'I', 'A', 'Authz', 'Authn', L.colSchutz],
         assets.map((a) => [
           a.id || '-',
           (typeof getLocalizedField === 'function'
             ? getLocalizedField(a, 'name', lang, { fallback: true })
             : a.name || '-') || '-',
-          a.type || '-',
+          getAssetTypeLabel(a, lang),
           a.confidentiality || '-',
           a.integrity || '-',
           a.authenticity || '-',
+          a.authorization || '-',
+          a.authentication || '-',
           a.schutzbedarf || '-',
         ]),
-        [14, 58, 35, 8, 8, 8, pdf.pageW - pdf.margin * 2 - (14 + 58 + 35 + 8 + 8 + 8)]
+        [14, 40, 24, 8, 8, 8, 14, 14, pdf.pageW - pdf.margin * 2 - 130]
       );
+      pdf.addText(L.assetCriteriaLegend, 9, 5);
     }
 
     // =============================================================

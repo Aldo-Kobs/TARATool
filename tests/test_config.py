@@ -473,7 +473,7 @@ class TestAssetProtectionLevelConfig:
         page = app_with_analysis
         low_asset = {
             "name": "Low Asset",
-            "type": "Software",
+            "type": "Component",
             "description": "Minimal protection",
             "confidentiality": "I",
             "integrity": "I",

@@ -75,6 +75,8 @@
       colName: 'Name',
       colType: 'Typ',
       colSchutz: 'Schutzbedarf',
+      assetCriteriaLegend:
+        'C: Confidentiality · I: Integrity · A: Availability · Authz: Autorisierung · Authn: Authentifizierung',
       damageScenarios: 'Schadensszenarien',
       noDs: 'Keine Schadensszenarien definiert.',
       colShort: 'Kurz',
@@ -168,6 +170,8 @@
       colName: 'Name',
       colType: 'Type',
       colSchutz: 'Protection need',
+      assetCriteriaLegend:
+        'C: Confidentiality · I: Integrity · A: Availability · Authz: Authorization · Authn: Authentication',
       damageScenarios: 'Damage scenarios',
       noDs: 'No damage scenarios defined.',
       colShort: 'Short',

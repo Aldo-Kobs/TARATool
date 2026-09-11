@@ -130,7 +130,7 @@ class TestFullWorkflow:
         """Data in one analysis must not bleed into another."""
         page = app
         create_analysis(page, "Analysis Alpha")
-        add_asset(page, {"name": "Alpha Asset", "type": "HW", "description": "",
+        add_asset(page, {"name": "Alpha Asset", "type": "Component", "description": "",
                          "confidentiality": "I", "integrity": "I", "availability": "I"})
 
         create_analysis(page, "Analysis Beta")

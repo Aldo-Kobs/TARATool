@@ -15,6 +15,84 @@ const assetModalTitleEl = document.getElementById('assetModalTitle');
 const closeAssetModalEl = document.getElementById('closeAssetModal');
 const btnAddAssetEl = document.getElementById('btnAddAsset');
 
+const ASSET_CRITERIA = [
+  ['confidentiality', 'assets.modal.confidentiality'],
+  ['integrity', 'assets.modal.integrity'],
+  // Legacy storage key for Availability; Authentication is a separate criterion.
+  ['authenticity', 'assets.modal.availability'],
+  ['authorization', 'assets.modal.authorization'],
+  ['authentication', 'assets.modal.authentication'],
+];
+const ASSET_TYPES = ['Component', 'Data', 'Function'];
+
+function normalizeAssetType(value) {
+  const aliases = {
+    component: 'Component',
+    komponente: 'Component',
+    data: 'Data',
+    daten: 'Data',
+    function: 'Function',
+    funktion: 'Function',
+  };
+  return (
+    aliases[
+      String(value || '')
+        .trim()
+        .toLowerCase()
+    ] || ''
+  );
+}
+
+function getAssetTypeLabel(asset, lang) {
+  const type = normalizeAssetType(asset.type || asset.type_en);
+  if (type) return t(`assets.type.${type.toLowerCase()}`, lang);
+  return getLocalizedField(asset, 'type', lang, { fallback: true }) || '-';
+}
+
+function populateAssetTypeOptions(asset) {
+  const select = document.getElementById('assetType');
+  select.replaceChildren();
+  ASSET_TYPES.forEach((type) => {
+    const option = document.createElement('option');
+    option.value = type;
+    option.dataset.i18n = `assets.type.${type.toLowerCase()}`;
+    option.textContent = t(option.dataset.i18n);
+    select.appendChild(option);
+  });
+  if (!asset) return;
+  const type = normalizeAssetType(asset.type || asset.type_en);
+  if (type) {
+    select.value = type;
+  } else {
+    // Keep legacy free-text types intact until the user chooses a category.
+    const previous = document.createElement('option');
+    previous.value = '';
+    previous.disabled = true;
+    previous.textContent = tf('assets.type.legacy', { type: getAssetTypeLabel(asset) });
+    select.prepend(previous);
+    select.value = '';
+  }
+}
+
+function readAssetEvaluation() {
+  const evaluation = {};
+  ASSET_CRITERIA.forEach(([key]) => {
+    evaluation[key] = document.querySelector(`input[name="${key}"]:checked`)?.value || '-';
+  });
+  // Inapplicable criteria do not increase protection need.
+  const levels = PROTECTION_LEVEL_RANKING;
+  const maxLevel = Math.max(
+    ...Object.values(evaluation).map((value) => (value === 'N/A' ? 0 : levels[value] || 0))
+  );
+  evaluation.schutzbedarf = ['-', 'I', 'II', 'III'][maxLevel];
+  return evaluation;
+}
+
+function refreshAssetRisks(analysis) {
+  /* global _recalcAllRiskEntries */
+  if (typeof _recalcAllRiskEntries === 'function') _recalcAllRiskEntries(analysis);
+}
+
 function renderAssets(analysis) {
   if (!assetsCardContainerEl) return;
   assetsCardContainerEl.innerHTML = '';
@@ -34,12 +112,7 @@ function renderAssets(analysis) {
     const descRaw = _loc(asset, 'description');
     const eName =
       typeof localizeParenHtml === 'function' ? localizeParenHtml(name) : escapeHtml(name);
-    const typeRaw = _loc(asset, 'type');
-    const eType = typeRaw
-      ? typeof localizeParenHtml === 'function'
-        ? localizeParenHtml(typeRaw)
-        : escapeHtml(typeRaw)
-      : escapeHtml('-');
+    const eType = escapeHtml(getAssetTypeLabel(asset));
     const eDesc = descRaw
       ? typeof localizeParenHtml === 'function'
         ? localizeParenHtml(descRaw.substring(0, 100) + (descRaw.length > 100 ? '...' : ''))
@@ -55,11 +128,9 @@ function renderAssets(analysis) {
             </div>
             <div class="asset-cia-area">
                 <div class="asset-cia-label">${_t('assets.schutz')}</div>
-                <div style="display:flex; justify-content:space-between; font-weight:bold;">
-                    <span title="Confidentiality">C: ${escapeHtml(asset.confidentiality || '-')}</span>
-                    <span title="Integrity">I: ${escapeHtml(asset.integrity || '-')}</span>
-                    <span title="Authenticity">A: ${escapeHtml(asset.authenticity || '-')}</span>
-                </div>
+                <dl class="asset-criteria-values">
+                    ${ASSET_CRITERIA.map(([key, label]) => `<dt>${escapeHtml(_t(label))}</dt><dd>${escapeHtml(asset[key] || '-')}</dd>`).join('')}
+                </dl>
             </div>
             <div class="asset-card-footer">
                 <button onclick="editAsset('${eId}')" class="action-button small">${_t('btn.edit')}</button>
@@ -91,29 +162,11 @@ function saveAsset(e) {
     return;
   }
 
-  // Read CIA values
-  const getRadioVal = (radioName) => {
-    const el = document.querySelector(`input[name="${radioName}"]:checked`);
-    return el ? el.value : '-';
-  };
-
-  const cia = {
-    c: getRadioVal('confidentiality'),
-    i: getRadioVal('integrity'),
-    a: getRadioVal('authenticity'),
-  };
-
-  // Determine protection level (highest value)
-  /* global PROTECTION_LEVEL_RANKING */
-  const levels =
-    typeof PROTECTION_LEVEL_RANKING !== 'undefined'
-      ? PROTECTION_LEVEL_RANKING
-      : { '-': 0, I: 1, II: 2, III: 3 };
-  const maxLevel = Math.max(levels[cia.c] || 0, levels[cia.i] || 0, levels[cia.a] || 0);
-  let schutzbedarf = '-';
-  if (maxLevel === 1) schutzbedarf = 'I';
-  if (maxLevel === 2) schutzbedarf = 'II';
-  if (maxLevel === 3) schutzbedarf = 'III';
+  if (!ASSET_TYPES.includes(typeField.value)) {
+    showToast(t('assets.type.required'), 'warning');
+    return;
+  }
+  const evaluation = readAssetEvaluation();
 
   if (assetId) {
     // Edit
@@ -121,20 +174,18 @@ function saveAsset(e) {
     if (index !== -1) {
       const updated = {
         ...analysis.assets[index],
-        confidentiality: cia.c,
-        integrity: cia.i,
-        authenticity: cia.a,
-        schutzbedarf: schutzbedarf,
+        ...evaluation,
+        type: typeField.value,
       };
       if (typeof setLocalizedField === 'function') {
         setLocalizedField(updated, 'name', name);
-        setLocalizedField(updated, 'type', typeField.value);
         setLocalizedField(updated, 'description', descField.value);
       } else {
         updated.name = name;
         updated.type = typeField.value;
         updated.description = descField.value;
       }
+      delete updated.type_en;
       analysis.assets[index] = updated;
       showToast(
         typeof tf === 'function' ? tf('toast.assetOk', { id: assetId }) : `Asset ${assetId} OK`,
@@ -152,16 +203,12 @@ function saveAsset(e) {
     const created = {
       id: newId,
       name: '',
-      type: '',
+      type: typeField.value,
       description: '',
-      confidentiality: cia.c,
-      integrity: cia.i,
-      authenticity: cia.a,
-      schutzbedarf: schutzbedarf,
+      ...evaluation,
     };
     if (typeof setLocalizedField === 'function') {
       setLocalizedField(created, 'name', name);
-      setLocalizedField(created, 'type', typeField.value);
       setLocalizedField(created, 'description', descField.value);
     } else {
       created.name = name;
@@ -175,6 +222,7 @@ function saveAsset(e) {
     );
   }
 
+  refreshAssetRisks(analysis);
   saveAnalyses();
   renderAssets(analysis);
   if (typeof renderImpactMatrix === 'function') renderImpactMatrix();
@@ -202,17 +250,11 @@ window.editAsset = (id) => {
     typeof getLocalizedField === 'function'
       ? getLocalizedField(asset, 'description', undefined, { raw: true })
       : asset.description || '';
-  const typeEl = document.getElementById('assetType');
-  const typeRaw =
-    typeof getLocalizedField === 'function'
-      ? getLocalizedField(asset, 'type', undefined, { raw: true })
-      : asset.type || '';
   nameEl.value = nameRaw;
-  typeEl.value = typeRaw;
+  populateAssetTypeOptions(asset);
   descEl.value = descRaw;
   if (typeof syncLocalizedInputHint === 'function') {
     syncLocalizedInputHint(nameEl, asset, 'name', '');
-    syncLocalizedInputHint(typeEl, asset, 'type', '');
     syncLocalizedInputHint(descEl, asset, 'description', '');
   } else {
     const lang = (window.TaraPrefs && TaraPrefs.getLang()) || 'de';
@@ -227,7 +269,6 @@ window.editAsset = (id) => {
       descEl.placeholder = deDesc ? `(${deDesc})` : '';
     } else {
       nameEl.placeholder = '';
-      typeEl.placeholder = '';
       descEl.placeholder = '';
     }
   }
@@ -239,9 +280,7 @@ window.editAsset = (id) => {
       el.checked = el.value === val;
     });
   };
-  setRadio('confidentiality', asset.confidentiality);
-  setRadio('integrity', asset.integrity);
-  setRadio('authenticity', asset.authenticity);
+  ASSET_CRITERIA.forEach(([key]) => setRadio(key, asset[key]));
 
   if (assetModalEl) assetModalEl.style.display = 'block';
 };
@@ -345,6 +384,7 @@ if (btnAddAssetEl) {
       assetModalTitleEl.textContent =
         typeof t === 'function' ? t('assets.modal.new') : 'Neues Asset';
     if (assetFormEl) assetFormEl.reset();
+    populateAssetTypeOptions();
     document.getElementById('assetIdField').value = '';
     if (assetModalEl) assetModalEl.style.display = 'block';
   };
@@ -364,6 +404,13 @@ window.flushAssetModalLang = function (lang) {
   if (!id) return;
   const asset = (analysis.assets || []).find((a) => a.id === id);
   if (!asset) return;
+  Object.assign(asset, readAssetEvaluation());
+  const type = document.getElementById('assetType').value;
+  if (ASSET_TYPES.includes(type)) {
+    asset.type = type;
+    delete asset.type_en;
+  }
+  refreshAssetRisks(analysis);
   const name = document.getElementById('assetName')?.value ?? '';
   const desc = document.getElementById('assetDescription')?.value ?? '';
   if (typeof setLocalizedField === 'function') {

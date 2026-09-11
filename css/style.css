@@ -219,6 +219,87 @@ body:has(.modal[style*='display:block']) .header-nav {
   color: var(--text-heading);
 }
 
+.overview-risk-charts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.risk-chart-card {
+  min-width: 0;
+  padding: 16px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+}
+
+.risk-chart-card h3 {
+  margin: 0 0 16px;
+  font-size: 1em;
+  color: var(--text-heading);
+}
+
+.risk-chart-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.risk-pie {
+  width: 200px;
+  max-width: 100%;
+  aspect-ratio: 1;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--border-soft);
+  color: var(--text-main);
+  text-align: center;
+  font-size: 0.85em;
+}
+
+.risk-pie span {
+  max-width: 140px;
+  padding: 12px;
+}
+
+.risk-chart-legend {
+  flex: 1;
+  min-width: 180px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.risk-chart-legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.risk-chart-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.risk-chart-value {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.risk-chart-summary {
+  margin: 16px 0 0;
+  color: var(--text-muted);
+  font-size: 0.85em;
+}
+
 .meta-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -283,6 +364,7 @@ body:has(.modal[style*='display:block']) .header-nav {
 }
 
 @media (max-width: 760px) {
+  .overview-risk-charts,
   .overview-details-grid,
   .overview-images-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -430,6 +512,42 @@ textarea {
   margin-bottom: 2px;
   text-transform: uppercase;
   color: #999;
+}
+
+.asset-evaluation {
+  border: 1px solid var(--border-soft);
+  padding: 12px;
+}
+
+.asset-evaluation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.asset-evaluation-criterion {
+  min-width: 0;
+  margin: 0;
+  padding: 8px;
+  border: 1px solid var(--border-soft);
+}
+
+.asset-evaluation-criterion label {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.asset-criteria-values {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px 12px;
+  margin: 8px 0;
+  font-size: 0.9em;
+}
+
+.asset-criteria-values dd {
+  margin: 0;
+  font-weight: bold;
 }
 
 /* Footer (Buttons) */
