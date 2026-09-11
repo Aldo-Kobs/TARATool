@@ -76,9 +76,6 @@ function fillAnalysisForm(analysis) {
   const elName = document.getElementById('inputAnalysisName');
   const elDesc = document.getElementById('inputDescription');
   const elUse = document.getElementById('inputIntendedUse');
-  const elProductVariants = document.getElementById('inputProductVariants');
-  const elFunctions = document.getElementById('inputFunctions');
-  const elPotentialMisuseCases = document.getElementById('inputPotentialMisuseCases');
   const elAuthor = document.getElementById('inputAuthorName');
   const elMetadata = document.getElementById('analysisMetadata');
 
@@ -86,9 +83,6 @@ function fillAnalysisForm(analysis) {
   if (elName) elName.value = analysis.name;
   if (elDesc) elDesc.value = analysis.description;
   if (elUse) elUse.value = analysis.intendedUse;
-  if (elProductVariants) elProductVariants.value = analysis.productVariants || '';
-  if (elFunctions) elFunctions.value = analysis.functions || '';
-  if (elPotentialMisuseCases) elPotentialMisuseCases.value = analysis.potentialMisuseCases || '';
   if (elAuthor) elAuthor.value = analysis.metadata.author;
 
   if (elMetadata) {
@@ -102,14 +96,90 @@ function fillAnalysisForm(analysis) {
         `;
   }
 
+  renderOverviewLists(analysis);
+
   // Also update overview if currently visible
   renderOverview(analysis);
+}
+
+function resizeOverviewTextareas() {
+  document.querySelectorAll('.overview-details-grid textarea').forEach((input) => {
+    if (!input.getClientRects().length) return;
+    input.style.height = 'auto';
+    input.style.height = `${input.scrollHeight + 2}px`;
+  });
+}
+
+function labelOverviewListItems(field) {
+  const label = t(`overview.${field.dataset.overviewList}`);
+  field.querySelectorAll('li').forEach((item, index) => {
+    const name = tf('overview.listItem', { field: label, number: index + 1 });
+    item.querySelector('textarea').setAttribute('aria-label', name);
+    item.querySelector('button').setAttribute('aria-label', `${t('overview.removeItem')}: ${name}`);
+  });
+}
+
+function appendOverviewListItem(field, value = '') {
+  const item = document.createElement('li');
+  const row = document.createElement('div');
+  row.className = 'overview-list-row';
+  const input = document.createElement('textarea');
+  input.rows = 2;
+  input.value = value;
+  const remove = document.createElement('button');
+  remove.type = 'button';
+  remove.className = 'action-button';
+  remove.dataset.listRemove = '';
+  remove.textContent = '×';
+  remove.title = t('overview.removeItem');
+  row.append(input, remove);
+  item.appendChild(row);
+  field.querySelector('ul').appendChild(item);
+  labelOverviewListItems(field);
+  return input;
+}
+
+function renderOverviewLists(analysis) {
+  document.querySelectorAll('[data-overview-list]').forEach((field) => {
+    field.querySelector('ul').replaceChildren();
+    const items = normalizeOverviewList(analysis[field.dataset.overviewList]);
+    // A blank first row makes an empty list immediately editable.
+    (items.length ? items : ['']).forEach((value) => appendOverviewListItem(field, value));
+  });
+}
+
+function initOverviewDetailsListeners() {
+  const details = document.querySelector('.overview-details-grid');
+  if (!details) return;
+  details.addEventListener('input', () => {
+    resizeOverviewTextareas();
+    saveCurrentAnalysisState();
+  });
+  details.addEventListener('click', (event) => {
+    const button = event.target.closest('button');
+    const field = button?.closest('[data-overview-list]');
+    if (!field) return;
+    if (button.hasAttribute('data-list-add')) {
+      appendOverviewListItem(field).focus();
+    } else if (button.hasAttribute('data-list-remove')) {
+      const item = button.closest('li');
+      const next = item.nextElementSibling || item.previousElementSibling;
+      item.remove();
+      labelOverviewListItems(field);
+      (next?.querySelector('textarea') || field.querySelector('[data-list-add]')).focus();
+      saveCurrentAnalysisState();
+    }
+    resizeOverviewTextareas();
+  });
+  // Reflow when the viewport or surrounding layout changes width.
+  const observer = new ResizeObserver(resizeOverviewTextareas);
+  observer.observe(details);
 }
 
 // Image uploads belong to the analysis selected when the file was chosen.
 // Tokens prevent an older read from overwriting a replacement or removal.
 const overviewImageReads = new WeakMap();
-const OVERVIEW_IMAGE_MAX_BYTES = 1024 * 1024;
+const OVERVIEW_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
 
 function isOverviewImage(image) {
   return (
@@ -147,6 +217,33 @@ function storeOverviewImage(analysis, key, image) {
   // Roll back a failed save so the preview never claims an image was persisted.
   if (!saveAnalyses()) analysis[key] = previous;
   if (getActiveAnalysis() === analysis) renderOverviewImages(analysis);
+}
+
+function optimizeOverviewImage(decoded, image) {
+  // Base64 images share localStorage with analyses and version history. Keep
+  // large uploads within the previous per-image storage budget.
+  const maxDataUrlLength = Math.ceil((1024 * 1024) / 3) * 4 + 32;
+  if (image.dataUrl.length <= maxDataUrlLength) return image;
+
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  if (!context) throw new Error('Image optimization unavailable');
+  let scale = Math.min(1, 4096 / Math.max(decoded.naturalWidth, decoded.naturalHeight));
+  for (;;) {
+    canvas.width = Math.max(1, Math.round(decoded.naturalWidth * scale));
+    canvas.height = Math.max(1, Math.round(decoded.naturalHeight * scale));
+    context.drawImage(decoded, 0, 0, canvas.width, canvas.height);
+    // Prefer lossless PNG for diagrams and text; preserve transparency in WebP.
+    let dataUrl = canvas.toDataURL('image/png');
+    if (dataUrl.length > maxDataUrlLength) dataUrl = canvas.toDataURL('image/webp', 0.9);
+    if (dataUrl.length <= maxDataUrlLength) {
+      const optimized = { ...image, dataUrl };
+      if (!isOverviewImage(optimized)) throw new Error('Invalid optimized image');
+      return optimized;
+    }
+    if (canvas.width === 1 && canvas.height === 1) throw new Error('Image optimization failed');
+    scale *= 0.8;
+  }
 }
 
 function initOverviewImageListeners() {
@@ -193,7 +290,12 @@ function initOverviewImageListeners() {
         const decoded = new Image();
         decoded.onerror = () => fail('overview.imageInvalid');
         decoded.onload = () => {
-          if (isCurrent()) storeOverviewImage(analysis, key, image);
+          if (!isCurrent()) return;
+          try {
+            storeOverviewImage(analysis, key, optimizeOverviewImage(decoded, image));
+          } catch (_) {
+            fail('overview.imageReadError');
+          }
         };
         decoded.src = image.dataUrl;
       };
@@ -293,6 +395,7 @@ function renderOverview(analysis) {
   if (!analysis) return;
 
   renderOverviewImages(analysis);
+  resizeOverviewTextareas();
 
   // 1. Simple counters
   const elAssetCount = document.getElementById('statAssetCount');
@@ -610,9 +713,10 @@ function createNewAnalysis(e) {
         metadata: { ...(newAnalysis.metadata || {}), version: INITIAL_VERSION, date: today },
         description: newAnalysis.description || '',
         intendedUse: newAnalysis.intendedUse || '',
-        productVariants: newAnalysis.productVariants || '',
-        functions: newAnalysis.functions || '',
-        potentialMisuseCases: newAnalysis.potentialMisuseCases || '',
+        productVariants: normalizeOverviewList(newAnalysis.productVariants),
+        functions: normalizeOverviewList(newAnalysis.functions),
+        potentialMisuseCases: normalizeOverviewList(newAnalysis.potentialMisuseCases),
+        assumptions: normalizeOverviewList(newAnalysis.assumptions),
         architectureImage: newAnalysis.architectureImage
           ? { ...newAnalysis.architectureImage }
           : null,
@@ -657,6 +761,7 @@ function createNewAnalysis(e) {
  * Called from the central DOMContentLoaded handler in init.js.
  */
 function initAnalysisCoreListeners() {
+  initOverviewDetailsListeners();
   initOverviewImageListeners();
   const form = document.getElementById('newAnalysisForm');
   const modal = document.getElementById('newAnalysisModal');

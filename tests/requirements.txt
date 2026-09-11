@@ -4,3 +4,4 @@ playwright>=1.40
 pytest-html>=4.0
 pytest-xdist>=3.5
 pytest-timeout>=2.2
+PyMuPDF>=1.24

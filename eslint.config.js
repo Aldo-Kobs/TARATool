@@ -68,8 +68,10 @@ export default [
         prepareNewAnalysisModal: 'readonly',
         renderAnalysisSelector: 'readonly',
         renderOverview: 'readonly',
+        isOverviewImage: 'readonly',
         initAnalysisCoreListeners: 'readonly',
         saveCurrentAnalysisState: 'readonly',
+        normalizeOverviewList: 'readonly',
         renderActiveTab: 'readonly',
         // modules/
         renderAssets: 'readonly',

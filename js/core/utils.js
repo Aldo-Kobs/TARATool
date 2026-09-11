@@ -69,6 +69,19 @@ function saveAnalyses() {
 // --- DATA MIGRATION (shared between load & import) ---
 // =============================================================
 
+function normalizeOverviewList(value) {
+  // Legacy text fields used one line per entry. Arrays preserve multiline entries.
+  const items = Array.isArray(value)
+    ? value
+    : typeof value === 'string'
+      ? value.split(/\r?\n/)
+      : [];
+  return items
+    .filter((item) => typeof item === 'string')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
 /**
  * Ensures all required fields exist on an analysis object and performs
  * data migrations (risk UIDs, residual risk key remapping, sync).
@@ -77,6 +90,10 @@ function saveAnalyses() {
  */
 function migrateAnalysis(analysis) {
   if (!analysis) return;
+
+  ['functions', 'potentialMisuseCases', 'productVariants', 'assumptions'].forEach((key) => {
+    analysis[key] = normalizeOverviewList(analysis[key]);
+  });
 
   // Ensure required array/object fields
   if (!analysis.damageScenarios) {
@@ -177,18 +194,17 @@ function saveCurrentAnalysisState() {
   const elName = document.getElementById('inputAnalysisName');
   const elDesc = document.getElementById('inputDescription');
   const elUse = document.getElementById('inputIntendedUse');
-  const elProductVariants = document.getElementById('inputProductVariants');
-  const elFunctions = document.getElementById('inputFunctions');
-  const elPotentialMisuseCases = document.getElementById('inputPotentialMisuseCases');
   const elAuth = document.getElementById('inputAuthorName');
 
   if (elName) analysis.name = elName.value.trim();
   if (elDesc) analysis.description = elDesc.value.trim();
   if (elUse) analysis.intendedUse = elUse.value.trim();
-  if (elProductVariants) analysis.productVariants = elProductVariants.value.trim();
-  if (elFunctions) analysis.functions = elFunctions.value.trim();
-  if (elPotentialMisuseCases) analysis.potentialMisuseCases = elPotentialMisuseCases.value.trim();
   if (elAuth) analysis.metadata.author = elAuth.value.trim();
+  document.querySelectorAll('[data-overview-list]').forEach((field) => {
+    analysis[field.dataset.overviewList] = normalizeOverviewList(
+      Array.from(field.querySelectorAll('textarea'), (input) => input.value)
+    );
+  });
 }
 
 // =============================================================

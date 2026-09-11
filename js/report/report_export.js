@@ -51,6 +51,7 @@
       return entry.rootName || entry.id || '-';
     };
 
+    saveCurrentAnalysisState();
     const analysis = h.getActiveAnalysis();
     if (!analysis) {
       if (typeof showToast === 'function')
@@ -97,10 +98,31 @@
       L.author,
       (analysis.metadata && analysis.metadata.author) || analysis.author || '-'
     );
+    pdf.addSpacer(4);
+    const overviewImages = await Promise.all([
+      h.overviewImageForPdf(
+        analysis.architectureImage,
+        L.architectureImage,
+        L.imageEmpty,
+        L.imageInvalid
+      ),
+      h.overviewImageForPdf(
+        analysis.componentsImage,
+        L.componentsImage,
+        L.imageEmpty,
+        L.imageInvalid
+      ),
+    ]);
+    pdf.addOverviewImages(overviewImages);
+    pdf.addOverviewSection(L.systemDesc, analysis.description);
+    pdf.addOverviewSection(L.functions, analysis.functions, true);
+    pdf.addOverviewSection(L.intendedUse, analysis.intendedUse);
+    pdf.addOverviewSection(L.potentialMisuseCases, analysis.potentialMisuseCases, true);
+    pdf.addOverviewSection(L.productVariants, analysis.productVariants, true);
+    pdf.addOverviewSection(L.assumptions, analysis.assumptions, true);
+    pdf.addSpacer(3);
     pdf.addKeyValue(L.version, (analysis.metadata && analysis.metadata.version) || '-');
     pdf.addKeyValue(L.date, h.formatDate((analysis.metadata && analysis.metadata.date) || ''));
-    pdf.addKeyValue(L.systemDesc, analysis.description || '-');
-    pdf.addKeyValue(L.intendedUse, analysis.intendedUse || '-');
     pdf.addKeyValue(L.reportCreated, generatedAt);
 
     // =============================================================

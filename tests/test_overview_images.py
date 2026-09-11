@@ -89,7 +89,7 @@ def test_images_copy_export_import_and_version_restore(app):
 @pytest.mark.parametrize('mime, buffer, error_key', [
     ('text/plain', b'not an image', 'imageInvalid'),
     ('image/png', b'not really a PNG', 'imageInvalid'),
-    ('image/png', b'x' * (1024 * 1024 + 1), 'imageTooLarge'),
+    ('image/png', b'x' * (5 * 1024 * 1024 + 1), 'imageTooLarge'),
 ], ids=['unsupported-type', 'corrupt-image', 'oversized-image'])
 def test_invalid_upload_preserves_existing_image(app, mime, buffer, error_key):
     upload(app, 'architecture')
@@ -134,3 +134,15 @@ def test_legacy_analysis_and_unsafe_imported_image(app):
     app.evaluate('TaraPrefs.setLang("en")')
     expect(field(app, 'architecture').locator('label')).to_have_text('System or product architecture')
     expect(field(app, 'components').locator('label')).to_have_text('Internal components and external interfaces')
+
+
+def test_five_mb_images_save_in_both_fields(app):
+    # A valid PNG with padding exercises the full upload boundary and optimization.
+    large_png = PNG + b'\0' * (5 * 1024 * 1024 - len(PNG))
+    for key in ['architecture', 'components']:
+        upload(app, key, f'{key}-large.png', large_png)
+        wait_saved(app, key, f'{key}-large.png')
+    app.reload()
+    for key in ['architecture', 'components']:
+        wait_saved(app, key, f'{key}-large.png')
+    assert app.locator('.meta-form-grid + .overview-images-grid + .overview-details-grid').count() == 1
