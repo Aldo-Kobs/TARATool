@@ -229,6 +229,40 @@
     }
   }
 
+  async function overviewImageForPdf(image, title, emptyText, invalidText) {
+    const result = { title, placeholder: image ? invalidText : emptyText };
+    if (!isOverviewImage(image)) return result;
+    try {
+      const decoded = new Image();
+      await new Promise((resolve, reject) => {
+        decoded.onload = resolve;
+        decoded.onerror = reject;
+        decoded.src = image.dataUrl;
+      });
+      let dataUrl = image.dataUrl;
+      let format = dataUrl.startsWith('data:image/jpeg;') ? 'JPEG' : 'PNG';
+      // Decode WebP locally to PNG for consistent transparency and PDF support.
+      if (dataUrl.startsWith('data:image/webp;')) {
+        const canvas = document.createElement('canvas');
+        canvas.width = decoded.naturalWidth;
+        canvas.height = decoded.naturalHeight;
+        canvas.getContext('2d').drawImage(decoded, 0, 0);
+        dataUrl = canvas.toDataURL('image/png');
+        format = 'PNG';
+        canvas.width = canvas.height = 0;
+      }
+      return {
+        ...result,
+        dataUrl,
+        format,
+        width: decoded.naturalWidth,
+        height: decoded.naturalHeight,
+      };
+    } catch (_) {
+      return result;
+    }
+  }
+
   /**
    * Adaptive print DPI for A3 tree pages.
    * Floor stays high enough for readable node text; only slight drop for many trees.
@@ -370,6 +404,7 @@
   window.ReportHelpers = {
     renderDotToSvg,
     svgTextToPng,
+    overviewImageForPdf,
     treeRasterDpi,
     yieldToUi,
     getActiveAnalysis,

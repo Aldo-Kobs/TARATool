@@ -256,9 +256,10 @@ function createDefaultAnalysis() {
     name: _name,
     description: '',
     intendedUse: '',
-    productVariants: '',
-    functions: '',
-    potentialMisuseCases: '',
+    productVariants: [],
+    functions: [],
+    potentialMisuseCases: [],
+    assumptions: [],
     architectureImage: null,
     componentsImage: null,
     metadata: {

@@ -104,9 +104,10 @@ window.revertToVersion = (analysisId, version) => {
       analysis.name = entry.state.name;
       analysis.description = entry.state.description;
       analysis.intendedUse = entry.state.intendedUse;
-      analysis.productVariants = entry.state.productVariants || '';
-      analysis.functions = entry.state.functions || '';
-      analysis.potentialMisuseCases = entry.state.potentialMisuseCases || '';
+      analysis.productVariants = normalizeOverviewList(entry.state.productVariants);
+      analysis.functions = normalizeOverviewList(entry.state.functions);
+      analysis.potentialMisuseCases = normalizeOverviewList(entry.state.potentialMisuseCases);
+      analysis.assumptions = normalizeOverviewList(entry.state.assumptions);
       analysis.architectureImage = entry.state.architectureImage
         ? { ...entry.state.architectureImage }
         : null;
@@ -250,9 +251,10 @@ function createNewVersion(comment) {
       metadata: { ...analysis.metadata, version: newVersion, date: today },
       description: analysis.description,
       intendedUse: analysis.intendedUse,
-      productVariants: analysis.productVariants || '',
-      functions: analysis.functions || '',
-      potentialMisuseCases: analysis.potentialMisuseCases || '',
+      productVariants: normalizeOverviewList(analysis.productVariants),
+      functions: normalizeOverviewList(analysis.functions),
+      potentialMisuseCases: normalizeOverviewList(analysis.potentialMisuseCases),
+      assumptions: normalizeOverviewList(analysis.assumptions),
       architectureImage: analysis.architectureImage ? { ...analysis.architectureImage } : null,
       componentsImage: analysis.componentsImage ? { ...analysis.componentsImage } : null,
       assets: JSON.parse(JSON.stringify(analysis.assets)),

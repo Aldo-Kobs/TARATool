@@ -83,6 +83,71 @@
       y += lines.length * spacing;
     };
 
+    // Full-width overview sections, with hanging indents and page-safe wrapping.
+    const addOverviewSection = (title, value, isList = false) => {
+      ensureSpace(18);
+      addH2(title);
+      const items = isList ? normalizeOverviewList(value) : [String(value || '-')];
+      if (!items.length) items.push('-');
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      items.forEach((item) => {
+        const indent = isList && item !== '-' ? 5 : 0;
+        const lines = doc.splitTextToSize(
+          item,
+          doc.internal.pageSize.getWidth() - margin * 2 - indent
+        );
+        lines.forEach((line, index) => {
+          ensureSpace(5);
+          if (indent && index === 0) {
+            doc.setFillColor(0);
+            doc.circle(margin + 1, y - 1, 0.6, 'F');
+          }
+          doc.text(line, margin + indent, y);
+          y += 5;
+        });
+        y += 2;
+      });
+    };
+
+    const addOverviewImages = (images) => {
+      const gap = 8;
+      const columnW = (doc.internal.pageSize.getWidth() - margin * 2 - gap) / 2;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      const titles = images.map((image) => doc.splitTextToSize(image.title, columnW));
+      const titleH = Math.max(...titles.map((lines) => lines.length)) * 5;
+      const sizes = images.map((image) => {
+        if (!image.dataUrl) return { width: 0, height: 8 };
+        const scale = Math.min(columnW / image.width, 110 / image.height);
+        return { width: image.width * scale, height: image.height * scale };
+      });
+      const height = titleH + Math.max(...sizes.map((size) => size.height)) + 8;
+      ensureSpace(height);
+      const top = y;
+      images.forEach((image, index) => {
+        const x = margin + index * (columnW + gap);
+        doc.setFont('helvetica', 'bold');
+        doc.text(titles[index], x, top);
+        doc.setFont('helvetica', 'normal');
+        const size = sizes[index];
+        if (image.dataUrl) {
+          doc.addImage(
+            image.dataUrl,
+            image.format,
+            x + (columnW - size.width) / 2,
+            top + titleH,
+            size.width,
+            size.height
+          );
+        } else {
+          const lines = doc.splitTextToSize(image.placeholder, columnW);
+          doc.text(lines, x, top + titleH);
+        }
+      });
+      y = top + height;
+    };
+
     const addSpacer = (mm = 4) => {
       const v = Math.max(0, Number(mm) || 0);
       ensureSpace(v);
@@ -571,6 +636,8 @@
       addText,
       addSpacer,
       addKeyValue,
+      addOverviewSection,
+      addOverviewImages,
       addTable,
       addTableGrid,
       addImpactMatrixTable,

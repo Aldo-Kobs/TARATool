@@ -308,11 +308,42 @@ body:has(.modal[style*='display:block']) .header-nav {
 
 .overview-details-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 15px;
 }
 
+/* Keep complete overview entries visible as their text grows. */
+.overview-details-grid textarea {
+  overflow-y: hidden;
+}
+
+.overview-list {
+  margin: 0 0 10px;
+  padding-left: 24px;
+}
+
+.overview-list li {
+  padding-left: 4px;
+  margin-bottom: 10px;
+}
+
+.overview-list-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.overview-list-row textarea {
+  flex: 1;
+  min-width: 0;
+}
+
+.overview-list-row button {
+  flex-shrink: 0;
+}
+
 .overview-images-grid {
+  margin: 15px 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 15px;
