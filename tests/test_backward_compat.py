@@ -225,19 +225,13 @@ class TestImpactNormalization:
     """Verify computeLeafImpactNorm uses correct formula against config values."""
 
     @pytest.mark.parametrize("ds_list,expected_i_norm", [
-        # From calc_test_fixture: A01 (III, g=1.0): DS1=3, DS2=2, DS3=1
-        #                          A02 (II, g=0.8): DS1=2, DS2=3, DS3=2
-        # DS1 only: max(1.0*1.0, 0.6*0.8) = max(1.0, 0.48) = 1.00
+        # Explicitly bound to A01 (III): DS1=3, DS2=2, DS3=1.
+        # A02's stronger DS2/DS3 ratings must not affect this asset.
         (["DS1"], "1.00"),
-        # DS2 only: max(0.6*1.0, 1.0*0.8) = max(0.6, 0.8) = 0.80
-        (["DS2"], "0.80"),
-        # DS3 only: max(0.3*1.0, 0.6*0.8) = max(0.3, 0.48) = 0.48
-        (["DS3"], "0.48"),
-        # DS1+DS2: max of all combinations = max(1.0, 0.6, 0.48, 0.8) = 1.00
+        (["DS2"], "0.60"),
+        (["DS3"], "0.30"),
         (["DS1", "DS2"], "1.00"),
-        # DS2+DS3: max(0.6, 0.3, 0.8, 0.48) = 0.80
-        (["DS2", "DS3"], "0.80"),
-        # All DS: max across all = 1.00
+        (["DS2", "DS3"], "0.60"),
         (["DS1", "DS2", "DS3"], "1.00"),
         # Empty DS list → empty string
         ([], ""),
@@ -247,7 +241,7 @@ class TestImpactNormalization:
         page = page_with_calc
         result = page.evaluate(f"""() => {{
             const a = analysisData.find(x => x.id === activeAnalysisId);
-            return computeLeafImpactNorm({json.dumps(ds_list)}, a);
+            return computeLeafImpactNorm({json.dumps(ds_list)}, a, "A01");
         }}""")
         assert result == expected_i_norm, f"I(N)={result} expected {expected_i_norm} for ds={ds_list}"
 
@@ -697,23 +691,24 @@ class TestKSTUEdgeCases:
 class TestAgriFixtureCalculations:
     """End-to-end calculation validation using the agri_testbot fixture."""
 
-    def test_all_risk_entries_have_valid_scores(self, page_with_agri: Page):
-        """All 5 risk entries must have non-zero rootRiskValue after load."""
-        page = page_with_agri
-        result = page.evaluate("""() => {
+    def test_legacy_multi_asset_trees_require_asset_assignment(self, page_with_agri: Page):
+        """Preserve authored paths but require an asset before computing their scores."""
+        result = page_with_agri.evaluate("""() => {
             const a = analysisData[0];
-            return a.riskEntries.map(e => ({
+            return a.riskEntries.filter(e => !e.matrixGenerated).map(e => ({
                 id: e.id,
+                assetId: e.assetId,
                 rootRiskValue: e.rootRiskValue,
                 hasKstu: !!e.kstu && !!e.kstu.k,
                 hasINorm: !!e.i_norm
             }));
         }""")
+        assert result
         for entry in result:
-            assert entry["hasKstu"], f"{entry['id']} missing KSTU"
-            assert entry["hasINorm"], f"{entry['id']} missing i_norm"
-            score = float(entry["rootRiskValue"])
-            assert score > 0, f"{entry['id']} has zero risk score"
+            assert entry["hasKstu"], f"{entry['id']} lost its authored KSTU values"
+            assert entry["assetId"] == ''
+            assert not entry["hasINorm"]
+            assert entry["rootRiskValue"] == ''
 
     def test_recalc_matches_stored_values(self, page_with_agri: Page):
         """Recalculating from scratch must produce same scores as stored."""
@@ -727,7 +722,7 @@ class TestAgriFixtureCalculations:
                 const clone = JSON.parse(JSON.stringify(entry));
                 applyImpactInheritance(clone, a);
                 applyWorstCaseInheritance(clone);
-                const recalced = _computeRiskScore(clone.kstu, clone.i_norm).toFixed(2);
+                const recalced = getAssessedRiskValue(clone.i_norm, clone.kstu);
                 results.push({ id: entry.id, stored, recalced, match: stored === recalced });
             });
             return results;

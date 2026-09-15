@@ -261,7 +261,6 @@ window.removeDamageScenario = function (dsId) {
     confirmText: _t('confirm.delete'),
     onConfirm: () => {
       analysis.damageScenarios = analysis.damageScenarios.filter((d) => d.id !== dsId);
-
       if (analysis.impactMatrix) {
         for (const assetId in analysis.impactMatrix) {
           delete analysis.impactMatrix[assetId][dsId];
@@ -281,6 +280,7 @@ window.removeDamageScenario = function (dsId) {
         purgeDamageScenarioFromRiskEntries(analysis, dsId);
       }
 
+      syncAssetRisks(analysis);
       saveAnalyses();
       renderDamageScenarios();
       renderImpactMatrix();

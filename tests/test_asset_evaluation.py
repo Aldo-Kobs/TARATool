@@ -106,6 +106,8 @@ def test_protection_changes_recalculate_existing_risks(app):
 def test_pdf_includes_authorization_and_authentication(app):
     add_asset(app, {'name':'Report asset','type':'Function','authorization':'II','authentication':'III'})
     app.evaluate('''() => {
+        const analysis = getActiveAnalysis();
+        analysis.impactComments = { A01: Object.fromEntries(getDisplayDamageScenarios(analysis).map(ds => [ds.id, 'Not applicable to this configuration.'])) };
         const original = ReportPdfBuilder.pdfBuilder;
         window.capturedAssetTable = null;
         ReportPdfBuilder.pdfBuilder = doc => {

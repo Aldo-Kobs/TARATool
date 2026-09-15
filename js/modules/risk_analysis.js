@@ -26,6 +26,7 @@ function renderRiskAnalysis() {
   const analysis = getActiveAnalysis();
   if (!analysis) return;
   if (!riskAnalysisContainerEl) return;
+  syncAssetRisks(analysis);
 
   const _t = (k) => (typeof t === 'function' ? t(k) : k);
 
@@ -57,6 +58,8 @@ function renderRiskAnalysis() {
                 <button onclick="downloadDotFile()" class="action-button large"><i class="fas fa-file-export"></i> ${_t('btn.exportDot')}</button>
             </div>
         </div>
+        <p class="muted-hint">${_t('risk.manualHint')}</p>
+        ${renderAssetRiskCoverage(analysis)}
         <div id="rootOverviewContainer">
             ${renderRootOverview(analysis)}
         </div>
@@ -65,11 +68,46 @@ function renderRiskAnalysis() {
         </div>
     `;
 
+  riskAnalysisContainerEl.querySelectorAll('[data-asset-create]').forEach((button) => {
+    button.onclick = () => openAttackTreeModal(null, button.dataset.assetCreate);
+  });
+  riskAnalysisContainerEl.querySelectorAll('[data-risk-edit]').forEach((button) => {
+    button.onclick = () => window.editAttackTree(button.dataset.riskEdit);
+  });
+
   const btn = document.getElementById('btnOpenAttackTreeModal');
   if (btn)
     btn.onclick = () => {
       if (typeof openAttackTreeModal === 'function') openAttackTreeModal();
     };
+}
+
+function renderAssetRiskCoverage(analysis) {
+  const rows = analysis.assets
+    .map((asset) => {
+      const linked = analysis.riskEntries.filter(
+        (entry) => getRiskAsset(analysis, entry) === asset
+      );
+      const name =
+        getLocalizedField(asset, 'name', undefined, { fallback: true }) || asset.name_en || '-';
+      return `<tr data-asset-id="${escapeHtml(asset.id)}">
+      <th scope="row">${escapeHtml(asset.id)}: ${escapeHtml(name)}</th>
+      <td>${
+        linked.length
+          ? `<ul class="asset-risk-links">${linked.map((entry) => `<li><button class="action-button small" data-risk-edit="${escapeHtml(entry.id)}">${escapeHtml(entry.id)}: ${escapeHtml(_rootLabel(entry))}</button></li>`).join('')}</ul>`
+          : `<span class="asset-risk-missing">${t('risk.noLinkedRisks')}</span>`
+      }</td>
+      <td><button class="action-button small" data-asset-create="${escapeHtml(asset.id)}"><i class="fas fa-plus" aria-hidden="true"></i> ${t('risk.createForAsset')}</button></td>
+    </tr>`;
+    })
+    .join('');
+  return `<section class="asset-risk-coverage" aria-labelledby="assetRiskCoverageTitle">
+    <h4 id="assetRiskCoverageTitle">${t('risk.assetOverview')}</h4>
+    <div class="asset-risk-table-scroll"><table class="asset-risk-table">
+      <thead><tr><th scope="col">${t('risk.asset')}</th><th scope="col">${t('risk.linkedRisks')}</th><th scope="col">${t('risk.actions')}</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+  </section>`;
 }
 
 /* ── Root-Node-Overview Panel ──────────────────────────────────────── */
@@ -81,7 +119,7 @@ function renderRootOverview(analysis) {
   const _rl = (lbl) => (typeof tRiskLabel === 'function' ? tRiskLabel(lbl) : lbl);
 
   const fmt = (val) => {
-    if (val === null || val === undefined || val === '') return '0,0';
+    if (val === null || val === undefined || val === '') return '-';
     return String(val).replace('.', ',');
   };
 
@@ -102,7 +140,7 @@ function renderRootOverview(analysis) {
   sorted.forEach((entry) => {
     const kstu = entry.kstu || {};
     const iNorm = entry.i_norm;
-    const rScore = computeRiskScore(iNorm, kstu);
+    const rScore = parseFloat(entry.rootRiskValue);
     const meta = getRiskMeta(entry.rootRiskValue);
     const bgClass =
       typeof getRiskBgClass === 'function' ? getRiskBgClass(rScore) : 'risk-bg-unknown';
@@ -110,9 +148,12 @@ function renderRootOverview(analysis) {
     html += `
             <div class="root-overview-card ${bgClass}">
                 <div class="root-overview-title">${escapeHtml(_rootLabel(entry))}</div>
+                <div class="root-overview-row">${escapeHtml(riskAssetLabel(analysis, entry))}</div>
+                ${entry.rootRiskValue === '' ? `<div class="root-overview-row">${_t('risk.unassessed')}</div>` : ''}
+                ${renderSecurityLevelResult(analysis, entry)}
                 <div class="root-overview-row">P = ${escapeHtml(pStr(kstu))}</div>
                 <div class="root-overview-row">I[norm] = ${escapeHtml(fmt(iNorm))}</div>
-                <div class="root-overview-row root-overview-risk">R = <b style="color:${meta.color}">${escapeHtml(fmt(rScore.toFixed(2)))}</b>
+                <div class="root-overview-row root-overview-risk">R = <b style="color:${meta.color}">${escapeHtml(Number.isFinite(rScore) ? fmt(rScore.toFixed(2)) : '-')}</b>
                     <span class="root-overview-badge" style="background:${meta.color}; color:#fff;">${escapeHtml(_rl(meta.label))}</span>
                 </div>
             </div>`;
@@ -148,6 +189,8 @@ function renderExistingRiskEntries(analysis) {
             <li class="entry-list-item" style="border-left-color:${meta.color};">
                 <div>
                     <strong>${eId}</strong>: ${eName} <br>
+                    <span class="entry-list-meta">${escapeHtml(riskAssetLabel(analysis, entry))}</span><br>
+                    ${renderSecurityLevelResult(analysis, entry)}
                     <span class="entry-list-meta">
                         ${_t('risk.score')} <b style="color:${meta.color}">${escapeHtml(meta.display)}</b>
                         <span class="root-overview-badge" style="margin-left:5px; background:${meta.color}; color:#fff;">${escapeHtml(_rl(meta.label))}</span>
@@ -223,13 +266,17 @@ window.editAttackTree = function (riskId) {
 function reindexRiskIDs(analysis) {
   if (!analysis || !analysis.riskEntries) return;
   const idMap = {};
-  analysis.riskEntries.forEach((entry, index) => {
+  const allEntries = [
+    ...analysis.riskEntries,
+    ...(analysis.matrixRiskArchive || []).map((record) => record.entry),
+  ];
+  allEntries.forEach((entry, index) => {
     const newId = 'R' + (index + 1).toString().padStart(2, '0');
     if (entry.id !== newId) idMap[entry.id] = newId;
     entry.id = newId;
   });
   if (analysis.securityGoals) {
-    const validIds = new Set(analysis.riskEntries.map((e) => e.id));
+    const validIds = new Set(allEntries.map((e) => e.id));
     analysis.securityGoals.forEach((sg) => {
       if (Array.isArray(sg.rootRefs)) {
         sg.rootRefs = sg.rootRefs

@@ -44,11 +44,12 @@
             { fallback: true }
           ) ||
           entry.rootName ||
+          entry.rootName_en ||
           entry.id ||
           '-'
         );
       }
-      return entry.rootName || entry.id || '-';
+      return entry.rootName || entry.rootName_en || entry.id || '-';
     };
 
     saveCurrentAnalysisState();
@@ -63,6 +64,9 @@
         );
       return;
     }
+
+    syncAssetRisks(analysis);
+    if (!validateImpactComments(analysis)) return;
 
     const doc = b.createPdfDoc();
     if (!doc) {
@@ -312,6 +316,20 @@
     } else {
       pdf.addText(L.impactHint, 9, 4.2);
       pdf.addImpactMatrixTable(assets, dsList, impact);
+      pdf.addH2(L.impactComments);
+      const commentRows = assets.flatMap((asset) =>
+        dsList.map((ds) => {
+          const value = String(impact[asset.id]?.[ds.id] || 'N/A');
+          const label = IMPACT_LABELS[value] || value;
+          return [
+            `${asset.id}: ${getLocalizedField(asset, 'name', lang, { fallback: true }) || asset.name || asset.name_en || '-'}`,
+            `${ds.id}: ${getLocalizedField(ds, 'name', lang, { fallback: true }) || ds.name || ds.name_en || '-'}`,
+            value === label ? value : `${value} (${label})`,
+            getImpactComment(analysis, asset.id, ds.id, lang),
+          ];
+        })
+      );
+      pdf.addImpactCommentsTable([L.assets, L.damageType, L.colImpact, L.colComment], commentRows);
     }
 
     // =============================================================
@@ -320,6 +338,53 @@
     doc.addPage();
     pdf.setY(pdf.margin);
     pdf.addH1(L.riskAndTrees);
+    if (validSecurityLevelSettings(analysis.securityLevelSettings)) {
+      const settings = analysis.securityLevelSettings;
+      pdf.addH2(t('sl.settingsTitle', lang));
+      pdf.addText(t('sl.standardNote', lang), 9, 4.2);
+      pdf.addText(t('sl.formula', lang), 9, 4.2);
+      pdf.addKeyValue(t('sl.resultType', lang), securityLevelTitle(analysis, lang));
+      pdf.addTableGrid(
+        [
+          t('sl.feasibility', lang) + ' / ' + t('sl.impact', lang),
+          ...SECURITY_LEVEL_BANDS.map(
+            (band, index) =>
+              t('sl.band.' + band, lang) +
+              '\n' +
+              securityLevelBandRange(settings.impactBounds, index)
+          ),
+        ],
+        SECURITY_LEVEL_BANDS.map((band, index) => [
+          t('sl.band.' + band, lang) +
+            '\n' +
+            securityLevelBandRange(settings.feasibilityBounds, index),
+          ...settings.matrix[index].map((value) => `SL ${value}`),
+        ]),
+        [44, 34, 34, 34, 34],
+        { zebra: true }
+      );
+      pdf.addSpacer(4);
+    }
+    if (assets.length) {
+      pdf.addH2(t('risk.assetOverview', lang));
+      pdf.addTableGrid(
+        [t('risk.asset', lang), t('risk.linkedRisks', lang)],
+        assets.map((asset) => {
+          const linked = risks.filter((entry) => getRiskAsset(analysis, entry) === asset);
+          return [
+            h.sanitizePdfText(riskAssetLabel(analysis, { assetUid: asset.uid }, lang)),
+            h.sanitizePdfText(
+              linked.length
+                ? linked.map((entry) => `${entry.id}: ${locRoot(entry)}`).join('\n')
+                : t('risk.noLinkedRisks', lang)
+            ),
+          ];
+        }),
+        [60, 108],
+        { zebra: true }
+      );
+      pdf.addSpacer(4);
+    }
     if (risks.length === 0) {
       pdf.addText(L.noTrees);
     } else {
@@ -329,22 +394,33 @@
       });
       const overviewRows = overviewSorted.map((entry) => {
         const kstu = entry.kstu || {};
-        const rScore = computeRiskScore(entry.i_norm, kstu);
+        const rScore = parseFloat(entry.rootRiskValue);
         const cls = h.riskClassFromValue(entry.rootRiskValue);
         return [
-          h.sanitizePdfText(locRoot(entry) || entry.id || ''),
+          h.sanitizePdfText(
+            `${riskAssetLabel(analysis, entry, lang)}\n${locRoot(entry) || entry.id || ''}`
+          ),
           h.pVec(kstu.k, kstu.s, kstu.t, kstu.u),
           h.fmtNumComma(entry.i_norm, 2),
           h.fmtNumComma(rScore, 2),
           riskLabel(cls.label),
+          securityLevelResultText(securityLevelForRisk(analysis, entry), lang),
           h.sanitizePdfText((entry.notes || '').trim() || '-', true),
         ];
       });
       pdf.addH2(L.rootOverview);
       pdf.addTableGrid(
-        [L.colRoot, L.colP, L.colInorm, L.colR, L.colRiskClass, L.colComment],
+        [
+          L.colRoot,
+          L.colP,
+          L.colInorm,
+          L.colR,
+          L.colRiskClass,
+          securityLevelTitle(analysis, lang),
+          L.colComment,
+        ],
         overviewRows,
-        [40, 35, 16, 14, 24, 39],
+        [35, 30, 14, 12, 21, 26, 30],
         {
           zebra: true,
           noWrapCols: [1, 2, 3, 4],
@@ -364,7 +440,12 @@
       sorted.forEach((entry) => {
         const cls = h.riskClassFromValue(entry.rootRiskValue);
         pdf.addH2(`${entry.id || ''}: ${locRoot(entry) || ''}`);
-        pdf.addKeyValue(L.riskScore, entry.rootRiskValue ?? '-');
+        pdf.addKeyValue(L.assets, riskAssetLabel(analysis, entry, lang));
+        pdf.addKeyValue(L.riskScore, entry.rootRiskValue || t('risk.unassessed', lang));
+        pdf.addKeyValue(
+          securityLevelTitle(analysis, lang),
+          securityLevelResultText(securityLevelForRisk(analysis, entry), lang)
+        );
         pdf.addKeyValue(L.colRiskClass, riskLabel(cls.label));
         if ((entry.notes || '').trim()) {
           pdf.addKeyValue(L.notes, h.sanitizePdfText(entry.notes, true));
@@ -379,9 +460,9 @@
     // Attack Tree Visualization (A3 Landscape)
     // =============================================================
     if (risks.length > 0) {
-      const sortedTrees = [...risks].sort((a, b) =>
-        (a.id || '').localeCompare(b.id || '', undefined, { numeric: true })
-      );
+      const sortedTrees = risks
+        .filter((entry) => entry.rootRiskValue !== '')
+        .sort((a, b) => (a.id || '').localeCompare(b.id || '', undefined, { numeric: true }));
 
       for (let ti = 0; ti < sortedTrees.length; ti++) {
         const entry = sortedTrees[ti];
@@ -490,6 +571,39 @@
     }
 
     // =============================================================
+    // Risk Lifecycle
+    // =============================================================
+    doc.addPage('a4', 'portrait');
+    pdf.setY(pdf.margin);
+    pdf.addH1(t('tab.lifecycle', lang));
+    if (!risks.length) {
+      pdf.addText(t('lifecycle.noRisks', lang));
+    } else {
+      pdf.addTableGrid(
+        [
+          t('lifecycle.risk', lang),
+          t('risk.asset', lang),
+          t('lifecycle.phase', lang),
+          t('lifecycle.notes', lang),
+        ],
+        risks.map((entry) => [
+          h.sanitizePdfText(`${entry.id}: ${locRoot(entry)}`),
+          h.sanitizePdfText(riskAssetLabel(analysis, entry, lang)),
+          h.sanitizePdfText(
+            riskLifecyclePhaseLabels(entry, lang).join('\n') || t('lifecycle.unassigned', lang)
+          ),
+          h.sanitizePdfText(
+            getLocalizedField(entry.lifecycle || {}, 'notes', lang, { fallback: true }) ||
+              entry.lifecycle?.notes_en ||
+              '-'
+          ),
+        ]),
+        [42, 35, 40, 63],
+        { zebra: true }
+      );
+    }
+
+    // =============================================================
     // Chapter 7: Security Objectives
     // =============================================================
     try {
@@ -539,6 +653,45 @@
     pdf.setY(pdf.margin);
     pdf.addH1(L.residualRisk);
 
+    const evaluationEntries = analysis.residualRisk?.entries || [];
+    if (evaluationEntries.length) {
+      pdf.addText(
+        tf(
+          'rr.evaluationSummary',
+          {
+            evaluated: evaluationEntries.filter((entry) => entry.evaluated === true).length,
+            total: evaluationEntries.length,
+          },
+          lang
+        )
+      );
+      pdf.addTableGrid(
+        [L.colRoot, t('rr.evaluationStatus', lang), t('rr.securityGoals', lang)],
+        evaluationEntries.map((entry) => {
+          const goals = (analysis.securityGoals || []).filter((goal) =>
+            goal.rootRefs?.includes(entry.id)
+          );
+          return [
+            h.sanitizePdfText(`${entry.id}: ${locRoot(entry)}`),
+            t(entry.evaluated === true ? 'rr.evaluated' : 'rr.notEvaluated', lang),
+            h.sanitizePdfText(
+              goals.length
+                ? goals
+                    .map(
+                      (goal) =>
+                        `${goal.id}: ${getLocalizedField(goal, 'name', lang, { fallback: true }) || goal.name || '-'}`
+                    )
+                    .join('\n')
+                : t('rr.noGoalsLinked', lang)
+            ),
+          ];
+        }),
+        [85, 45, 137],
+        { zebra: true }
+      );
+      pdf.addSpacer(4);
+    }
+
     // Residual Risk Root-Node-Overview table
     const rrEntries =
       analysis.residualRisk && Array.isArray(analysis.residualRisk.entries)
@@ -569,14 +722,23 @@
           origR,
           resR,
           riskLabel(resMeta.label),
+          securityLevelResultText(securityLevelForRisk(analysis, rrEntry, true), lang),
         ]);
       });
       if (rrOverviewRows.length > 0) {
         pdf.addH2(L.rootOverviewRr);
         pdf.addTableGrid(
-          [L.colRoot, L.colPrr, L.colInorm, L.colR, L.colRR, L.colRiskClass],
+          [
+            L.colRoot,
+            L.colPrr,
+            L.colInorm,
+            L.colR,
+            L.colRR,
+            L.colRiskClass,
+            securityLevelTitle(analysis, lang),
+          ],
           rrOverviewRows,
-          [52, 38, 18, 16, 16, 28],
+          [52, 38, 18, 16, 16, 28, 40],
           {
             zebra: true,
             noWrapCols: [1, 2, 3, 4, 5],
@@ -736,9 +898,9 @@
     // Residual Risk Tree Visualization (Landscape)
     // =============================================================
     if (risks.length > 0) {
-      const sortedTrees = [...risks].sort((a, b) =>
-        (a.id || '').localeCompare(b.id || '', undefined, { numeric: true })
-      );
+      const sortedTrees = risks
+        .filter((entry) => entry.rootRiskValue !== '')
+        .sort((a, b) => (a.id || '').localeCompare(b.id || '', undefined, { numeric: true }));
 
       for (let ti = 0; ti < sortedTrees.length; ti++) {
         const entry = sortedTrees[ti];

@@ -89,6 +89,7 @@ function readAssetEvaluation() {
 }
 
 function refreshAssetRisks(analysis) {
+  syncAssetRisks(analysis);
   /* global _recalcAllRiskEntries */
   if (typeof _recalcAllRiskEntries === 'function') _recalcAllRiskEntries(analysis);
 }
@@ -351,8 +352,11 @@ window.removeAsset = (id) => {
         delete analysis.impactComments[id];
       }
 
+      syncAssetRisks(analysis);
+
       // Renumber remaining assets (A01, A02, ...) and remap impactMatrix keys
       _renumberAssets(analysis);
+      syncAssetRisks(analysis);
 
       saveAnalyses();
       renderAssets(analysis);

@@ -146,6 +146,8 @@ function migrateAnalysis(analysis) {
     console.warn('[Migration] Residual risk key remapping failed:', e);
   }
 
+  if (typeof syncAssetRisks === 'function') syncAssetRisks(analysis);
+
   // Sync: Risk analysis -> Residual risk structure (entries)
   try {
     if (typeof syncResidualRiskFromRiskAnalysis === 'function') {
@@ -232,6 +234,17 @@ function getAllDamageScenarioIds(analysis) {
     if (d && d.id && !defaultIds.has(d.id)) ids.push(d.id);
   });
   return ids.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+}
+
+function getImpactComment(analysis, assetId, dsId, lang) {
+  const value = analysis?.impactComments?.[assetId]?.[dsId];
+  if (typeof value === 'string') return value.trim();
+  if (!value || typeof value !== 'object') return '';
+  const localized = getLocalizedField(value, 'text', lang, { fallback: true });
+  return (
+    [localized, value.text, value.text_en].map((text) => String(text || '').trim()).find(Boolean) ||
+    ''
+  );
 }
 
 /**

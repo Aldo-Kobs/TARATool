@@ -150,6 +150,7 @@ body:has(.modal[style*='display:block']) .header-nav {
 /* --- TABS --- */
 .tab-navigation {
   display: flex;
+  flex-wrap: wrap;
   gap: 5px;
   margin-bottom: 0;
 }
@@ -777,23 +778,52 @@ select.impact-na {
   gap: 4px;
   justify-content: center;
 }
-.impact-comment-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 2px 4px;
-  color: #bbb;
-  font-size: 0.9em;
-  transition: color 0.15s ease;
+.impact-cell-wrap select.impact-select {
+  min-width: 6.5rem;
 }
-.impact-comment-btn:hover {
-  color: #555;
+.impact-comment-btn {
+  position: relative;
+  flex-shrink: 0;
+  min-width: 38px;
+  min-height: 34px;
+  padding: 0 8px 4px;
+  border: 2px solid #c0392b;
+  border-radius: 4px;
+  background: var(--bg-surface);
+  color: var(--text-main);
+  font-size: 1.4em;
+  font-weight: bold;
+  line-height: 1;
+}
+.impact-comment-btn:hover,
+.impact-comment-btn:focus-visible {
+  background: var(--bg-muted);
+  outline: 2px solid var(--text-main);
+  outline-offset: 2px;
 }
 .impact-comment-btn.has-comment {
-  color: #e67e22;
+  border-color: #27915a;
 }
-.impact-comment-btn.has-comment:hover {
-  color: #d35400;
+.impact-comment-marker {
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  min-width: 15px;
+  padding: 1px;
+  border-radius: 50%;
+  background: #c0392b;
+  color: #fff;
+  font-size: 13px;
+  line-height: 15px;
+  text-align: center;
+}
+.has-comment .impact-comment-marker {
+  background: #217a4b;
+}
+.impact-comment-progress {
+  color: var(--text-main);
+  font-size: 0.9em;
+  font-weight: 600;
 }
 
 /* Attack tree node/leaf note button */
@@ -2194,4 +2224,248 @@ html[data-theme='dark'] [style*='background:#f2f2f2'],
 html[data-theme='dark'] [style*='background: #f2f2f2'] {
   background: var(--bg-muted) !important;
   color: var(--text-main);
+}
+
+/* Asset coverage in the risk analysis tab */
+.asset-risk-coverage {
+  margin-bottom: 24px;
+}
+.asset-risk-table-scroll {
+  overflow-x: auto;
+}
+.asset-risk-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.asset-risk-table th,
+.asset-risk-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-soft);
+  vertical-align: top;
+}
+.asset-risk-table th:first-child {
+  width: 35%;
+}
+.asset-risk-table td:last-child {
+  width: 1%;
+  white-space: nowrap;
+}
+.asset-risk-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.asset-risk-links button {
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.asset-risk-missing {
+  font-weight: 600;
+}
+
+.rr-goal-picker {
+  margin: 0 0 16px;
+  padding: 14px;
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+}
+.rr-goal-picker legend {
+  font-weight: 700;
+}
+.rr-goal-summary {
+  margin-top: 12px;
+}
+.rr-goal-summary ul {
+  margin: 6px 0;
+  padding-left: 22px;
+}
+.rr-goal-summary p {
+  margin: 6px 0;
+}
+.rr-evaluation-status {
+  display: inline-block;
+  margin: 6px 0;
+  padding: 4px 8px;
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+  background: var(--bg-muted);
+  color: var(--text-main);
+  font-size: 0.85em;
+  font-weight: 700;
+}
+.rr-evaluation-status.is-evaluated {
+  background: #e1f3e6;
+  border-color: #48805a;
+  color: #20512f;
+}
+.rr-evaluated-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+.rr-evaluation-summary {
+  font-weight: 700;
+}
+
+.lifecycle-summary {
+  font-weight: 600;
+}
+.lifecycle-table-scroll {
+  overflow-x: auto;
+}
+.lifecycle-table {
+  width: 100%;
+  min-width: 850px;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+.lifecycle-table th,
+.lifecycle-table td {
+  padding: 12px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border-soft);
+  overflow-wrap: anywhere;
+}
+.lifecycle-table th:nth-child(1) {
+  width: 24%;
+}
+.lifecycle-table th:nth-child(2) {
+  width: 19%;
+}
+.lifecycle-table th:nth-child(3) {
+  width: 28%;
+}
+.lifecycle-table th:nth-child(4) {
+  width: 29%;
+}
+.lifecycle-table input,
+.lifecycle-table textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+.lifecycle-table textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+.lifecycle-custom-wrap {
+  margin-top: 10px;
+}
+.lifecycle-custom-wrap label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.lifecycle-phase-picker {
+  border: 1px solid var(--border-input);
+  border-radius: 4px;
+  padding: 8px;
+}
+.lifecycle-phase-picker summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.lifecycle-phase-picker fieldset {
+  border: 0;
+  padding: 8px 0 0;
+  margin: 0;
+  max-height: 280px;
+  overflow-y: auto;
+}
+.lifecycle-phase-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 5px 0;
+  font-weight: 400;
+  cursor: pointer;
+}
+.lifecycle-phase-option input {
+  width: auto;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.lifecycle-selected {
+  margin-top: 8px;
+}
+.lifecycle-selected ul {
+  margin: 0;
+  padding-left: 18px;
+}
+.lifecycle-selected li + li {
+  margin-top: 4px;
+}
+
+.security-level-result {
+  margin: 8px 0;
+  padding: 8px;
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+  color: var(--text-main);
+  background: var(--bg-muted);
+  font-size: 0.9em;
+}
+.sl-settings-content {
+  width: min(960px, 94vw);
+  box-sizing: border-box;
+}
+.sl-band-settings {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+.sl-band-settings fieldset {
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+}
+.sl-bound-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+}
+.sl-bound-label input {
+  width: 110px;
+}
+.sl-matrix-scroll {
+  overflow-x: auto;
+}
+.sl-settings-matrix {
+  width: 100%;
+  border-collapse: collapse;
+}
+.sl-settings-matrix caption {
+  font-weight: 700;
+  padding: 8px;
+}
+.sl-settings-matrix th,
+.sl-settings-matrix td {
+  padding: 8px;
+  border: 1px solid var(--border-soft);
+  text-align: left;
+}
+.sl-settings-matrix select {
+  min-width: 85px;
+  width: 100%;
+}
+.sl-settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+#securityLevelSettingsError {
+  color: #c0392b;
+  font-weight: 600;
+}
+@media (max-width: 650px) {
+  .sl-band-settings {
+    grid-template-columns: 1fr;
+  }
 }

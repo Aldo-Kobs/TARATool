@@ -976,12 +976,29 @@
         this.host = document.getElementById('atTreeEditorV2');
       },
 
-      open(existingEntry) {
+      open(existingEntry, assetId = null) {
         const analysis = typeof getActiveAnalysis === 'function' ? getActiveAnalysis() : null;
         this.analysis = analysis || null;
 
         this.editingId = existingEntry?.id || '';
         this.entryUid = existingEntry?.uid || _uid('risk');
+        this.assetId =
+          (!existingEntry && assetId) || getRiskAsset(analysis, existingEntry || {})?.id || '';
+        const assetSelect = document.getElementById('at_asset');
+        if (assetSelect) {
+          assetSelect.replaceChildren(new Option(_t('risk.assetRequired'), ''));
+          (analysis?.assets || []).forEach((asset) => {
+            assetSelect.add(
+              new Option(`${asset.id}: ${_loc(asset, 'name') || asset.name_en || '-'}`, asset.id)
+            );
+          });
+          assetSelect.value = this.assetId;
+          assetSelect.disabled = false;
+          assetSelect.onchange = () => {
+            this.assetId = assetSelect.value;
+            this.rerender();
+          };
+        }
 
         const idField = document.getElementById('at_id');
         if (idField) idField.value = this.editingId || '';
@@ -1129,6 +1146,11 @@
 
       getEntryData({ computeOnly = false } = {}) {
         const analysis = this.analysis;
+        const asset = analysis?.assets?.find((item) => item.id === this.assetId);
+        if (!computeOnly && !asset) {
+          document.getElementById('at_asset')?.reportValidity();
+          return null;
+        }
 
         this.flushLocalizedInputs();
 
@@ -1141,6 +1163,8 @@
 
         const entry = {
           id: entryId,
+          assetId: asset?.id || '',
+          assetUid: asset?.uid || '',
           uid: this.entryUid || _uid('risk'),
           rootName: treeV2.title || '',
           rootName_en: treeV2.title_en || '',
@@ -1163,7 +1187,7 @@
           if (analysis && typeof applyImpactInheritance === 'function')
             applyImpactInheritance(entry, analysis);
           if (typeof applyWorstCaseInheritance === 'function') applyWorstCaseInheritance(entry);
-          entry.rootRiskValue = _computeRiskScore(entry.kstu, entry.i_norm).toFixed(2);
+          entry.rootRiskValue = getAssessedRiskValue(entry.i_norm, entry.kstu);
         } catch (e) {
           console.warn('[AT V2] getEntryData calc:', e.message || e);
         }

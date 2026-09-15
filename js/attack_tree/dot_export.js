@@ -86,7 +86,7 @@ function generateDotString(analysis, specificTreeId = null) {
 
   // Delegates to global computeRiskScore() (utils.js) — formatted for DOT labels
   const _calcR = (iNorm, kstu) => {
-    return _fmt(computeRiskScore(iNorm, kstu).toFixed(2));
+    return _fmt(getAssessedRiskValue(iNorm, kstu));
   };
 
   const _lbl = (text, kstu, iNorm, stride) => {
@@ -108,7 +108,8 @@ function generateDotString(analysis, specificTreeId = null) {
 
   // DOT-specific pastel fill colors based on risk score
   const _getColor = (iNorm, kstu) => {
-    const r = computeRiskScore(iNorm, kstu);
+    const r = parseFloat(getAssessedRiskValue(iNorm, kstu));
+    if (!Number.isFinite(r)) return '#eeeeee';
     if (r >= 2.0) return '#ffcccc';
     if (r >= 1.6) return '#ffe0b3';
     if (r >= 0.8) return '#ffffcc';
@@ -509,7 +510,7 @@ function generateResidualRiskDotString(analysis, specificTreeId = null) {
 
   // Delegates to global computeRiskScore() — formatted with comma decimal for DOT labels
   const _score = (iNorm, kstu) => {
-    return computeRiskScore(iNorm, kstu).toFixed(2).replace('.', ',');
+    return getAssessedRiskValue(iNorm, kstu).replace('.', ',') || '-';
   };
 
   const _colorFromScore = (scoreStr) => {

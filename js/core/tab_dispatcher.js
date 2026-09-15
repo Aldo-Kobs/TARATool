@@ -32,6 +32,8 @@ function renderActiveTab(analysis, tabId) {
   } else if (tabId === 'tabDamageScenarios') {
     if (typeof renderDamageScenarios === 'function') renderDamageScenarios();
     if (typeof renderImpactMatrix === 'function') renderImpactMatrix();
+  } else if (tabId === 'tabRiskLifecycle') {
+    if (typeof renderRiskLifecycle === 'function') renderRiskLifecycle(analysis);
   } else if (tabId === 'tabSecurityGoals') {
     if (typeof renderSecurityGoals === 'function') renderSecurityGoals(analysis);
   } else if (tabId === 'tabRiskAnalysis') {

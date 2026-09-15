@@ -389,6 +389,69 @@
       y += 2;
     };
 
+    // Detailed assessment comments: repeat column headers and split long rows.
+    const addImpactCommentsTable = (headers, rows) => {
+      const totalW = doc.internal.pageSize.getWidth() - margin * 2;
+      const widths = [0.18, 0.22, 0.12, 0.48].map((fraction) => totalW * fraction);
+      const lineH = 4.5;
+      const pad = 2;
+      const bottom = () => doc.internal.pageSize.getHeight() - margin;
+      const wrap = (cells) =>
+        cells.map((cell, i) => doc.splitTextToSize(String(cell || '-'), widths[i] - pad * 2));
+      const drawCells = (cells, height, header = false) => {
+        let x = margin;
+        cells.forEach((lines, i) => {
+          doc.setDrawColor(200);
+          if (header) {
+            doc.setFillColor(240, 243, 246);
+            doc.rect(x, y, widths[i], height, 'F');
+          }
+          doc.rect(x, y, widths[i], height, 'S');
+          lines.forEach((line, j) => doc.text(line, x + pad, y + pad + 3.2 + j * lineH));
+          x += widths[i];
+        });
+        y += height;
+      };
+      const drawHeader = () => {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        const cells = wrap(headers);
+        const height = Math.max(...cells.map((lines) => lines.length)) * lineH + pad * 2;
+        ensureSpace(height + lineH + pad * 2);
+        drawCells(cells, height, true);
+        doc.setFont('helvetica', 'normal');
+      };
+      const newPage = () => {
+        doc.addPage();
+        y = margin;
+        drawHeader();
+      };
+      drawHeader();
+      rows.forEach((row) => {
+        const cells = wrap(row);
+        let offset = 0;
+        const lineCount = Math.max(...cells.map((lines) => lines.length));
+        while (offset < lineCount) {
+          let capacity = Math.floor((bottom() - y - pad * 2) / lineH);
+          // Keep ordinary rows together whenever they fit on a fresh page.
+          if (capacity < 1 || (offset === 0 && lineCount > capacity && lineCount <= 48)) {
+            newPage();
+            capacity = Math.floor((bottom() - y - pad * 2) / lineH);
+          }
+          const count = Math.min(capacity, lineCount - offset);
+          const chunk = cells.map((lines, i) =>
+            i < 3 && offset > 0 && lines.length <= count
+              ? lines
+              : lines.slice(offset, offset + count)
+          );
+          drawCells(chunk, count * lineH + pad * 2);
+          offset += count;
+          if (offset < lineCount) newPage();
+        }
+      });
+      y += 4;
+    };
+
     // Impact matrix as colored table (assets x damage scenarios)
     // - Y: Assets (ID + Name)
     // - X: Damage scenarios (ID + Name)
@@ -641,6 +704,7 @@
       addTable,
       addTableGrid,
       addImpactMatrixTable,
+      addImpactCommentsTable,
     };
   }
 

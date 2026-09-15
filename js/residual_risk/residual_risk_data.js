@@ -254,6 +254,8 @@
       rrMergeLegacyLeavesIntoMap(analysis, riskEntry.uid, rrMap, desiredKeys);
 
       const cloned = rrDeepClone(riskEntry);
+      // Evaluation is a user decision belonging to the residual assessment.
+      cloned.evaluated = existingResidual?.evaluated === true;
       rrIterateLeaves(cloned, ({ leaf, leafKey }) => {
         if (!leaf) return;
         const existing = rrMap[leafKey];
@@ -375,7 +377,7 @@
     }
 
     // Delegates to global computeRiskScore() (utils.js) — single source of truth
-    const riskValue = computeRiskScore(iNorm, kstu).toFixed(2);
+    const riskValue = getAssessedRiskValue(iNorm, kstu);
 
     return {
       riskValue,
