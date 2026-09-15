@@ -105,7 +105,7 @@ function _kstuWorstCase(items) {
   return res;
 }
 
-function computeLeafImpactNorm(dsList, analysis) {
+function computeLeafImpactNorm(dsList, analysis, assetId) {
   if (!analysis || !analysis.impactMatrix) return '';
   if (!dsList || dsList.length === 0) return '';
   if (!analysis.assets || analysis.assets.length === 0) return '';
@@ -113,7 +113,14 @@ function computeLeafImpactNorm(dsList, analysis) {
   let maxWeightedImpact = 0.0;
   let foundAny = false;
 
-  analysis.assets.forEach((asset) => {
+  const asset =
+    assetId !== undefined
+      ? analysis.assets.find((item) => item.id === assetId)
+      : analysis.assets.length === 1
+        ? analysis.assets[0]
+        : null;
+  if (!asset) return '';
+  [asset].forEach((asset) => {
     const row = analysis.impactMatrix[asset.id];
     if (!row) return;
 
@@ -232,7 +239,11 @@ function applyImpactInheritance(treeData, analysis) {
     if (depth === 1) {
       (branch.leaves || []).forEach((leaf) => {
         const dsList = leaf && Array.isArray(leaf.ds) ? leaf.ds : [];
-        leaf.i_norm = computeLeafImpactNorm(dsList, analysis);
+        leaf.i_norm = computeLeafImpactNorm(
+          dsList,
+          analysis,
+          getRiskAsset(analysis, treeData)?.id || ''
+        );
       });
 
       let bMax = 0.0;
@@ -252,7 +263,11 @@ function applyImpactInheritance(treeData, analysis) {
       nodes.forEach((node) => {
         (node.leaves || []).forEach((leaf) => {
           const dsList = leaf && Array.isArray(leaf.ds) ? leaf.ds : [];
-          leaf.i_norm = computeLeafImpactNorm(dsList, analysis);
+          leaf.i_norm = computeLeafImpactNorm(
+            dsList,
+            analysis,
+            getRiskAsset(analysis, treeData)?.id || ''
+          );
         });
 
         let nMax = 0.0;
@@ -290,7 +305,11 @@ function applyImpactInheritance(treeData, analysis) {
 
     leaves.forEach((leaf) => {
       const dsList = leaf && Array.isArray(leaf.ds) ? leaf.ds : [];
-      leaf.i_norm = computeLeafImpactNorm(dsList, analysis);
+      leaf.i_norm = computeLeafImpactNorm(
+        dsList,
+        analysis,
+        getRiskAsset(analysis, treeData)?.id || ''
+      );
     });
 
     let l3Max = 0.0;
@@ -322,9 +341,12 @@ function applyImpactInheritance(treeData, analysis) {
 }
 
 function generateNextRiskID(analysis) {
-  if (!analysis || !analysis.riskEntries || analysis.riskEntries.length === 0) return 'R01';
+  if (!analysis) return 'R01';
   let maxNum = 0;
-  analysis.riskEntries.forEach((entry) => {
+  [
+    ...(analysis.riskEntries || []),
+    ...(analysis.matrixRiskArchive || []).map((record) => record.entry),
+  ].forEach((entry) => {
     const m = (entry?.id || '').match(/^R(\d+)$/);
     if (m) {
       const n = parseInt(m[1], 10);
@@ -353,7 +375,11 @@ function applyImpactInheritanceV2(treeData, analysis) {
     // Leaves
     (node.impacts || []).forEach((leaf) => {
       const dsList = Array.isArray(leaf.ds) ? leaf.ds : [];
-      leaf.i_norm = computeLeafImpactNorm(dsList, analysis);
+      leaf.i_norm = computeLeafImpactNorm(
+        dsList,
+        analysis,
+        getRiskAsset(analysis, treeData)?.id || ''
+      );
       const v = _parseImpactValue(leaf.i_norm);
       if (v === null) return;
       if (maxI === null || v > maxI) maxI = v;

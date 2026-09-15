@@ -146,6 +146,8 @@ function migrateAnalysis(analysis) {
     console.warn('[Migration] Residual risk key remapping failed:', e);
   }
 
+  if (typeof syncAssetRisks === 'function') syncAssetRisks(analysis);
+
   // Sync: Risk analysis -> Residual risk structure (entries)
   try {
     if (typeof syncResidualRiskFromRiskAnalysis === 'function') {

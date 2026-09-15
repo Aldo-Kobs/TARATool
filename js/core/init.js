@@ -24,6 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
     swLang.addEventListener('change', () => TaraPrefs.setLang(swLang.checked ? 'de' : 'en'));
   }
   window.onTaraLangChanged = function () {
+    if (typeof refreshSecurityLevelSettingsLanguage === 'function')
+      refreshSecurityLevelSettingsLanguage();
     const analysis = typeof getActiveAnalysis === 'function' ? getActiveAnalysis() : null;
     const activeTab = document.querySelector('.tab-button.active')?.dataset?.tab || 'tabOverview';
     if (analysis) {
@@ -256,6 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (typeof populateAttackTreeDropdowns === 'function') populateAttackTreeDropdowns();
     } catch (_) {}
     const analysis = typeof getActiveAnalysis === 'function' ? getActiveAnalysis() : null;
+    if (analysis) syncAssetRisks(analysis);
     const activeTab = document.querySelector('.tab-button.active')?.dataset?.tab || 'tabOverview';
     if (analysis && typeof renderActiveTab === 'function') {
       renderActiveTab(analysis, activeTab);

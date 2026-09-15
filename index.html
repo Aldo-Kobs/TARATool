@@ -59,6 +59,7 @@
                 </div>
                 <button id="btnImportAnalysis" class="action-button small" data-i18n="nav.import"><i class="fas fa-file-import"></i> Import</button>
                 <button id="btnExportAnalysis" class="action-button small" data-i18n="nav.export"><i class="fas fa-file-export"></i> Export</button>
+                <button id="btnSettings" class="action-button small" data-i18n="nav.settings"><i class="fas fa-gear"></i> Einstellungen</button>
                 <button id="btnAbout" class="action-button small" onclick="openAboutModal()" title="About TARA Tool & SBOM" data-i18n="nav.about" data-i18n-title="nav.about"><i class="fas fa-info-circle"></i> About</button>
             </div>
         </div>
@@ -84,8 +85,10 @@
                 <button class="tab-button" data-tab="tabAssets" data-i18n="tab.assets">Assets</button>
                 <button class="tab-button" data-tab="tabDamageScenarios" data-i18n="tab.ds">Schadensszenarien</button>
                 <button class="tab-button" data-tab="tabRiskAnalysis" data-i18n="tab.risk">Risikoanalyse</button>
+                <button class="tab-button" data-tab="tabRiskLifecycle" data-i18n="tab.lifecycle">Risiko-Lebenszyklus</button>
                 <button class="tab-button" data-tab="tabSecurityGoals" data-i18n="tab.sg">Security Ziele</button>
                 <button class="tab-button" data-tab="tabResidualRisk" data-i18n="tab.rr">Restrisikoanalyse</button>
+                <button class="tab-button" data-tab="tabCraDocumentation" data-i18n="tab.craDocumentation">CRA-Dokumentationscheckliste</button>
             </div>
 
             <div id="tabOverview" class="tab-content" style="display: block;">
@@ -256,6 +259,14 @@
                 </div>
             </div>
 
+            <div id="tabRiskLifecycle" class="tab-content" style="display: none;">
+                <div class="panel">
+                    <h3 data-i18n="tab.lifecycle">Risiko-Lebenszyklus</h3>
+                    <p class="muted-hint" data-i18n="lifecycle.hint">Wählen Sie für jedes Risiko eine oder mehrere relevante Phasen.</p>
+                    <div id="riskLifecycleContainer"></div>
+                </div>
+            </div>
+
             <div id="tabSecurityGoals" class="tab-content" style="display: none;">
                 <div class="assets-controls" style="margin-bottom:15px;">
                     <button id="btnAddSecurityGoal" class="primary-button" data-i18n="btn.addSg"><i class="fas fa-plus"></i> Security Ziel hinzufügen</button>
@@ -276,6 +287,8 @@
             </div>
 
         
+            <div id="tabCraDocumentation" class="tab-content" style="display: none;"></div>
+
         <footer class="status-bar" style="background: #333; color: #fff; padding: 4px 20px; font-size: 0.8em; margin-top: auto;">
             <span id="statusBarMessage" data-i18n="status.ready">Bereit.</span>
         </footer>
@@ -385,6 +398,11 @@
                 <input type="hidden" id="tree_depth" name="tree_depth" value="1">
                 <input type="hidden" id="use_second_intermediate" name="use_second_intermediate" value="false">
 
+                <div class="form-group">
+                    <label for="at_asset" data-i18n="risk.asset">Asset</label>
+                    <select id="at_asset" name="at_asset" required></select>
+                    <p class="muted-hint" data-i18n="risk.assetHint">Alle Angriffspfade dieses Risikos beziehen sich auf dieses Asset.</p>
+                </div>
                 <div class="at-card at-root-card" style="background:#f0f0f0; border-color:#ccc; margin-bottom:10px;">
                     <div class="at-card-header">
                         <strong style="white-space:nowrap;" data-i18n="risk.modal.root">Angriffsziel (Root):</strong>
@@ -568,6 +586,21 @@
         </div>
     </div>
     
+    <div id="securityLevelSettingsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="securityLevelSettingsTitle" style="display:none;">
+        <div class="modal-content sl-settings-content">
+            <button type="button" class="close-button" id="closeSecurityLevelSettings" aria-label="Close">&times;</button>
+            <h2 id="securityLevelSettingsTitle" data-i18n="sl.settingsTitle">Security-Level-Einstellungen</h2>
+            <form id="securityLevelSettingsForm">
+                <div id="securityLevelSettingsBody"></div>
+                <p id="securityLevelSettingsError" role="alert"></p>
+                <div class="sl-settings-actions">
+                    <button type="button" id="cancelSecurityLevelSettings" class="action-button" data-i18n="btn.cancel">Abbrechen</button>
+                    <button type="submit" class="primary-button" data-i18n="sl.save">Matrix speichern</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="aboutModal" class="modal" style="display:none;">
         <div class="modal-content about-modal-content">
             <span class="close-button" onclick="closeAboutModal()">&times;</span>
@@ -594,6 +627,7 @@
     <script src="js/modules/impact_matrix.js"></script>
     <script src="js/modules/security_goals.js"></script>
     <script src="js/modules/risk_analysis.js"></script>
+    <script src="js/modules/risk_lifecycle.js"></script>
 
     <!-- Attack Tree -->
     <script src="js/attack_tree/attack_tree_structure.js"></script>
@@ -618,6 +652,9 @@
     <!-- Residual Risk -->
     <script src="js/residual_risk/residual_risk_data.js"></script>
     <script src="js/residual_risk/residual_risk_ui.js"></script>
+
+    <script src="js/core/risk_sync.js"></script>
+    <script src="js/modules/security_level_settings.js"></script>
 
     <!-- Tab Dispatcher (after all modules, before init) -->
     <script src="js/core/tab_dispatcher.js"></script>

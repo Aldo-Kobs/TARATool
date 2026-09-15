@@ -48,7 +48,7 @@ function populateAttackTreeDropdowns() {
   });
 }
 
-function openAttackTreeModal(existingEntry = null) {
+function openAttackTreeModal(existingEntry = null, assetId = null) {
   const analysis = getActiveAnalysis();
   if (!analysis) return;
 
@@ -79,7 +79,7 @@ function openAttackTreeModal(existingEntry = null) {
 
   // Open editor
   if (window.atV2 && typeof window.atV2.open === 'function') {
-    window.atV2.open(existingEntry);
+    window.atV2.open(existingEntry, assetId);
   }
 
   // Root live sync
@@ -118,7 +118,8 @@ function saveAttackTree(e) {
     // Preserve fields managed outside the tree editor (e.g. tree-level notes)
     const prev = analysis.riskEntries[existingIdx];
     if (prev.notes !== undefined) entry.notes = prev.notes;
-    analysis.riskEntries[existingIdx] = entry;
+    if (prev.notes_en !== undefined) entry.notes_en = prev.notes_en;
+    analysis.riskEntries[existingIdx] = { ...prev, ...entry };
     if (typeof showToast === 'function')
       showToast(
         typeof t === 'function' ? t('toast.treeUpdated') : 'Angriffsbaum aktualisiert.',
@@ -234,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function _renderNodeSummaryHTML(kstu, iNorm) {
   const riskScore = _computeRiskScore(kstu, iNorm);
-  const riskR = riskScore.toFixed(2);
+  const riskR = getAssessedRiskValue(iNorm, kstu) || '-';
 
   const _disp = (v) => (v === null || v === undefined || v === '' ? '-' : v);
   const dispI = _disp(iNorm);
@@ -243,7 +244,7 @@ function _renderNodeSummaryHTML(kstu, iNorm) {
   const dispT = _disp(kstu?.t);
   const dispU = _disp(kstu?.u);
 
-  const riskClass = _getRiskCssClass(riskScore);
+  const riskClass = riskR === '-' ? 'risk-val-unknown' : _getRiskCssClass(riskScore);
 
   return `
         <div class="ns-row ns-row-head">

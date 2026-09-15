@@ -94,7 +94,7 @@
     }
 
     // Fallback – uses global computeRiskScore()
-    const r = computeRiskScore(iNorm, kstu).toFixed(2);
+    const r = getAssessedRiskValue(iNorm, kstu);
     return `<div class="node-stats-box"><div class="ns-row"><div>R=<b>${rrEscapeHtml(r)}</b></div><div>I(N)=<b>${rrEscapeHtml(iNorm || '-')}</b></div></div></div>`;
   }
 
@@ -111,7 +111,7 @@
     const u = parseFloat(rr.u);
     if ([k, s, t, u].some((v) => Number.isNaN(v))) return null;
 
-    return computeRiskScore(iNorm, rr).toFixed(2);
+    return getAssessedRiskValue(iNorm, rr);
   }
 
   function rrRenderResidualLeafRiskValueHTML(leaf) {
@@ -314,6 +314,59 @@
     return { path, text: leafText };
   }
 
+  function rrEvaluationBadge(entry) {
+    const evaluated = entry?.evaluated === true;
+    return `<span class="rr-evaluation-status ${evaluated ? 'is-evaluated' : ''}">${_t(evaluated ? 'rr.evaluated' : 'rr.notEvaluated')}</span>`;
+  }
+
+  function rrGoalLabel(goal) {
+    return `${goal.id}: ${rrLoc(goal, 'name') || goal.name || '-'}`;
+  }
+
+  function rrGoalsSummary(entry, analysis) {
+    const goals = (analysis.securityGoals || []).filter((goal) =>
+      goal.rootRefs?.includes(entry.id)
+    );
+    return `<div class="rr-goal-summary"><strong>${_t('rr.securityGoals')}</strong>${
+      goals.length
+        ? `<ul>${goals.map((goal) => `<li>${rrEscapeHtml(rrGoalLabel(goal))}</li>`).join('')}</ul>`
+        : `<p class="muted-hint">${_t('rr.noGoalsLinked')}</p>`
+    }</div>`;
+  }
+
+  function rrGoalPicker(entry, analysis) {
+    const goals = analysis.securityGoals || [];
+    return `<fieldset class="rr-goal-picker"><legend>${_t('rr.securityGoals')}</legend>
+      <p class="muted-hint">${_t('rr.securityGoalsHint')}</p>
+      ${
+        goals.length
+          ? goals
+              .map(
+                (goal) => `<label class="sg-root-ref-item">
+        <input type="checkbox" class="rr-goal-checkbox" value="${rrEscapeHtml(goal.id)}" ${goal.rootRefs?.includes(entry.id) ? 'checked' : ''}>
+        <span>${rrEscapeHtml(rrGoalLabel(goal))}</span>
+      </label>`
+              )
+              .join('')
+          : `<p>${_t('rr.noGoalsAvailable')}</p>`
+      }
+    </fieldset>`;
+  }
+
+  function rrWireGoalPicker(body, entry, analysis) {
+    body.querySelectorAll('.rr-goal-checkbox').forEach((checkbox) => {
+      checkbox.addEventListener('change', () => {
+        const goal = analysis.securityGoals.find((item) => item.id === checkbox.value);
+        if (!goal) return;
+        const refs = new Set(goal.rootRefs || []);
+        if (checkbox.checked) refs.add(entry.id);
+        else refs.delete(entry.id);
+        goal.rootRefs = [...refs];
+        saveAnalyses();
+      });
+    });
+  }
+
   function rrOpenModalForTree(residualEntry) {
     rrEnsureModalWiring();
 
@@ -360,13 +413,17 @@
     } catch (e) {}
 
     if (rows.length === 0) {
-      body.innerHTML = `<div class="warning-box" style="margin:0;"><h4 style="margin:0 0 6px 0;">${_t('rr.noLeaves')}</h4><p style="margin:0; color:#555;">${_t('rr.noLeavesHint')}</p></div>`;
+      body.innerHTML =
+        rrGoalPicker(liveEntry, analysis) +
+        `<div class="warning-box" style="margin:0;"><h4 style="margin:0 0 6px 0;">${_t('rr.noLeaves')}</h4><p style="margin:0; color:#555;">${_t('rr.noLeavesHint')}</p></div>`;
+      rrWireGoalPicker(body, liveEntry, analysis);
       modal.dataset.rrEditingUid = liveEntry?.uid || '';
       modal.style.display = 'block';
       return;
     }
 
     const tableHtml = `
+            <div id="residualSecurityLevelPreview">${renderSecurityLevelResult(analysis, liveEntry, true)}</div>
             <div class="success-box" style="margin-bottom:12px;">
                 <p style="margin:0;">${_t('rr.editHint')}</p>
             </div>
@@ -446,7 +503,8 @@
             </div>
         `;
 
-    body.innerHTML = tableHtml;
+    body.innerHTML = rrGoalPicker(liveEntry, analysis) + tableHtml;
+    rrWireGoalPicker(body, liveEntry, analysis);
 
     // Map leafKey -> leafRef
     const leafByKey = {};
@@ -474,6 +532,8 @@
         }
 
         const persist = () => {
+          const preview = body.querySelector('#residualSecurityLevelPreview');
+          if (preview) preview.innerHTML = renderSecurityLevelResult(analysis, liveEntry, true);
           // Keep legacy dict in sync (needed for migration of older data formats)
           try {
             if (analysis?.residualRisk?.leaves && liveEntry?.uid) {
@@ -576,8 +636,7 @@
     html += '<div class="root-overview-grid">';
 
     withMetrics.forEach(({ entry, base, m }) => {
-      const origKstu = base?.kstu || {};
-      const origScore = computeRiskScore(base?.i_norm, origKstu);
+      const origScore = parseFloat(base?.rootRiskValue);
       const origMeta = rrGetRiskMeta(base?.rootRiskValue);
 
       const resKstu = m && m.kstu ? m.kstu : {};
@@ -590,10 +649,13 @@
       html += `
             <div class="root-overview-card ${fillClass}">
                 <div class="root-overview-title">${_paren(rrRootLabel(base) || base?.id || '')}</div>
+                <div class="root-overview-row">${rrEscapeHtml(riskAssetLabel(analysis, base))}</div>
+                <div class="root-overview-row" data-rr-status="${rrEscapeHtml(entry.uid)}">${rrEvaluationBadge(entry)}</div>
+                ${renderSecurityLevelResult(analysis, entry, true)}
                 <div class="root-overview-row">P(RR) = ${rrEscapeHtml(pStr(resKstu))}</div>
                 <div class="root-overview-row">I[norm] = ${rrEscapeHtml(fmt(m ? m.i_norm : base?.i_norm))}</div>
-                <div class="root-overview-row">R = <b style="color:${origMeta.color}">${rrEscapeHtml(fmt(origScore.toFixed(2)))}</b></div>
-                <div class="root-overview-row root-overview-risk">RR = <b style="color:${resMeta.color}">${rrEscapeHtml(fmt(resScore.toFixed(2)))}</b>
+                <div class="root-overview-row">R = <b style="color:${origMeta.color}">${rrEscapeHtml(Number.isFinite(origScore) ? fmt(origScore.toFixed(2)) : '-')}</b></div>
+                <div class="root-overview-row root-overview-risk">RR = <b style="color:${resMeta.color}">${rrEscapeHtml(Number.isFinite(resScore) ? fmt(resScore.toFixed(2)) : '-')}</b>
                     <span class="root-overview-badge" style="background:${resMeta.color}; color:#fff;">${rrEscapeHtml(rrRiskLabel(resMeta))}</span>
                 </div>
             </div>`;
@@ -689,13 +751,17 @@
     const borderColor = resMeta.color;
 
     return `
-            <div class="rr-risk-card" style="border-left: 5px solid ${borderColor};">
+            <div class="rr-risk-card" data-rr-risk="${uid}" style="border-left: 5px solid ${borderColor};">
                 <div class="rr-risk-header">
                     <div style="flex:1; min-width:260px;">
                         <div style="font-size:1.05em; font-weight:700;">
                             <span>${id}</span>: ${name}
                         </div>
 
+                        <div data-rr-status="${uid}">${rrEvaluationBadge(entry)}</div>
+                        <div class="muted-hint">${rrEscapeHtml(riskAssetLabel(analysis, base))}</div>
+                        ${renderSecurityLevelResult(analysis, entry, true)}
+                        ${rrGoalsSummary(entry, analysis)}
                         <!-- Risiko-Score & Restrisiko hintereinander -->
                         <div style="margin-top:6px; color:#666; font-size:0.9em;">
                             <span>${_t('rr.scoreR')} <b style="color:${origMeta.color}">${rrEscapeHtml(origMeta.display)}</b></span>
@@ -730,6 +796,7 @@
                     </div>
 
                     <div style="display:flex; flex-direction:column; gap:10px; align-items:flex-end;">
+                        <label class="rr-evaluated-control"><input type="checkbox" class="rr-evaluated-checkbox" data-rr-evaluated="${uid}" ${entry.evaluated === true ? 'checked' : ''}> ${_t('rr.markEvaluated')}</label>
                         <i class="fas fa-check-circle rr-tree-check ${treeComplete ? '' : 'incomplete'}" title="${treeComplete ? _t('rr.complete') : _t('rr.incomplete')}"></i>
                         <button class="action-button small rr-edit-btn" data-rr-edit="${uid}">
                             <i class="fas fa-edit"></i> ${_t('btn.edit')}
@@ -770,8 +837,34 @@
     }
 
     container.innerHTML =
+      `<p id="rrEvaluationSummary" class="rr-evaluation-summary" role="status"></p><p class="muted-hint">${_t('rr.evaluationHint')}</p>` +
       rrRenderRootOverview(entries, analysis) +
       entries.map((e) => rrRenderTreeCard(e, analysis)).join('');
+
+    const updateEvaluation = () => {
+      const currentEntries = analysis.residualRisk.entries;
+      const evaluated = currentEntries.filter((entry) => entry.evaluated === true).length;
+      document.getElementById('rrEvaluationSummary').textContent = tf('rr.evaluationSummary', {
+        evaluated,
+        total: currentEntries.length,
+      });
+      container.querySelectorAll('[data-rr-status]').forEach((element) => {
+        const entry = currentEntries.find((item) => item.uid === element.dataset.rrStatus);
+        element.innerHTML = rrEvaluationBadge(entry);
+      });
+    };
+    updateEvaluation();
+    container.querySelectorAll('.rr-evaluated-checkbox').forEach((checkbox) => {
+      checkbox.addEventListener('change', () => {
+        const entry = analysis.residualRisk.entries.find(
+          (item) => item.uid === checkbox.dataset.rrEvaluated
+        );
+        if (!entry) return;
+        entry.evaluated = checkbox.checked;
+        saveAnalyses();
+        updateEvaluation();
+      });
+    });
 
     container.querySelectorAll('.rr-edit-btn').forEach((btn) => {
       btn.addEventListener('click', (e) => {

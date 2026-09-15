@@ -41,7 +41,7 @@ class TestAppStartup:
         expect(app.locator("h1")).to_be_visible()
 
     def test_all_tabs_exist(self, app: Page):
-        """All six navigation tabs must be present."""
+        """All navigation tabs must be present."""
         for tab_id in TAB_IDS.values():
             btn = app.locator(f'.tab-button[data-tab="{tab_id}"]')
             expect(btn).to_be_visible()

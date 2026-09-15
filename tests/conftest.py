@@ -30,8 +30,10 @@ TAB_IDS = {
     "assets":            "tabAssets",
     "damage_scenarios":  "tabDamageScenarios",
     "risk_analysis":     "tabRiskAnalysis",
+    "risk_lifecycle":    "tabRiskLifecycle",
     "security_goals":    "tabSecurityGoals",
     "residual_risk":     "tabResidualRisk",
+    "cra_documentation": "tabCraDocumentation",
 }
 
 # ---------------------------------------------------------------------------

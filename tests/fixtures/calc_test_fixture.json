@@ -67,6 +67,7 @@
     {
       "id": "T01",
       "uid": "risk_calc_0001",
+      "assetId": "A01",
       "rootName": "Network Interface",
       "treeV2": {
         "uid": "node_t01_root",
@@ -167,6 +168,7 @@
     {
       "id": "T02",
       "uid": "risk_calc_0002",
+      "assetId": "A01",
       "rootName": "Physical Port",
       "treeV2": {
         "uid": "node_t02_root",
@@ -257,6 +259,7 @@
     {
       "id": "T03",
       "uid": "risk_calc_0003",
+      "assetId": "A01",
       "rootName": "Remote Access",
       "treeV2": {
         "uid": "node_t03_root",
@@ -357,6 +360,7 @@
     {
       "id": "T04",
       "uid": "risk_calc_0004",
+      "assetId": "A01",
       "rootName": "Update Channel",
       "treeV2": {
         "uid": "node_t04_root",
@@ -425,6 +429,7 @@
     {
       "id": "T05",
       "uid": "risk_calc_0005",
+      "assetId": "A01",
       "rootName": "Social Engineering",
       "treeV2": {
         "uid": "node_t05_root",
@@ -483,6 +488,7 @@
     {
       "id": "T06",
       "uid": "risk_calc_0006",
+      "assetId": "A01",
       "rootName": "Protocol Stack",
       "treeV2": {
         "uid": "node_t06_root",
@@ -767,6 +773,7 @@
       {
         "id": "T01",
         "uid": "risk_calc_0001",
+        "assetId": "A01",
         "rootName": "Network Interface",
         "treeV2": {
           "uid": "node_t01_root",
@@ -894,6 +901,7 @@
       {
         "id": "T02",
         "uid": "risk_calc_0002",
+        "assetId": "A01",
         "rootName": "Physical Port",
         "treeV2": {
           "uid": "node_t02_root",
@@ -1002,6 +1010,7 @@
       {
         "id": "T03",
         "uid": "risk_calc_0003",
+        "assetId": "A01",
         "rootName": "Remote Access",
         "treeV2": {
           "uid": "node_t03_root",
@@ -1129,6 +1138,7 @@
       {
         "id": "T04",
         "uid": "risk_calc_0004",
+        "assetId": "A01",
         "rootName": "Update Channel",
         "treeV2": {
           "uid": "node_t04_root",
@@ -1199,6 +1209,7 @@
       {
         "id": "T05",
         "uid": "risk_calc_0005",
+        "assetId": "A01",
         "rootName": "Social Engineering",
         "treeV2": {
           "uid": "node_t05_root",
@@ -1266,6 +1277,7 @@
       {
         "id": "T06",
         "uid": "risk_calc_0006",
+        "assetId": "A01",
         "rootName": "Protocol Stack",
         "treeV2": {
           "uid": "node_t06_root",

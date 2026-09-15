@@ -66,7 +66,7 @@ function _recalcAllRiskEntries(analysis) {
     try {
       if (typeof applyImpactInheritance === 'function') applyImpactInheritance(entry, analysis);
       if (typeof applyWorstCaseInheritance === 'function') applyWorstCaseInheritance(entry);
-      const newRisk = _computeRiskScore(entry.kstu, entry.i_norm).toFixed(2);
+      const newRisk = getAssessedRiskValue(entry.i_norm, entry.kstu);
       if (entry.rootRiskValue !== newRisk) {
         entry.rootRiskValue = newRisk;
         changed = true;
@@ -106,6 +106,7 @@ window.updateImpactScore = function (assetId, dsId, newValue, selectElement) {
     selectElement.className = 'impact-select ' + getImpactColorClass(newValue);
   }
 
+  syncAssetRisks(analysis);
   saveAnalyses();
 
   // Recalculate all attack trees (impact depends on matrix values)

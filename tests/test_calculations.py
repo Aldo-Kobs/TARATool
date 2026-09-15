@@ -27,9 +27,9 @@ Impact matrix:
   A02 (schutzbedarf II,  g=0.8): DS1=2, DS2=3, DS3=2
 
 I(N) table:
-  ds=[DS1]           → 1.00   ds=[DS2]           → 0.80
-  ds=[DS3]           → 0.48   ds=[DS1,DS2]       → 1.00
-  ds=[DS1,DS3]       → 1.00   ds=[DS2,DS3]       → 0.80
+  ds=[DS1]           → 1.00   ds=[DS2]           → 0.60
+  ds=[DS3]           → 0.30   ds=[DS1,DS2]       → 1.00
+  ds=[DS1,DS3]       → 1.00   ds=[DS2,DS3]       → 0.60
   ds=[DS1,DS2,DS3]   → 1.00
 """
 
@@ -493,7 +493,7 @@ class TestResidualRiskCards:
     """Verify that residual risk cards render with correct data."""
 
     def test_cards_rendered_for_all_trees(self, loaded: Page):
-        """All 6 trees should produce residual risk cards."""
+        """Authored and automatically generated trees should produce residual risk cards."""
         page = loaded
         tab_btn = page.locator('.tab-button[data-tab="tabResidualRisk"]')
         tab_btn.wait_for(state="visible", timeout=5000)
@@ -510,7 +510,7 @@ class TestResidualRiskCards:
                 })
             };
         }""")
-        assert result["count"] == 6, f"Expected 6 cards, got {result['count']}: {result['ids']}"
+        assert result["count"] == page.evaluate("getActiveAnalysis().riskEntries.length")
 
     def test_cards_show_risk_score(self, loaded: Page):
         """Each card must display a Risiko-Score."""

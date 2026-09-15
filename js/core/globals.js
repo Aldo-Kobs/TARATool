@@ -281,6 +281,8 @@ function createDefaultAnalysis() {
     impactMatrix: {},
     impactComments: {},
     riskEntries: [],
+    securityLevelSettings: null,
+    matrixRiskArchive: [],
     securityGoals: [],
     residualRisk: { leaves: {}, entries: [], treeNotes: {} },
   };

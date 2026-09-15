@@ -12,6 +12,7 @@ function activateAnalysis(id) {
   if (!analysis) return;
 
   activeAnalysisId = id;
+  syncAssetRisks(analysis);
 
   // Keep residual risk structure up to date (risk analysis -> residual risk)
   try {
@@ -729,7 +730,11 @@ function createNewAnalysis(e) {
         ),
         impactMatrix: JSON.parse(JSON.stringify(newAnalysis.impactMatrix || {})),
         impactComments: JSON.parse(JSON.stringify(newAnalysis.impactComments || {})),
+        matrixRiskArchive: JSON.parse(JSON.stringify(newAnalysis.matrixRiskArchive || [])),
         riskEntries: JSON.parse(JSON.stringify(newAnalysis.riskEntries || [])),
+        securityLevelSettings: JSON.parse(
+          JSON.stringify(newAnalysis.securityLevelSettings || null)
+        ),
         securityGoals: JSON.parse(JSON.stringify(newAnalysis.securityGoals || [])),
         residualRisk: JSON.parse(JSON.stringify(newAnalysis.residualRisk || { leaves: {} })),
       },

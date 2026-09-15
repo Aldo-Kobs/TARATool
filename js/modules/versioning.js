@@ -114,21 +114,29 @@ window.revertToVersion = (analysisId, version) => {
       analysis.componentsImage = entry.state.componentsImage
         ? { ...entry.state.componentsImage }
         : null;
-      analysis.assets = entry.state.assets;
+      analysis.assets = JSON.parse(JSON.stringify(entry.state.assets || []));
 
-      analysis.damageScenarios = entry.state.damageScenarios;
-      analysis.impactMatrix = entry.state.impactMatrix;
+      analysis.damageScenarios = JSON.parse(JSON.stringify(entry.state.damageScenarios || []));
+      analysis.impactMatrix = JSON.parse(JSON.stringify(entry.state.impactMatrix || {}));
       analysis.impactComments = JSON.parse(JSON.stringify(entry.state.impactComments || {}));
 
-      analysis.riskEntries = entry.state.riskEntries;
+      analysis.riskEntries = JSON.parse(JSON.stringify(entry.state.riskEntries || []));
+      analysis.securityLevelSettings = JSON.parse(
+        JSON.stringify(entry.state.securityLevelSettings || null)
+      );
+      analysis.matrixRiskArchive = JSON.parse(JSON.stringify(entry.state.matrixRiskArchive || []));
 
       // Security Objectives
-      analysis.securityGoals = entry.state.securityGoals || [];
-      analysis.residualRisk = entry.state.residualRisk || {
-        leaves: {},
-        entries: [],
-        treeNotes: {},
-      };
+      analysis.securityGoals = JSON.parse(JSON.stringify(entry.state.securityGoals || []));
+      analysis.residualRisk = JSON.parse(
+        JSON.stringify(
+          entry.state.residualRisk || {
+            leaves: {},
+            entries: [],
+            treeNotes: {},
+          }
+        )
+      );
       if (!analysis.residualRisk.leaves) analysis.residualRisk.leaves = {};
       if (!Array.isArray(analysis.residualRisk.entries)) analysis.residualRisk.entries = [];
       if (!analysis.residualRisk.treeNotes) analysis.residualRisk.treeNotes = {};
@@ -137,6 +145,7 @@ window.revertToVersion = (analysisId, version) => {
       analysis.metadata.author = entry.state.metadata.author;
       analysis.metadata.date = entry.state.metadata.date;
 
+      syncAssetRisks(analysis);
       fillAnalysisForm(analysis);
       renderHistoryTable(analysis);
 
@@ -263,6 +272,8 @@ function createNewVersion(comment) {
       impactMatrix: JSON.parse(JSON.stringify(analysis.impactMatrix)),
       impactComments: JSON.parse(JSON.stringify(analysis.impactComments || {})),
       riskEntries: JSON.parse(JSON.stringify(analysis.riskEntries)),
+      securityLevelSettings: JSON.parse(JSON.stringify(analysis.securityLevelSettings || null)),
+      matrixRiskArchive: JSON.parse(JSON.stringify(analysis.matrixRiskArchive || [])),
       securityGoals: JSON.parse(JSON.stringify(analysis.securityGoals || [])),
       residualRisk: JSON.parse(JSON.stringify(analysis.residualRisk || { leaves: {} })),
     },
