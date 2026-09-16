@@ -16,22 +16,7 @@
       if (source === 'assetTypes')
         return ASSET_TYPES.map((type) => t('assets.type.option.' + type.toLowerCase(), lang));
       if (source === 'protection' || source === 'protectionNA')
-        return [
-          ...['I', 'II', 'III'].map(
-            (level) => `${level} — ${ui('weight')}: ${PROTECTION_LEVEL_WEIGHTS[level]}`
-          ),
-          ui('unset'),
-          ...(source === 'protectionNA' ? [ui('na')] : []),
-        ];
-      if (source === 'weights')
-        return Object.entries(PROTECTION_LEVEL_WEIGHTS).map(
-          ([level, weight]) => `${level}: ${weight}`
-        );
-      if (source === 'damageScale')
-        return VALID_IMPACT_VALUES.map(
-          (value) =>
-            `${value} — ${IMPACT_LABELS[value] || value}${value === 'N/A' ? '' : `; ${ui('factor')}: ${SEVERITY_LEVEL_FACTORS[value] ?? 0}`}`
-        );
+        return [ui('unset'), ...(source === 'protectionNA' ? [ui('na')] : [])];
       if (source === 'scenarios')
         return getDisplayDamageScenarios(analysis).map(
           (ds) => `${ds.id} — ${localized(ds, 'name')}: ${localized(ds, 'description')}`
@@ -57,10 +42,7 @@
       if (source.startsWith('target.')) {
         const id = source.split('.')[1];
         const requirement = SECURITY_LEVEL_REQUIREMENTS.find((item) => item.id === id);
-        return [
-          `${id} — ${t('sl.requirement.' + id, lang)} (${requirement?.abbreviation || ''})`,
-          `${t('sl.target', lang)}: ${securityLevelTargetText(getSecurityLevelTarget(analysis, id), lang)}`,
-        ];
+        return [`${id} — ${t('sl.requirement.' + id, lang)} (${requirement?.abbreviation || ''})`];
       }
       if (source.startsWith('bands.')) {
         const settings = getSecurityLevelMatrix(analysis);
@@ -73,26 +55,6 @@
                 `${t('sl.band.' + band, lang)}: ${securityLevelBandRange(bounds, index)}`
             )
           : [t('sl.notConfigured', lang)];
-      }
-      if (source === 'thresholds') {
-        const ascending = [...RISK_THRESHOLDS].sort((a, b) => a.min - b.min);
-        return ascending.map(
-          (threshold, index) =>
-            `${tRiskLabel(threshold.label, lang)}: ${threshold.min} ≤ R${ascending[index + 1] ? ` < ${ascending[index + 1].min}` : ''}`
-        );
-      }
-      if (source === 'calculationExample') {
-        const severity = Math.max(...Object.values(SEVERITY_LEVEL_FACTORS).map(Number));
-        const weight = PROTECTION_LEVEL_WEIGHTS.II;
-        const factors = ['K', 'S', 'T', 'U'].map((key) =>
-          Number(PROBABILITY_CRITERIA[key]?.options?.[0]?.value)
-        );
-        if (![severity, weight, ...factors].every(Number.isFinite)) return [];
-        const impact = severity * weight;
-        const risk = impact * factors.reduce((sum, value) => sum + value, 0);
-        return [
-          `I = ${severity} × ${weight} = ${impact.toFixed(2)}; R = ${impact.toFixed(2)} × (${factors.join(' + ')}) = ${risk.toFixed(2)}`,
-        ];
       }
       return [];
     };
@@ -109,15 +71,24 @@
             section
           ) => `<section id="parameter-section-${esc(section.id)}" class="parameter-section" data-parameter-section="${esc(section.id)}">
         <h4>${esc(local(section.title))}</h4>
+        ${section.intro ? `<p>${esc(local(section.intro))}</p>` : ''}
         <div class="parameter-table-scroll"><table class="parameter-table">
           <thead><tr>${['field', 'help', 'values', 'example'].map((key) => `<th scope="col">${esc(ui(key))}</th>`).join('')}</tr></thead>
           <tbody>${section.fields
             .map((field) => {
               const values = currentValues(field.valueSource);
+              const interpretations = (field.interpretations || [])
+                .filter((item) => !item.value || VALID_IMPACT_VALUES.includes(item.value))
+                .map((item) => {
+                  const label = item.value
+                    ? `${item.value} — ${IMPACT_LABELS[item.value] || item.value}`
+                    : local(item.label);
+                  return `<li><strong>${esc(label)}</strong>: ${esc(local(item.meaning))}<p>${esc(ui('example'))}: ${esc(local(item.example))}</p></li>`;
+                });
               return `<tr data-parameter-id="${esc(field.id)}">
               <th scope="row">${esc(local(field.label))}<span class="parameter-kind">${esc(ui(field.kind))}</span></th>
               <td>${esc(local(field.help))}</td>
-              <td>${esc(local(field.values))}${values.length ? `<ul>${values.map((value) => `<li>${esc(value)}</li>`).join('')}</ul>` : ''}</td>
+              <td>${esc(local(field.values))}${interpretations.length ? `<ul class="parameter-interpretations">${interpretations.join('')}</ul>` : ''}${values.length ? `<ul>${values.map((value) => `<li>${esc(value)}</li>`).join('')}</ul>` : ''}</td>
               <td>${esc(local(field.example))}</td>
             </tr>`;
             })
@@ -133,7 +104,11 @@
       </details>`;
 
     const rows = Array.from(container.querySelectorAll('[data-parameter-id]'));
-    const searchTexts = rows.map((row) => row.textContent.toLocaleLowerCase(lang));
+    const searchTexts = rows.map((row) =>
+      `${row.closest('section').querySelector('h4').textContent} ${row.textContent}`.toLocaleLowerCase(
+        lang
+      )
+    );
     const filter = () => {
       const query = container
         .querySelector('#parameterSearch')
