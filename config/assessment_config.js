@@ -3,9 +3,9 @@
  * @description Portable assessment config for file:// usage (no web server).
  *              AUTO-GENERATED from assessment_config.json - do not edit by hand.
  *              After changing the JSON, run:
- *                Windows: tools/sync_assessment_config.bat
- *                Linux/macOS: tools/sync_assessment_config.sh
- *                oder: python3 tools/sync_assessment_config.py
+ *                Windows: scripts/sync_assessment_config.bat
+ *                Linux/macOS: scripts/sync_assessment_config.sh
+ *                oder: python3 scripts/sync_assessment_config.py
  */
 window.__ASSESSMENT_CONFIG_PRELOAD__ = {
   _meta: {

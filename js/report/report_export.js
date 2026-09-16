@@ -338,33 +338,6 @@
     doc.addPage();
     pdf.setY(pdf.margin);
     pdf.addH1(L.riskAndTrees);
-    if (validSecurityLevelSettings(analysis.securityLevelSettings)) {
-      const settings = analysis.securityLevelSettings;
-      pdf.addH2(t('sl.settingsTitle', lang));
-      pdf.addText(t('sl.standardNote', lang), 9, 4.2);
-      pdf.addText(t('sl.formula', lang), 9, 4.2);
-      pdf.addKeyValue(t('sl.resultType', lang), securityLevelTitle(analysis, lang));
-      pdf.addTableGrid(
-        [
-          t('sl.feasibility', lang) + ' / ' + t('sl.impact', lang),
-          ...SECURITY_LEVEL_BANDS.map(
-            (band, index) =>
-              t('sl.band.' + band, lang) +
-              '\n' +
-              securityLevelBandRange(settings.impactBounds, index)
-          ),
-        ],
-        SECURITY_LEVEL_BANDS.map((band, index) => [
-          t('sl.band.' + band, lang) +
-            '\n' +
-            securityLevelBandRange(settings.feasibilityBounds, index),
-          ...settings.matrix[index].map((value) => `SL ${value}`),
-        ]),
-        [44, 34, 34, 34, 34],
-        { zebra: true }
-      );
-      pdf.addSpacer(4);
-    }
     if (assets.length) {
       pdf.addH2(t('risk.assetOverview', lang));
       pdf.addTableGrid(
@@ -404,23 +377,14 @@
           h.fmtNumComma(entry.i_norm, 2),
           h.fmtNumComma(rScore, 2),
           riskLabel(cls.label),
-          securityLevelResultText(securityLevelForRisk(analysis, entry), lang),
           h.sanitizePdfText((entry.notes || '').trim() || '-', true),
         ];
       });
       pdf.addH2(L.rootOverview);
       pdf.addTableGrid(
-        [
-          L.colRoot,
-          L.colP,
-          L.colInorm,
-          L.colR,
-          L.colRiskClass,
-          securityLevelTitle(analysis, lang),
-          L.colComment,
-        ],
+        [L.colRoot, L.colP, L.colInorm, L.colR, L.colRiskClass, L.colComment],
         overviewRows,
-        [35, 30, 14, 12, 21, 26, 30],
+        [40, 35, 16, 14, 24, 39],
         {
           zebra: true,
           noWrapCols: [1, 2, 3, 4],
@@ -441,11 +405,11 @@
         const cls = h.riskClassFromValue(entry.rootRiskValue);
         pdf.addH2(`${entry.id || ''}: ${locRoot(entry) || ''}`);
         pdf.addKeyValue(L.assets, riskAssetLabel(analysis, entry, lang));
-        pdf.addKeyValue(L.riskScore, entry.rootRiskValue || t('risk.unassessed', lang));
         pdf.addKeyValue(
-          securityLevelTitle(analysis, lang),
-          securityLevelResultText(securityLevelForRisk(analysis, entry), lang)
+          t('risk.damageScenarioImpact', lang),
+          h.sanitizePdfText(riskDamageImpactsText(analysis, entry, lang), true)
         );
+        pdf.addKeyValue(L.riskScore, entry.rootRiskValue || t('risk.unassessed', lang));
         pdf.addKeyValue(L.colRiskClass, riskLabel(cls.label));
         if ((entry.notes || '').trim()) {
           pdf.addKeyValue(L.notes, h.sanitizePdfText(entry.notes, true));
@@ -652,6 +616,46 @@
     }
     pdf.setY(pdf.margin);
     pdf.addH1(L.residualRisk);
+    pdf.addH2(t('sl.settingsTitle', lang));
+    pdf.addText(t('sl.fixedTargets', lang), 9, 4.2);
+    pdf.addTableGrid(
+      [L.colId, t('sl.requirement', lang), t('sl.target', lang)],
+      SECURITY_LEVEL_REQUIREMENTS.map(({ id, abbreviation }) => [
+        id,
+        t('sl.requirement.' + id, lang) + ' (' + abbreviation + ')',
+        securityLevelTargetText(getSecurityLevelTarget(analysis, id), lang),
+      ]),
+      [20, 175, 45],
+      { zebra: true }
+    );
+    pdf.addSpacer(4);
+
+    if (validSecurityLevelMatrix(getSecurityLevelMatrix(analysis))) {
+      const settings = getSecurityLevelMatrix(analysis);
+      pdf.addH2(t('sl.matrixTitle', lang));
+      pdf.addText(t('sl.standardNote', lang), 9, 4.2);
+      pdf.addText(t('sl.formula', lang), 9, 4.2);
+      pdf.addTableGrid(
+        [
+          t('sl.feasibility', lang) + ' / ' + t('sl.impact', lang),
+          ...SECURITY_LEVEL_BANDS.map(
+            (band, index) =>
+              t('sl.band.' + band, lang) +
+              '\n' +
+              securityLevelBandRange(settings.impactBounds, index)
+          ),
+        ],
+        SECURITY_LEVEL_BANDS.map((band, index) => [
+          t('sl.band.' + band, lang) +
+            '\n' +
+            securityLevelBandRange(settings.feasibilityBounds, index),
+          ...settings.matrix[index].map((value) => `SL-C ${value}`),
+        ]),
+        [44, 34, 34, 34, 34],
+        { zebra: true }
+      );
+      pdf.addSpacer(4);
+    }
 
     const evaluationEntries = analysis.residualRisk?.entries || [];
     if (evaluationEntries.length) {

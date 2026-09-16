@@ -735,6 +735,9 @@ function createNewAnalysis(e) {
         securityLevelSettings: JSON.parse(
           JSON.stringify(newAnalysis.securityLevelSettings || null)
         ),
+        craDocumentationChecklist: JSON.parse(
+          JSON.stringify(newAnalysis.craDocumentationChecklist || null)
+        ),
         securityGoals: JSON.parse(JSON.stringify(newAnalysis.securityGoals || [])),
         residualRisk: JSON.parse(JSON.stringify(newAnalysis.residualRisk || { leaves: {} })),
       },

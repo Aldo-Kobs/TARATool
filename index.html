@@ -89,6 +89,7 @@
                 <button class="tab-button" data-tab="tabSecurityGoals" data-i18n="tab.sg">Security Ziele</button>
                 <button class="tab-button" data-tab="tabResidualRisk" data-i18n="tab.rr">Restrisikoanalyse</button>
                 <button class="tab-button" data-tab="tabCraDocumentation" data-i18n="tab.craDocumentation">CRA-Dokumentationscheckliste</button>
+                <button class="tab-button" data-tab="tabParameters" data-i18n="tab.parameters">Parameter</button>
             </div>
 
             <div id="tabOverview" class="tab-content" style="display: block;">
@@ -287,7 +288,13 @@
             </div>
 
         
-            <div id="tabCraDocumentation" class="tab-content" style="display: none;"></div>
+            <div id="tabCraDocumentation" class="tab-content" style="display: none;">
+                <div id="craDocumentationContainer"></div>
+            </div>
+
+            <div id="tabParameters" class="tab-content" style="display: none;">
+                <div id="parametersContainer"></div>
+            </div>
 
         <footer class="status-bar" style="background: #333; color: #fff; padding: 4px 20px; font-size: 0.8em; margin-top: auto;">
             <span id="statusBarMessage" data-i18n="status.ready">Bereit.</span>
@@ -306,9 +313,9 @@
                 <div class="form-group">
                     <label for="assetType" data-i18n="assets.modal.type">Typ</label>
                     <select id="assetType" required>
-                        <option value="Component" data-i18n="assets.type.component">Komponente</option>
-                        <option value="Data" data-i18n="assets.type.data">Daten</option>
-                        <option value="Function" data-i18n="assets.type.function">Funktion</option>
+                        <option value="Component" data-i18n="assets.type.option.component">Komponente (Hardware, Schnittstellen)</option>
+                        <option value="Data" data-i18n="assets.type.option.data">Daten (Software, Firmware, kryptografische Schlüssel)</option>
+                        <option value="Function" data-i18n="assets.type.option.function">Funktion (interne Funktionen, Systemfunktionen)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -403,6 +410,7 @@
                     <select id="at_asset" name="at_asset" required></select>
                     <p class="muted-hint" data-i18n="risk.assetHint">Alle Angriffspfade dieses Risikos beziehen sich auf dieses Asset.</p>
                 </div>
+                <div id="atDamageScenarioImpactPreview" class="at-impact-preview"></div>
                 <div class="at-card at-root-card" style="background:#f0f0f0; border-color:#ccc; margin-bottom:10px;">
                     <div class="at-card-header">
                         <strong style="white-space:nowrap;" data-i18n="risk.modal.root">Angriffsziel (Root):</strong>
@@ -589,13 +597,13 @@
     <div id="securityLevelSettingsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="securityLevelSettingsTitle" style="display:none;">
         <div class="modal-content sl-settings-content">
             <button type="button" class="close-button" id="closeSecurityLevelSettings" aria-label="Close">&times;</button>
-            <h2 id="securityLevelSettingsTitle" data-i18n="sl.settingsTitle">Security-Level-Einstellungen</h2>
+            <h2 id="securityLevelSettingsTitle" data-i18n="sl.dialogTitle">Security-Level-Einstellungen</h2>
             <form id="securityLevelSettingsForm">
                 <div id="securityLevelSettingsBody"></div>
                 <p id="securityLevelSettingsError" role="alert"></p>
                 <div class="sl-settings-actions">
                     <button type="button" id="cancelSecurityLevelSettings" class="action-button" data-i18n="btn.cancel">Abbrechen</button>
-                    <button type="submit" class="primary-button" data-i18n="sl.save">Matrix speichern</button>
+                    <button type="submit" class="primary-button" data-i18n="sl.save">Einstellungen speichern</button>
                 </div>
             </form>
         </div>
@@ -616,6 +624,7 @@
     <script src="js/core/i18n.js"></script>
     <script src="js/core/bilingual.js"></script>
     <script src="config/assessment_config.js"></script>
+    <script src="config/parameter_guide.js"></script>
     <script src="js/core/config_loader.js"></script>
     <script src="js/core/globals.js"></script>
     <script src="js/core/utils.js"></script>
@@ -628,6 +637,8 @@
     <script src="js/modules/security_goals.js"></script>
     <script src="js/modules/risk_analysis.js"></script>
     <script src="js/modules/risk_lifecycle.js"></script>
+    <script src="js/modules/cra_documentation.js"></script>
+    <script src="js/modules/parameters.js"></script>
 
     <!-- Attack Tree -->
     <script src="js/attack_tree/attack_tree_structure.js"></script>

@@ -717,8 +717,12 @@
       typeof getDisplayDamageScenarios === 'function'
         ? getDisplayDamageScenarios(editor.analysis)
         : [];
+    const sourceImpacts = getAssetDamageImpacts(
+      editor.analysis,
+      getRiskAsset(editor.analysis, { assetId: editor.assetId || '' })
+    );
     ds.innerHTML = `
-      <span class="ds-checks-label">Impact:</span>
+      <span class="ds-checks-label">${_t('impact.rating')}:</span>
       ${dsList
         .map((dsItem) => {
           const checked = (imp.ds || []).includes(dsItem.id) ? 'checked' : '';
@@ -741,12 +745,13 @@
                 ''
               : dsItem.description || '';
           const label = short ? `${dsItem.id} (${short})` : dsItem.id;
+          const source = sourceImpacts.find((item) => item.id === dsItem.id);
           const tipTitle = _escapeHtml(`${dsItem.id}: ${name}`);
           const tipCat = short ? `(${_escapeHtml(short)})` : '';
           const tipDesc = _escapeHtml(desc);
           return `<label class="ds-tag" tabindex="0">
           <span class="at-hover-tooltip"><strong>${tipTitle}</strong>${tipCat ? `<br>${tipCat}` : ''}<br>${tipDesc}</span>
-          ${_escapeHtml(label)}<input type="checkbox" data-ds="${dsItem.id}" ${checked}>
+          ${_escapeHtml(label)}<span class="risk-impact-level" data-editor-choice-impact="${_escapeHtml(dsItem.id)}" title="${_escapeHtml(source ? _t('risk.damageScenarioImpact') : _t('risk.assetRequired'))}">${_escapeHtml(source?.level || '—')}</span><input type="checkbox" data-ds="${_escapeHtml(dsItem.id)}" ${checked}>
         </label>`;
         })
         .join('')}
@@ -758,109 +763,6 @@
           .filter((x) => x.checked)
           .map((x) => x.getAttribute('data-ds'));
         imp.ds = picked;
-        editor.updateSummaries();
-      });
-    });
-
-    const strideWrap = document.createElement('div');
-    strideWrap.className = 'stride-checks';
-    const _strideFallback = [
-      {
-        id: 'S',
-        name: 'Spoofing (Identitätstäuschung)',
-        name_en: 'Spoofing (identity deception)',
-        short: 'S',
-        description:
-          'Kann sich ein Angreifer oder ein fremdes Gerät als vertrauenswürdiger Teilnehmer ausgeben, um Zugriff zu erhalten? (z.\u00a0B. ein gefälschtes Servicetool).',
-        description_en:
-          'Can an attacker or foreign device impersonate a trusted participant to gain access? (e.g. a forged service tool).',
-      },
-      {
-        id: 'T',
-        name: 'Tampering (Manipulation)',
-        name_en: 'Tampering (manipulation)',
-        short: 'T',
-        description:
-          'Können Daten, Parameter, Konfigurationen oder die Firmware auf dem Gerät oder während der Übertragung unbefugt verändert werden?',
-        description_en:
-          'Can data, parameters, configurations or firmware on the device or in transit be changed without authorisation?',
-      },
-      {
-        id: 'R',
-        name: 'Repudiation (Abstreitbarkeit)',
-        name_en: 'Repudiation (non-repudiation gap)',
-        short: 'R',
-        description:
-          'Können kritische Aktionen durchgeführt werden, ohne dass wir im Nachhinein nachweisen können, wer es war? (Fehlende oder manipulierbare Logs).',
-        description_en:
-          'Can critical actions be performed without us later being able to prove who did them? (Missing or tamperable logs).',
-      },
-      {
-        id: 'I',
-        name: 'Information Disclosure (Informationsenthüllung)',
-        name_en: 'Information Disclosure',
-        short: 'I',
-        description:
-          'Können schützenswerte Informationen (z.\u00a0B. Passwörter, Rezepturen, Kundendaten oder Know-how) von Unbefugten ausgelesen werden?',
-        description_en:
-          'Can sensitive information (e.g. passwords, recipes, customer data or know-how) be read by unauthorised parties?',
-      },
-      {
-        id: 'D',
-        name: 'Denial of Service (Dienstverweigerung)',
-        name_en: 'Denial of Service',
-        short: 'D',
-        description:
-          'Kann das System so sabotiert oder überlastet werden, dass es seine Funktion einstellt oder träge wird? (z.\u00a0B. Blockade der Steuerung).',
-        description_en:
-          'Can the system be sabotaged or overloaded so that it stops working or becomes sluggish? (e.g. blocking the controller).',
-      },
-      {
-        id: 'E',
-        name: 'Elevation of Privilege (Rechteausweitung)',
-        name_en: 'Elevation of Privilege',
-        short: 'E',
-        description:
-          'Kann ein Nutzer mit geringen Rechten (z.\u00a0B. Gast/Operator) Berechtigungen erlangen, die ihm nicht zustehen (z.\u00a0B. Admin-/Service-Rechte)?',
-        description_en:
-          'Can a low-privilege user (e.g. guest/operator) obtain permissions they should not have (e.g. admin/service rights)?',
-      },
-    ];
-    const strideCats =
-      typeof window.ASSESSMENT_CONFIG !== 'undefined' && window.ASSESSMENT_CONFIG?.strideCategories
-        ? window.ASSESSMENT_CONFIG.strideCategories
-        : _strideFallback;
-    strideWrap.innerHTML = `
-      <span class="stride-label">STRIDE:</span>
-      ${strideCats
-        .map((cat) => {
-          const checked = (imp.stride || []).includes(cat.id) ? 'checked' : '';
-          const tipName = _escapeHtml(
-            typeof getLocalizedField === 'function'
-              ? getLocalizedField(cat, 'name', undefined, { fallback: true }) || cat.name || cat.id
-              : cat.name || cat.id
-          );
-          const tipDesc = _escapeHtml(
-            typeof getLocalizedField === 'function'
-              ? getLocalizedField(cat, 'description', undefined, { fallback: true }) ||
-                  cat.description ||
-                  ''
-              : cat.description || ''
-          );
-          return `<label class="stride-tag ${checked ? 'stride-active' : ''}" data-stride-id="${cat.id}" tabindex="0"><span class="at-hover-tooltip"><strong>${tipName}</strong><br>${tipDesc}</span>${cat.short}<input type="checkbox" data-stride="${cat.id}" ${checked} class="stride-cb"></label>`;
-        })
-        .join('')}
-    `;
-    _qsa('input[type="checkbox"][data-stride]', strideWrap).forEach((cb) => {
-      cb.addEventListener('change', () => {
-        const picked = _qsa('input[type="checkbox"][data-stride]', strideWrap)
-          .filter((x) => x.checked)
-          .map((x) => x.getAttribute('data-stride'));
-        imp.stride = picked;
-        _qsa('.stride-tag', strideWrap).forEach((lbl) => {
-          const id = lbl.querySelector('input')?.getAttribute('data-stride');
-          lbl.classList.toggle('stride-active', picked.includes(id));
-        });
         editor.updateSummaries();
       });
     });
@@ -903,7 +805,6 @@
 
     wrap.appendChild(row1);
     wrap.appendChild(ds);
-    wrap.appendChild(strideWrap);
     wrap.appendChild(kstu);
     wrap.appendChild(sum);
     card.appendChild(wrap);
@@ -922,6 +823,16 @@
     }
 
     const entry = editor.getEntryData({ computeOnly: true });
+
+    const impactPreview = document.getElementById('atDamageScenarioImpactPreview');
+    if (impactPreview) {
+      const asset = getRiskAsset(analysis, entry);
+      const ratings = getAssetDamageImpacts(analysis, asset);
+      const linked = new Set(getRiskDamageImpacts(analysis, entry).items.map((item) => item.id));
+      impactPreview.innerHTML = `<strong>${_t('risk.damageScenarioImpact')}</strong>
+        <p class="muted-hint">${_t(asset ? 'risk.impactSetupHint' : 'risk.assetRequired')}</p>
+        ${asset ? `<ul>${ratings.map((item) => `<li data-editor-impact-ds="${_escapeHtml(item.id)}" class="${linked.has(item.id) ? 'is-linked' : ''}"><span>${_escapeHtml(item.id)} — ${_escapeHtml(item.name)}</span><b class="risk-impact-level">${_escapeHtml(item.level)}</b>${linked.has(item.id) ? `<small>${_t('risk.linkedImpact')}</small>` : ''}</li>`).join('')}</ul>` : ''}`;
+    }
 
     try {
       if (typeof applyImpactInheritance === 'function') applyImpactInheritance(entry, analysis);
@@ -949,14 +860,10 @@
       (n.impacts || []).forEach((lf) => {
         const lfSum = document.getElementById(`atv2_leaf_summary_${lf.uid}`);
         if (lfSum && typeof _renderNodeSummaryHTML === 'function') {
-          let html = _renderNodeSummaryHTML(
+          lfSum.innerHTML = _renderNodeSummaryHTML(
             { k: lf.k, s: lf.s, t: lf.t, u: lf.u },
             lf.i_norm || ''
           );
-          if (Array.isArray(lf.stride) && lf.stride.length > 0) {
-            html += `<div class="ns-row" style="color:#2980b9;font-weight:600">STRIDE: ${lf.stride.join(', ')}</div>`;
-          }
-          lfSum.innerHTML = html;
         }
       });
       (n.children || []).forEach(walk);

@@ -1,21 +1,31 @@
-# Security-level planning matrix
+# SL-T targets by foundational requirement
 
-Use **Settings** in the top toolbar to configure the active analysis. Set three upper bounds for attack feasibility, three for impact, and an SL 0–4 value for each of the 16 matrix cells. Save the matrix to enable the calculation. Initial band boundaries are editable starting values; there is no predefined IEC mapping.
+Open **Settings** and select an SL-T target from 0 to 4 independently for each of the seven IEC 62443 foundational requirements:
 
-The result defaults to **SL-C planning estimate**. Settings also offers **SL-T target**. IEC 62443-3-2 addresses risk assessment and target levels for zones and conduits, while IEC 62443-4-2 defines component requirements associated with capability levels. A user-defined risk matrix does not demonstrate component capability, verify the seven foundational requirements, or constitute an IEC conformity assessment. See the official [IEC 62443-3-2 description](https://webstore.iec.ch/en/publication/30727) and [IEC 62443-4-2 description](https://webstore.iec.ch/en/publication/34421).
+| Requirement | Name                                      |
+| ----------- | ----------------------------------------- |
+| FR1 / IAC   | Identification and authentication control |
+| FR2 / UC    | Use control                               |
+| FR3 / SI    | System integrity                          |
+| FR4 / DC    | Data confidentiality                      |
+| FR5 / RDF   | Restricted data flow                      |
+| FR6 / TRE   | Timely response to events                 |
+| FR7 / RA    | Resource availability                     |
 
-## Calculation
+The names follow the [IEC 62443-4-2 description](https://webstore.iec.ch/en/publication/34421). Risk assessment and target levels for zones and conduits are covered by [IEC 62443-3-2](https://webstore.iec.ch/en/publication/30727).
 
-- Feasibility is the sum of the existing risk-root K, S, T and U values. Higher values mean greater attack feasibility in this tool's scoring model.
-- Impact is the risk's normalized impact for its assigned asset.
-- The existing tree aggregation supplies the root values; the new matrix does not change the risk score calculation.
-- Each upper bound is inclusive. Bands span zero upward without gaps, and values above the last bound use the fourth band.
-- The selected feasibility row and impact column give the planning level.
-- Residual calculations use reassessed K/S/T/U for mitigated impacts. Accepted, delegated and untreated impacts retain their original values.
-- An unassigned asset, an empty tree, an incomplete impact assessment or missing mitigation scores produces “Assessment incomplete.” Missing/invalid matrix settings produce “Configure matrix in Settings.” Neither case is treated as SL 0.
+Targets apply to the active analysis. A blank selection means **Not set**, which is distinct from SL-T 0. Partial target assignments can be saved; the settings dialog shows how many of the seven targets have been set. The tool keeps the seven values separate and does not average them into one security level.
 
-## Storage and reports
+SL-T expresses the required protection. These user-defined targets remain fixed as attack feasibility, impact and residual risk scores change. Risk Analysis no longer shows matrix-derived security levels. Residual Risk displays the seven targets as a shared reference, alongside the restored SL-C matrix calculation for each residual risk. Targets do not demonstrate implemented security capability.
 
-Matrix settings belong to each analysis and travel with JSON exports, copies and version snapshots. Older analyses have no active matrix until one is configured. Results are derived from current assessment values and settings, avoiding stored levels becoming stale. The active assessment configuration still governs the underlying K/S/T/U and impact calculations.
+Targets persist through saves, JSON exports/imports, analysis copies and version snapshots. The PDF includes all seven requirements with their targets. The blank CRA Documentation Checklist remains excluded from the PDF.
 
-Risk Analysis and Residual Risk show the estimate, its feasibility and impact inputs, and the selected bands. The PDF includes the configured matrix, band boundaries and both original and residual planning levels.
+Older feasibility/impact matrices do not establish per-requirement targets. They remain untouched until new targets are saved; when that happens, the former matrix is retained in `securityLevelSettings.legacyMatrix`. Restoring an old matrix version leaves the target values unset instead of deriving unsupported defaults.
+
+## Residual SL-C matrix
+
+Settings also contains the editable attack-feasibility and impact boundaries and a 4 × 4 SL matrix. Choose SL 0–4 for every cell to enable residual SL-C calculations. You can save incomplete matrix configuration alongside your SL-T targets; an incomplete matrix shows “Configure matrix in Settings” instead of a result.
+
+Residual Risk uses A = K + S + T + U from the residual attack tree and the normalized impact for the assigned asset. Boundary values belong to the lower band. Mitigation updates the matrix lookup without changing any SL-T targets. The result is labelled **SL-C planning estimate**, not demonstrated capability. Risk Analysis has no SL-C output. The PDF's Residual Risk section includes the configured matrix and residual results alongside the seven SL-T targets.
+
+Previously saved matrices, including those preserved under `legacyMatrix`, are restored automatically. Editing and saving writes the active matrix alongside the targets while retaining the legacy data. Matrix configuration follows the same save, import/export, copy and version history as the targets.

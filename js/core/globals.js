@@ -282,6 +282,7 @@ function createDefaultAnalysis() {
     impactComments: {},
     riskEntries: [],
     securityLevelSettings: null,
+    craDocumentationChecklist: null,
     matrixRiskArchive: [],
     securityGoals: [],
     residualRisk: { leaves: {}, entries: [], treeNotes: {} },
