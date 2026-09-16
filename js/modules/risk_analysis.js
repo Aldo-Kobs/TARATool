@@ -110,6 +110,14 @@ function renderAssetRiskCoverage(analysis) {
   </section>`;
 }
 
+function renderRiskDamageImpacts(analysis, entry) {
+  const result = getRiskDamageImpacts(analysis, entry);
+  return `<div class="risk-damage-impacts" data-risk-impact="${escapeHtml(entry.uid || entry.id)}">
+    <strong>${t('risk.damageScenarioImpact')}</strong>
+    ${result.status === 'ok' ? `<ul>${result.items.map((item) => `<li data-impact-ds="${escapeHtml(item.id)}" title="${escapeHtml(item.name)}"><span>${escapeHtml(`${item.id} — ${item.name}`)}</span>: <b class="risk-impact-level">${escapeHtml(item.level)}</b></li>`).join('')}</ul>` : `<p class="muted-hint">${t('risk.' + result.status)}</p>`}
+  </div>`;
+}
+
 /* ── Root-Node-Overview Panel ──────────────────────────────────────── */
 
 function renderRootOverview(analysis) {
@@ -150,7 +158,6 @@ function renderRootOverview(analysis) {
                 <div class="root-overview-title">${escapeHtml(_rootLabel(entry))}</div>
                 <div class="root-overview-row">${escapeHtml(riskAssetLabel(analysis, entry))}</div>
                 ${entry.rootRiskValue === '' ? `<div class="root-overview-row">${_t('risk.unassessed')}</div>` : ''}
-                ${renderSecurityLevelResult(analysis, entry)}
                 <div class="root-overview-row">P = ${escapeHtml(pStr(kstu))}</div>
                 <div class="root-overview-row">I[norm] = ${escapeHtml(fmt(iNorm))}</div>
                 <div class="root-overview-row root-overview-risk">R = <b style="color:${meta.color}">${escapeHtml(Number.isFinite(rScore) ? fmt(rScore.toFixed(2)) : '-')}</b>
@@ -190,7 +197,7 @@ function renderExistingRiskEntries(analysis) {
                 <div>
                     <strong>${eId}</strong>: ${eName} <br>
                     <span class="entry-list-meta">${escapeHtml(riskAssetLabel(analysis, entry))}</span><br>
-                    ${renderSecurityLevelResult(analysis, entry)}
+                    ${renderRiskDamageImpacts(analysis, entry)}
                     <span class="entry-list-meta">
                         ${_t('risk.score')} <b style="color:${meta.color}">${escapeHtml(meta.display)}</b>
                         <span class="root-overview-badge" style="margin-left:5px; background:${meta.color}; color:#fff;">${escapeHtml(_rl(meta.label))}</span>

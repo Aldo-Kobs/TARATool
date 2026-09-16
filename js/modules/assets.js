@@ -55,7 +55,7 @@ function populateAssetTypeOptions(asset) {
   ASSET_TYPES.forEach((type) => {
     const option = document.createElement('option');
     option.value = type;
-    option.dataset.i18n = `assets.type.${type.toLowerCase()}`;
+    option.dataset.i18n = `assets.type.option.${type.toLowerCase()}`;
     option.textContent = t(option.dataset.i18n);
     select.appendChild(option);
   });

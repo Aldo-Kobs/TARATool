@@ -124,6 +124,9 @@ window.revertToVersion = (analysisId, version) => {
       analysis.securityLevelSettings = JSON.parse(
         JSON.stringify(entry.state.securityLevelSettings || null)
       );
+      analysis.craDocumentationChecklist = JSON.parse(
+        JSON.stringify(entry.state.craDocumentationChecklist || null)
+      );
       analysis.matrixRiskArchive = JSON.parse(JSON.stringify(entry.state.matrixRiskArchive || []));
 
       // Security Objectives
@@ -273,6 +276,9 @@ function createNewVersion(comment) {
       impactComments: JSON.parse(JSON.stringify(analysis.impactComments || {})),
       riskEntries: JSON.parse(JSON.stringify(analysis.riskEntries)),
       securityLevelSettings: JSON.parse(JSON.stringify(analysis.securityLevelSettings || null)),
+      craDocumentationChecklist: JSON.parse(
+        JSON.stringify(analysis.craDocumentationChecklist || null)
+      ),
       matrixRiskArchive: JSON.parse(JSON.stringify(analysis.matrixRiskArchive || [])),
       securityGoals: JSON.parse(JSON.stringify(analysis.securityGoals || [])),
       residualRisk: JSON.parse(JSON.stringify(analysis.residualRisk || { leaves: {} })),

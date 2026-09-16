@@ -727,11 +727,18 @@ select.impact-select {
   box-sizing: border-box;
 }
 
-/* Impact-Matrix-Wrapper: Scroll erst wenn Inhalt breiter als Viewport-Anteil */
+/* Keep the column labels visible while scrolling long asset lists. */
 #dsMatrixContainer .impact-matrix-scroll {
-  overflow-x: auto;
+  overflow: auto;
+  max-height: 65vh;
   width: 100%;
   max-width: 100%;
+}
+#dsMatrixContainer .impact-matrix-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  box-shadow: 0 1px 0 var(--border-soft);
 }
 
 @media (max-width: 1100px) {
@@ -2401,6 +2408,60 @@ html[data-theme='dark'] [style*='background: #f2f2f2'] {
   margin-top: 4px;
 }
 
+/* SL-T targets in Settings and Residual Risk */
+.sl-settings-content {
+  width: min(960px, 94vw);
+  box-sizing: border-box;
+}
+.sl-target-table-scroll {
+  overflow-x: auto;
+}
+.sl-target-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.sl-target-table th,
+.sl-target-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-soft);
+}
+.sl-target-table tbody th {
+  font-weight: 400;
+}
+.sl-target-table select {
+  width: 100%;
+  min-width: 130px;
+}
+.sl-settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+#securityLevelSettingsError {
+  color: #c0392b;
+  font-weight: 600;
+}
+.sl-target-summary {
+  margin-bottom: 20px;
+}
+.sl-target-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+.sl-target-grid > div {
+  padding: 10px;
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+  background: var(--bg-muted);
+}
+.sl-target-grid strong {
+  display: block;
+  margin-top: 6px;
+}
+
 .security-level-result {
   margin: 8px 0;
   padding: 8px;
@@ -2410,10 +2471,7 @@ html[data-theme='dark'] [style*='background: #f2f2f2'] {
   background: var(--bg-muted);
   font-size: 0.9em;
 }
-.sl-settings-content {
-  width: min(960px, 94vw);
-  box-sizing: border-box;
-}
+
 .sl-band-settings {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2455,17 +2513,248 @@ html[data-theme='dark'] [style*='background: #f2f2f2'] {
   min-width: 85px;
   width: 100%;
 }
-.sl-settings-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-#securityLevelSettingsError {
-  color: #c0392b;
-  font-weight: 600;
-}
+
 @media (max-width: 650px) {
   .sl-band-settings {
     grid-template-columns: 1fr;
   }
+}
+
+/* CRA documentation checklist */
+.cra-annex {
+  margin-top: 28px;
+}
+.cra-annex h4 {
+  font-size: 1.1em;
+  margin-bottom: 8px;
+}
+#craChecklistProgress {
+  font-weight: 600;
+}
+.cra-table-scroll {
+  overflow-x: auto;
+}
+.cra-checklist-table {
+  width: 100%;
+  min-width: 660px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.cra-checklist-table th,
+.cra-checklist-table td {
+  border: 1px solid var(--border-soft);
+  padding: 14px;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+.cra-checklist-table thead {
+  background: var(--bg-muted);
+}
+.cra-checklist-table th:first-child {
+  width: 72px;
+}
+.cra-checklist-table th:nth-child(2) {
+  width: 43%;
+}
+.cra-checklist-table tbody th p {
+  font-weight: 400;
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+.cra-clause {
+  display: block;
+  font-weight: 400;
+  margin-bottom: 6px;
+}
+.cra-checklist-table label {
+  display: block;
+  margin-bottom: 6px;
+}
+.cra-checklist-table tbody th label {
+  cursor: pointer;
+}
+.cra-checklist-table textarea,
+.cra-checklist-table input[type='url'] {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+.cra-checklist-table textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+.cra-check {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+.cra-item-status {
+  display: block;
+  font-size: 0.85em;
+  margin-top: 6px;
+}
+.cra-checked > td:first-child {
+  background: var(--bg-muted);
+  border-left: 4px solid #27854b;
+}
+.cra-link-error {
+  color: #c0392b;
+  margin: 0 0 8px;
+}
+html[data-theme='dark'] .cra-link-error {
+  color: #ff9b91;
+}
+.cra-checklist-table input[type='url'] {
+  padding: 8px;
+  border: 1px solid var(--border-input);
+  border-radius: 4px;
+  font-family: inherit;
+  background: var(--bg-surface);
+  color: var(--text-main);
+}
+html[data-theme='dark'] .cra-checklist-table input[type='url'] {
+  background: var(--bg-page);
+}
+
+/* Original per-scenario impact ratings beside the calculated risk values. */
+.risk-damage-impacts {
+  margin: 8px 0;
+  font-size: 0.9em;
+  line-height: 1.5;
+}
+.risk-damage-impacts ul {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0;
+}
+.risk-damage-impacts li + li {
+  margin-top: 4px;
+}
+.risk-damage-impacts p {
+  margin: 4px 0 0;
+}
+.risk-impact-level {
+  display: inline-block;
+  padding: 1px 6px;
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+  background: var(--bg-surface);
+  color: var(--text-main);
+}
+
+.at-impact-preview {
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+  background: var(--bg-muted);
+}
+.at-impact-preview p {
+  margin: 6px 0;
+}
+.at-impact-preview ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+}
+.at-impact-preview li {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+}
+.at-impact-preview li.is-linked {
+  border-color: #3498db;
+}
+.at-impact-preview small {
+  flex-basis: 100%;
+}
+.ds-tag .risk-impact-level {
+  font-size: 0.85em;
+}
+
+/* Parameters reference */
+#parameterSearch {
+  width: min(600px, 100%);
+  padding: 10px;
+  border: 1px solid var(--border-input);
+  border-radius: 4px;
+  background: var(--bg-surface);
+  color: var(--text-main);
+  font: inherit;
+}
+.parameter-section-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 16px 0 24px;
+}
+.parameter-section {
+  margin: 24px 0;
+  scroll-margin-top: 80px;
+}
+.parameter-section h4 {
+  font-size: 1.1em;
+}
+.parameter-table-scroll {
+  overflow-x: auto;
+}
+.parameter-table {
+  width: 100%;
+  min-width: 780px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  line-height: 1.5;
+}
+.parameter-table th,
+.parameter-table td {
+  padding: 12px;
+  border: 1px solid var(--border-soft);
+  vertical-align: top;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.parameter-table th:first-child {
+  width: 17%;
+}
+.parameter-table th:nth-child(2) {
+  width: 25%;
+}
+.parameter-table th:nth-child(3) {
+  width: 35%;
+}
+.parameter-table thead {
+  background: var(--bg-muted);
+}
+.parameter-table ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+.parameter-table li + li {
+  margin-top: 6px;
+}
+.parameter-kind {
+  display: block;
+  font-size: 0.85em;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+.parameter-customization {
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+  padding: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.parameter-customization summary {
+  cursor: pointer;
+  font-weight: 600;
 }

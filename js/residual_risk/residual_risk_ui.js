@@ -838,6 +838,7 @@
 
     container.innerHTML =
       `<p id="rrEvaluationSummary" class="rr-evaluation-summary" role="status"></p><p class="muted-hint">${_t('rr.evaluationHint')}</p>` +
+      renderSecurityLevelTargets(analysis) +
       rrRenderRootOverview(entries, analysis) +
       entries.map((e) => rrRenderTreeCard(e, analysis)).join('');
 
