@@ -1,6 +1,6 @@
 # Customising Parameters for your company
 
-The **Parameters** tab is the last tab. It is a searchable, read-only reference covering 57 fields and calculated values, from Assets through Residual Risk plus the associated security-level settings. It does not change analysis data and is not an additional PDF report chapter.
+The **Parameters** tab is the last tab. It is a searchable, read-only reference covering 50 user-editable fields grouped by their tab and entry window, from Assets through Residual Risk plus the associated security-level settings. It does not change analysis data and is not an additional PDF report chapter.
 
 ## 1. Edit explanations and examples
 
@@ -8,17 +8,24 @@ Edit **[`config/parameter_guide.js`](../config/parameter_guide.js)**.
 
 The file assigns `window.PARAMETER_GUIDE`. Its structure is:
 
-- `sections[]`: reference sections, in display order.
+- `sections[]`: tab/window groups, in display order, with bilingual `title` and optional `intro`. Only fields users fill in belong in these groups; calculated outputs are excluded.
 - `sections[].fields[]`: parameter entries, in display order.
 - Each entry has a stable `id`, a bilingual `label`, `help`, `values` and `example`, plus a `kind` badge.
 - Each bilingual value contains `en` and `de` text. Change both languages as appropriate.
-- `kind` is `required`, `optional`, `recommended`, `conditional`, `reference` or `calculated`.
+- `kind` is `required`, `optional`, `recommended` or `conditional`.
 - `valueSource`, where present, tells the renderer to append current application values. Keep it if you want the guide to track the app automatically.
+- `interpretations[]`, where present: one entry per proposed level, with bilingual `meaning` and `example`. Protection levels use bilingual `label` (I/II/III); damage ratings use `value` (`N/A`, `1`, `2`, `3`) to read the current rating label from the assessment configuration.
 - `phaseExamples`: examples for each lifecycle phase.
 - `ui`: headings, search labels and the editing instructions at the bottom of the tab.
 - `sources`: references for the security-level summaries.
 
-Example: find the field with `id: 'damage-rating'` and edit `values.en`, `values.de`, `example.en` and `example.de` to define company-specific interpretations of Low, Medium and High. For an asset criterion, find `asset-confidentiality`, `asset-integrity`, `asset-availability`, `asset-authorization` or `asset-authentication`.
+For the Low / Medium / High guidance, find the field with `id: 'damage-rating'` under the `damage-matrix` section. Edit `interpretations[]`: values `1`, `2`, `3` are the respective ratings; `N/A` explains non-applicability. Change `meaning.en`, `meaning.de`, `example.en` and `example.de` for each level. The surrounding `values` text explains how to choose a rating.
+
+For I / II / III, find `asset-confidentiality`, `asset-integrity`, `asset-availability`, `asset-authorization` or `asset-authentication` in the `assets` section. Each has three `interpretations[]` entries. The proposal uses limited, significant and severe consequences, with a separate meaning and example for each property. Authentication concerns identity; authorization concerns permissions. Edit the `assets` section's `intro` for the common decision rule. These are proposed company criteria, not IEC security-level definitions.
+
+The `damage-matrix` section's `intro` explains the common impact approach. Agree measurable boundaries for each harm category (for example, tolerable downtime, financial loss, affected people and data sensitivity) before turning these examples into company policy. An example asset is not automatically assigned its illustrated level; the operating context determines the consequence.
+
+SL-T value meanings are introductory text in `security-targets`, followed by the seven actual FR inputs. `security-matrix` contains the editable band boundaries and matrix cells. Calculated risk, overall protection and SL-C results are intentionally not listed as input fields.
 
 Keep explanations consistent with the active settings. Editing the guide changes documentation only; it does not add controls, modify validation or change scores. The illustrative protection levels do not impose universal financial, downtime or injury thresholds. Agree such thresholds for your products and operating context.
 

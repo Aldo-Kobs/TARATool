@@ -2758,3 +2758,11 @@ html[data-theme='dark'] .cra-checklist-table input[type='url'] {
   cursor: pointer;
   font-weight: 600;
 }
+
+.parameter-interpretations > li + li {
+  margin-top: 16px;
+}
+.parameter-interpretations p {
+  margin: 6px 0 0;
+  color: var(--text-muted);
+}

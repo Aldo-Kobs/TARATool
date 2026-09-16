@@ -1,6 +1,5 @@
-/** Editable Parameters guide. Edit en/de text and examples here.
- * Numeric choices are supplied by the live assessment configuration.
- * See docs/parameters-customization.md.
+/** Editable input guidance. Change bilingual text, interpretations and examples here.
+ * See docs/parameters-customization.md. Numeric choices follow the active configuration.
  */
 window.PARAMETER_GUIDE = {
   ui: {
@@ -9,8 +8,8 @@ window.PARAMETER_GUIDE = {
       de: 'Parameter',
     },
     intro: {
-      en: 'Field guide from Assets through Residual Risk, including related security-level settings. Values are read from the active configuration. Examples are starting points for company-specific guidance.',
-      de: 'Feldreferenz von Assets bis Restrisiko einschließlich zugehöriger Security-Level-Einstellungen. Werte werden aus der aktiven Konfiguration gelesen. Beispiele sind Ausgangspunkte für unternehmensspezifische Vorgaben.',
+      en: 'Guide to the fields you fill in, grouped by tab and entry window, from Assets through Residual Risk and related Settings. The proposed protection and damage levels below are a starting point for discussion: adapt them to your company and product context.',
+      de: 'Anleitung zu auszufüllenden Feldern, nach Tab und Eingabefenster geordnet, von Assets bis Restrisiko und den zugehörigen Einstellungen. Die vorgeschlagenen Schutzbedarfs- und Schadensstufen dienen als Diskussionsgrundlage: Passen Sie sie an Ihr Unternehmen und den Produktkontext an.',
     },
     search: {
       en: 'Find a parameter, value or example',
@@ -56,29 +55,13 @@ window.PARAMETER_GUIDE = {
       en: 'Required in context',
       de: 'Situativ erforderlich',
     },
-    reference: {
-      en: 'Reference',
-      de: 'Referenz',
-    },
-    calculated: {
-      en: 'Calculated',
-      de: 'Berechnet',
-    },
-    weight: {
-      en: 'protection weight',
-      de: 'Schutzbedarfsgewicht',
-    },
-    factor: {
-      en: 'severity factor',
-      de: 'Schwerefaktor',
-    },
     unset: {
       en: 'Unset / “-”: not yet evaluated.',
       de: 'Leer / „-“: noch nicht bewertet.',
     },
     na: {
-      en: 'N/A: this criterion does not apply; does not increase protection need.',
-      de: 'N/A: Kriterium nicht anwendbar; erhöht den Schutzbedarf nicht.',
+      en: 'N/A: choose only when this criterion does not apply; explain why in the asset description.',
+      de: 'N/A: nur wählen, wenn dieses Kriterium nicht anwendbar ist; in der Asset-Beschreibung begründen.',
     },
     editTitle: {
       en: 'Where to customise this reference',
@@ -109,8 +92,8 @@ window.PARAMETER_GUIDE = {
     {
       id: 'assets',
       title: {
-        en: 'Assets',
-        de: 'Assets',
+        en: 'Assets → Add / Edit Asset',
+        de: 'Assets → Asset hinzufügen / bearbeiten',
       },
       fields: [
         {
@@ -186,14 +169,58 @@ window.PARAMETER_GUIDE = {
             de: 'Wie schwerwiegend wäre eine unbefugte Offenlegung? Das Formular erlaubt eine leere Auswahl; die Bewertung bewusst vervollständigen.',
           },
           values: {
-            en: 'I = lower, II = intermediate, III = higher protection need under your company criteria. These are relative categories, not universal financial or outage thresholds.',
-            de: 'I = niedriger, II = mittlerer, III = höherer Schutzbedarf nach Unternehmensmaßstäben. Keine universellen Kosten- oder Ausfallzeitgrenzen.',
+            en: 'Choose the level matching the highest credible consequence of this property failing in the intended operating context.',
+            de: 'Wählen Sie die Stufe entsprechend der höchsten plausiblen Folge eines Versagens dieser Eigenschaft im vorgesehenen Betriebskontext.',
           },
           example: {
-            en: 'III for a private signing key; I for public status information.',
-            de: 'III für einen privaten Signierschlüssel; I für öffentliche Statusdaten.',
+            en: 'Select by consequence, not by the number or type of security controls already installed. Record the context and rationale in the asset description.',
+            de: 'Nach den Folgen auswählen, nicht nach Anzahl oder Art bereits vorhandener Schutzmaßnahmen. Kontext und Begründung in der Asset-Beschreibung festhalten.',
           },
           valueSource: 'protection',
+          interpretations: [
+            {
+              label: {
+                en: 'I',
+                de: 'I',
+              },
+              meaning: {
+                en: 'Disclosure causes limited inconvenience and is readily contained.',
+                de: 'Offenlegung verursacht begrenzte, leicht beherrschbare Nachteile.',
+              },
+              example: {
+                en: 'Internal equipment inventory without credentials or personal information.',
+                de: 'Interne Geräteliste ohne Zugangsdaten oder personenbezogene Informationen.',
+              },
+            },
+            {
+              label: {
+                en: 'II',
+                de: 'II',
+              },
+              meaning: {
+                en: 'Disclosure exposes sensitive business or personal information and causes significant harm to affected people or business activities.',
+                de: 'Offenlegung sensibler Geschäfts- oder Personendaten schädigt Betroffene oder Geschäftsabläufe erheblich.',
+              },
+              example: {
+                en: 'Customer contact records or non-public engineering drawings.',
+                de: 'Kundenkontaktdaten oder nicht öffentliche Konstruktionszeichnungen.',
+              },
+            },
+            {
+              label: {
+                en: 'III',
+                de: 'III',
+              },
+              meaning: {
+                en: 'Disclosure can cause severe or widespread harm, compromise essential secrets, or enable control of critical systems.',
+                de: 'Offenlegung kann schwere oder weitreichende Schäden verursachen, wesentliche Geheimnisse preisgeben oder Zugriff auf kritische Systeme ermöglichen.',
+              },
+              example: {
+                en: 'A private firmware-signing key or administrator credentials for an entire fleet.',
+                de: 'Privater Firmware-Signaturschlüssel oder Administrator-Zugangsdaten für eine gesamte Geräteflotte.',
+              },
+            },
+          ],
         },
         {
           id: 'asset-integrity',
@@ -207,14 +234,58 @@ window.PARAMETER_GUIDE = {
             de: 'Wie schwerwiegend wäre eine unbefugte Veränderung? Das Formular erlaubt eine leere Auswahl; die Bewertung bewusst vervollständigen.',
           },
           values: {
-            en: 'I = lower, II = intermediate, III = higher protection need under your company criteria. These are relative categories, not universal financial or outage thresholds.',
-            de: 'I = niedriger, II = mittlerer, III = höherer Schutzbedarf nach Unternehmensmaßstäben. Keine universellen Kosten- oder Ausfallzeitgrenzen.',
+            en: 'Choose the level matching the highest credible consequence of this property failing in the intended operating context.',
+            de: 'Wählen Sie die Stufe entsprechend der höchsten plausiblen Folge eines Versagens dieser Eigenschaft im vorgesehenen Betriebskontext.',
           },
           example: {
-            en: 'III for safety-related configuration or firmware.',
-            de: 'III für sicherheitsrelevante Konfiguration oder Firmware.',
+            en: 'Select by consequence, not by the number or type of security controls already installed. Record the context and rationale in the asset description.',
+            de: 'Nach den Folgen auswählen, nicht nach Anzahl oder Art bereits vorhandener Schutzmaßnahmen. Kontext und Begründung in der Asset-Beschreibung festhalten.',
           },
           valueSource: 'protection',
+          interpretations: [
+            {
+              label: {
+                en: 'I',
+                de: 'I',
+              },
+              meaning: {
+                en: 'Incorrect or changed information has limited consequences and can be detected and corrected through routine work.',
+                de: 'Fehlerhafte oder veränderte Informationen haben begrenzte Folgen und lassen sich im Routinebetrieb erkennen und korrigieren.',
+              },
+              example: {
+                en: 'A nonessential dashboard label is changed; control decisions are unaffected.',
+                de: 'Eine unwesentliche Dashboard-Beschriftung wird geändert; Steuerungsentscheidungen bleiben unbeeinflusst.',
+              },
+            },
+            {
+              label: {
+                en: 'II',
+                de: 'II',
+              },
+              meaning: {
+                en: 'Unauthorised changes can materially affect decisions, product quality or operations and require deliberate recovery.',
+                de: 'Unbefugte Änderungen können Entscheidungen, Produktqualität oder Betrieb erheblich beeinträchtigen und gezielte Wiederherstellung erfordern.',
+              },
+              example: {
+                en: 'A production recipe is altered, causing rejected batches and rework.',
+                de: 'Eine Produktionsrezeptur wird verändert und verursacht Ausschuss und Nacharbeit.',
+              },
+            },
+            {
+              label: {
+                en: 'III',
+                de: 'III',
+              },
+              meaning: {
+                en: 'Unauthorised changes can cause dangerous behaviour, loss of trusted control or severe, widespread damage.',
+                de: 'Unbefugte Änderungen können gefährliches Verhalten, Verlust vertrauenswürdiger Steuerung oder schwere, weitreichende Schäden verursachen.',
+              },
+              example: {
+                en: 'Manipulated safety limits, control firmware or trusted update packages.',
+                de: 'Manipulierte Sicherheitsgrenzen, Steuerungsfirmware oder vertrauenswürdige Update-Pakete.',
+              },
+            },
+          ],
         },
         {
           id: 'asset-availability',
@@ -228,14 +299,58 @@ window.PARAMETER_GUIDE = {
             de: 'Wie schwerwiegend wäre der Ausfall von Zugriff oder Betrieb? Das Formular erlaubt eine leere Auswahl; die Bewertung bewusst vervollständigen.',
           },
           values: {
-            en: 'I = lower, II = intermediate, III = higher protection need under your company criteria. These are relative categories, not universal financial or outage thresholds.',
-            de: 'I = niedriger, II = mittlerer, III = höherer Schutzbedarf nach Unternehmensmaßstäben. Keine universellen Kosten- oder Ausfallzeitgrenzen.',
+            en: 'Choose the level matching the highest credible consequence of this property failing in the intended operating context.',
+            de: 'Wählen Sie die Stufe entsprechend der höchsten plausiblen Folge eines Versagens dieser Eigenschaft im vorgesehenen Betriebskontext.',
           },
           example: {
-            en: 'III for a function whose failure stops an essential process.',
-            de: 'III für eine Funktion, deren Ausfall einen wesentlichen Prozess stoppt.',
+            en: 'Select by consequence, not by the number or type of security controls already installed. Record the context and rationale in the asset description.',
+            de: 'Nach den Folgen auswählen, nicht nach Anzahl oder Art bereits vorhandener Schutzmaßnahmen. Kontext und Begründung in der Asset-Beschreibung festhalten.',
           },
           valueSource: 'protection',
+          interpretations: [
+            {
+              label: {
+                en: 'I',
+                de: 'I',
+              },
+              meaning: {
+                en: 'Interruption causes limited inconvenience; normal work can continue with a practical workaround and routine recovery.',
+                de: 'Eine Unterbrechung verursacht begrenzte Nachteile; die Arbeit kann mit einer praktikablen Ersatzlösung und routinemäßiger Wiederherstellung fortgesetzt werden.',
+              },
+              example: {
+                en: 'A reporting dashboard is offline while the controlled process keeps running.',
+                de: 'Ein Berichts-Dashboard fällt aus, während der gesteuerte Prozess weiterläuft.',
+              },
+            },
+            {
+              label: {
+                en: 'II',
+                de: 'II',
+              },
+              meaning: {
+                en: 'Interruption materially disrupts service or production; workarounds are limited and recovery effort is significant.',
+                de: 'Eine Unterbrechung stört Dienstleistung oder Produktion erheblich; Ersatzlösungen sind begrenzt und die Wiederherstellung ist aufwendig.',
+              },
+              example: {
+                en: 'One production cell stops until a controller is restored.',
+                de: 'Eine Produktionszelle steht still, bis eine Steuerung wiederhergestellt ist.',
+              },
+            },
+            {
+              label: {
+                en: 'III',
+                de: 'III',
+              },
+              meaning: {
+                en: 'Interruption can stop an essential function, exceed the tolerable outage or cause severe cascading or safety consequences.',
+                de: 'Eine Unterbrechung kann eine wesentliche Funktion stilllegen, die tolerierbare Ausfallzeit überschreiten oder schwere Folge- bzw. Sicherheitsschäden verursachen.',
+              },
+              example: {
+                en: 'Loss of an essential monitoring or control function with no workable fallback.',
+                de: 'Ausfall einer wesentlichen Überwachungs- oder Steuerungsfunktion ohne nutzbare Ersatzlösung.',
+              },
+            },
+          ],
         },
         {
           id: 'asset-authorization',
@@ -245,18 +360,62 @@ window.PARAMETER_GUIDE = {
           },
           kind: 'recommended',
           help: {
-            en: 'How important is restricting actions to permitted roles? The form allows an unset value; complete the assessment deliberately.',
-            de: 'Wie wichtig ist die Beschränkung von Aktionen auf berechtigte Rollen? Das Formular erlaubt eine leere Auswahl; die Bewertung bewusst vervollständigen.',
+            en: 'Authorization asks “What may this identity do?” Assess the need to enforce permissions, even for correctly authenticated identities.',
+            de: 'Autorisierung fragt: „Was darf diese Identität tun?“ Bewerten Sie, wie wichtig die Durchsetzung von Berechtigungen ist, auch bei korrekt authentifizierten Identitäten.',
           },
           values: {
-            en: 'I = lower, II = intermediate, III = higher protection need under your company criteria. These are relative categories, not universal financial or outage thresholds.',
-            de: 'I = niedriger, II = mittlerer, III = höherer Schutzbedarf nach Unternehmensmaßstäben. Keine universellen Kosten- oder Ausfallzeitgrenzen.',
+            en: 'Choose the level matching the highest credible consequence of this property failing in the intended operating context.',
+            de: 'Wählen Sie die Stufe entsprechend der höchsten plausiblen Folge eines Versagens dieser Eigenschaft im vorgesehenen Betriebskontext.',
           },
           example: {
-            en: 'III for administrative commands; N/A when this criterion does not apply.',
-            de: 'III für administrative Befehle; N/A, wenn dieses Kriterium nicht anwendbar ist.',
+            en: 'Select by consequence, not by the number or type of security controls already installed. Record the context and rationale in the asset description.',
+            de: 'Nach den Folgen auswählen, nicht nach Anzahl oder Art bereits vorhandener Schutzmaßnahmen. Kontext und Begründung in der Asset-Beschreibung festhalten.',
           },
           valueSource: 'protectionNA',
+          interpretations: [
+            {
+              label: {
+                en: 'I',
+                de: 'I',
+              },
+              meaning: {
+                en: 'Exceeding assigned permissions affects only low-consequence actions or information and is easily corrected.',
+                de: 'Eine Überschreitung zugewiesener Rechte betrifft nur wenig folgenschwere Aktionen oder Informationen und lässt sich leicht korrigieren.',
+              },
+              example: {
+                en: 'A viewer changes a nonessential display preference shared by a small team.',
+                de: 'Ein Betrachter ändert eine unwesentliche Anzeigeeinstellung für ein kleines Team.',
+              },
+            },
+            {
+              label: {
+                en: 'II',
+                de: 'II',
+              },
+              meaning: {
+                en: 'Exceeding permissions can alter important settings, expose sensitive data or disrupt a bounded part of operations.',
+                de: 'Eine Rechteüberschreitung kann wichtige Einstellungen ändern, sensible Daten offenlegen oder einen begrenzten Betriebsbereich stören.',
+              },
+              example: {
+                en: 'An operator changes maintenance settings outside their assigned role.',
+                de: 'Ein Bediener ändert Wartungseinstellungen außerhalb seiner zugewiesenen Rolle.',
+              },
+            },
+            {
+              label: {
+                en: 'III',
+                de: 'III',
+              },
+              meaning: {
+                en: 'Exceeding permissions can bypass critical safeguards or grant broad administrative control with severe consequences.',
+                de: 'Eine Rechteüberschreitung kann kritische Schutzmaßnahmen umgehen oder umfassende Administratorrechte mit schweren Folgen gewähren.',
+              },
+              example: {
+                en: 'A normal user disables safety controls or deploys software across the fleet.',
+                de: 'Ein normaler Benutzer deaktiviert Schutzfunktionen oder verteilt Software in der gesamten Flotte.',
+              },
+            },
+          ],
         },
         {
           id: 'asset-authentication',
@@ -266,26 +425,74 @@ window.PARAMETER_GUIDE = {
           },
           kind: 'recommended',
           help: {
-            en: 'How important is verifying user, device or service identity? The form allows an unset value; complete the assessment deliberately.',
-            de: 'Wie wichtig ist die Prüfung der Identität von Nutzern, Geräten oder Diensten? Das Formular erlaubt eine leere Auswahl; die Bewertung bewusst vervollständigen.',
+            en: 'Authentication asks “Who is this?” Assess the need to reliably verify user, device or service identity.',
+            de: 'Authentifizierung fragt: „Wer ist das?“ Bewerten Sie, wie wichtig die zuverlässige Prüfung der Benutzer-, Geräte- oder Dienstidentität ist.',
           },
           values: {
-            en: 'I = lower, II = intermediate, III = higher protection need under your company criteria. These are relative categories, not universal financial or outage thresholds.',
-            de: 'I = niedriger, II = mittlerer, III = höherer Schutzbedarf nach Unternehmensmaßstäben. Keine universellen Kosten- oder Ausfallzeitgrenzen.',
+            en: 'Choose the level matching the highest credible consequence of this property failing in the intended operating context.',
+            de: 'Wählen Sie die Stufe entsprechend der höchsten plausiblen Folge eines Versagens dieser Eigenschaft im vorgesehenen Betriebskontext.',
           },
           example: {
-            en: 'III for remote maintenance access; N/A where identity verification is inapplicable.',
-            de: 'III für Fernwartungszugriff; N/A, wenn Identitätsprüfung nicht anwendbar ist.',
+            en: 'Select by consequence, not by the number or type of security controls already installed. Record the context and rationale in the asset description.',
+            de: 'Nach den Folgen auswählen, nicht nach Anzahl oder Art bereits vorhandener Schutzmaßnahmen. Kontext und Begründung in der Asset-Beschreibung festhalten.',
           },
           valueSource: 'protectionNA',
+          interpretations: [
+            {
+              label: {
+                en: 'I',
+                de: 'I',
+              },
+              meaning: {
+                en: 'Mistaking an identity has limited consequences because the identity can access only low-consequence functions or information.',
+                de: 'Eine falsche Identitätszuordnung hat begrenzte Folgen, da die Identität nur auf wenig folgenschwere Funktionen oder Informationen zugreifen kann.',
+              },
+              example: {
+                en: 'Impersonating a user of a nonsensitive, read-only status portal.',
+                de: 'Nachahmen eines Benutzers eines unkritischen Statusportals mit reinem Lesezugriff.',
+              },
+            },
+            {
+              label: {
+                en: 'II',
+                de: 'II',
+              },
+              meaning: {
+                en: 'Impersonating a user, device or service can expose sensitive information or disrupt a bounded part of operations.',
+                de: 'Das Vortäuschen einer Benutzer-, Geräte- oder Dienstidentität kann sensible Informationen offenlegen oder einen begrenzten Betriebsbereich stören.',
+              },
+              example: {
+                en: 'A fake maintenance user gains access to one machine’s configuration.',
+                de: 'Ein vorgetäuschter Wartungsbenutzer erhält Zugriff auf die Konfiguration einer Maschine.',
+              },
+            },
+            {
+              label: {
+                en: 'III',
+                de: 'III',
+              },
+              meaning: {
+                en: 'A false identity can gain critical privileges or trusted access with severe or widespread consequences.',
+                de: 'Eine falsche Identität kann kritische Rechte oder vertrauenswürdigen Zugang mit schweren oder weitreichenden Folgen erhalten.',
+              },
+              example: {
+                en: 'Impersonating a fleet administrator or a trusted firmware update service.',
+                de: 'Vortäuschen eines Flottenadministrators oder eines vertrauenswürdigen Firmware-Update-Dienstes.',
+              },
+            },
+          ],
         },
       ],
+      intro: {
+        en: 'Proposed protection needs: I = limited consequences, II = significant consequences, III = severe consequences. Assess each property separately; I still means protection is needed. These are company guidance levels, not IEC security levels. Examples illustrate possible contexts, not automatic classifications. Agree measurable boundaries and record assumptions.',
+        de: 'Vorgeschlagener Schutzbedarf: I = begrenzte Folgen, II = erhebliche Folgen, III = schwere Folgen. Jede Eigenschaft getrennt bewerten; auch I erfordert Schutz. Dies sind unternehmensbezogene Orientierungsstufen, keine IEC-Security-Levels. Beispiele zeigen mögliche Kontexte, keine automatischen Einstufungen. Messbare Grenzen vereinbaren und Annahmen dokumentieren.',
+      },
     },
     {
       id: 'damage',
       title: {
-        en: 'Damage Scenarios',
-        de: 'Schadensszenarien',
+        en: 'Damage Scenarios → Add / Edit Scenario',
+        de: 'Schadensszenarien → Szenario hinzufügen / bearbeiten',
       },
       fields: [
         {
@@ -348,27 +555,15 @@ window.PARAMETER_GUIDE = {
             de: 'Fehlerhafte Messwerte führen zu ungeeigneten Prozessparametern.',
           },
         },
-        {
-          id: 'scenario-catalogue',
-          label: {
-            en: 'Available scenarios',
-            de: 'Verfügbare Szenarien',
-          },
-          kind: 'reference',
-          help: {
-            en: 'The current catalogue combines configured defaults with custom scenarios for the active analysis.',
-            de: 'Der aktuelle Katalog kombiniert konfigurierte Standardszenarien mit eigenen Szenarien der aktiven Analyse.',
-          },
-          values: {
-            en: 'Each matrix column represents one scenario.',
-            de: 'Jede Matrixspalte steht für ein Szenario.',
-          },
-          example: {
-            en: 'DS3 covers loss of operation in the component.',
-            de: 'DS3 umfasst den Ausfall der Betriebsfunktion der Komponente.',
-          },
-          valueSource: 'scenarios',
-        },
+      ],
+    },
+    {
+      id: 'damage-matrix',
+      title: {
+        en: 'Damage Scenarios → Impact matrix',
+        de: 'Schadensszenarien → Auswirkungsmatrix',
+      },
+      fields: [
         {
           id: 'damage-rating',
           label: {
@@ -381,15 +576,73 @@ window.PARAMETER_GUIDE = {
             de: 'Die Schwere der Folgen für dieses Asset/Szenario-Paar wählen. Die Bewertung fließt in Risiken dieses Assets mit dem verknüpften Szenario ein.',
           },
           values: {
-            en: 'Illustrative company interpretation: Low = limited, recoverable harm; Medium = material disruption; High = severe harm. Define measurable boundaries for your product and company. N/A = not applicable; unset cells display N/A.',
-            de: 'Beispielhafte Unternehmensauslegung: Low = begrenzter, behebbarer Schaden; Medium = wesentliche Beeinträchtigung; High = schwerer Schaden. Messbare Grenzen für Produkt und Unternehmen festlegen. N/A = nicht zutreffend; leere Zellen zeigen N/A.',
+            en: 'Rate the credible consequence for this asset and this scenario, not how likely an attack is. Use the highest applicable consequence within the scenario. Apply the same agreed assumptions and thresholds across assets.',
+            de: 'Bewerten Sie die plausible Folge für dieses Asset und dieses Szenario, nicht die Angriffswahrscheinlichkeit. Verwenden Sie die höchste zutreffende Folge innerhalb des Szenarios. Nutzen Sie für alle Assets dieselben vereinbarten Annahmen und Grenzwerte.',
           },
           example: {
-            en: 'Brief recoverable interruption versus prolonged loss of a critical component.',
-            de: 'Kurze behebbare Unterbrechung gegenüber langem Ausfall einer kritischen Komponente.',
+            en: 'For each scenario, agree company thresholds for outage duration, recovery effort, financial loss, affected people and data sensitivity. If evidence is missing, state the uncertainty in the mandatory comment and arrange a review.',
+            de: 'Je Szenario Unternehmensgrenzen für Ausfalldauer, Wiederherstellungsaufwand, finanzielle Verluste, Betroffene und Datensensibilität vereinbaren. Fehlende Nachweise im Pflichtkommentar als Unsicherheit festhalten und eine Prüfung veranlassen.',
           },
-          valueSource: 'damageScale',
+          interpretations: [
+            {
+              value: 'N/A',
+              meaning: {
+                en: 'Not applicable: this asset cannot credibly produce the stated damage in the assessed context. Do not use it for low impact or uncertainty. An untouched cell also displays N/A; record an explicit justification.',
+                de: 'Nicht anwendbar: Dieses Asset kann den beschriebenen Schaden im bewerteten Kontext plausibel nicht auslösen. Nicht für geringe Folgen oder Unsicherheit verwenden. Auch eine unberührte Zelle zeigt N/A; ausdrücklich begründen.',
+              },
+              example: {
+                en: 'Financial-record disclosure for a component that neither stores nor handles those records.',
+                de: 'Offenlegung von Finanzunterlagen bei einer Komponente, die diese weder speichert noch verarbeitet.',
+              },
+            },
+            {
+              value: '1',
+              meaning: {
+                en: 'Limited, local and readily recoverable harm. Normal procedures or a practical workaround keep the consequences within routine tolerance; no credible injury or major knock-on effect.',
+                de: 'Begrenzter, lokaler und leicht behebbarer Schaden. Routineverfahren oder eine praktikable Ersatzlösung halten die Folgen innerhalb der üblichen Toleranz; keine plausible Verletzung oder größere Folgewirkung.',
+              },
+              example: {
+                en: 'DS3 Operation damage: a nonessential interface stops, but the component’s main operation continues via a usable alternative.',
+                de: 'DS3 Betriebsschaden: Eine unwesentliche Schnittstelle fällt aus; der Hauptbetrieb der Komponente läuft über eine nutzbare Alternative weiter.',
+              },
+            },
+            {
+              value: '2',
+              meaning: {
+                en: 'Significant but contained harm. Service, production, finances or affected people are materially impacted; dedicated recovery, rework or specialist intervention is needed.',
+                de: 'Erheblicher, aber begrenzter Schaden. Dienstleistung, Produktion, Finanzen oder Betroffene werden spürbar beeinträchtigt; gezielte Wiederherstellung, Nacharbeit oder fachlicher Eingriff sind erforderlich.',
+              },
+              example: {
+                en: 'DS3 Operation damage: the component stops a production cell; specialist recovery and rework are needed, while the rest of the site operates.',
+                de: 'DS3 Betriebsschaden: Die Komponente legt eine Produktionszelle still; fachliche Wiederherstellung und Nacharbeit sind nötig, während der übrige Standort weiterarbeitet.',
+              },
+            },
+            {
+              value: '3',
+              meaning: {
+                en: 'Severe, widespread or difficult-to-reverse harm. Examples include serious personal harm, loss of an essential service beyond the tolerable outage, major business loss or extensive exposure of highly sensitive data.',
+                de: 'Schwerer, weitreichender oder schwer rückgängig zu machender Schaden. Beispiele sind schwere Personenschäden, Ausfall eines wesentlichen Dienstes über die tolerierbare Dauer hinaus, große Geschäftsverluste oder umfangreiche Offenlegung hochsensibler Daten.',
+              },
+              example: {
+                en: 'DS3 Operation damage: loss of the component stops an essential process without a workable fallback and exceeds the agreed maximum tolerable outage.',
+                de: 'DS3 Betriebsschaden: Der Komponentenausfall stoppt einen wesentlichen Prozess ohne nutzbare Ersatzlösung und überschreitet die vereinbarte maximal tolerierbare Ausfallzeit.',
+              },
+            },
+          ],
         },
+      ],
+      intro: {
+        en: 'Proposed impact guidance for discussion and company adaptation. Assess the actual harmful outcome per scenario. The same Low / Medium / High principle applies to safety, financial, operation, privacy and legal consequences, with thresholds appropriate to each scenario.',
+        de: 'Vorgeschlagene Auswirkungsbewertung zur Diskussion und unternehmensspezifischen Anpassung. Den tatsächlichen Schaden je Szenario bewerten. Dasselbe Prinzip Gering / Mittel / Hoch gilt für Sicherheits-, Finanz-, Betriebs-, Datenschutz- und rechtliche Folgen, mit zum jeweiligen Szenario passenden Grenzen.',
+      },
+    },
+    {
+      id: 'damage-comment',
+      title: {
+        en: 'Damage Scenarios → Cell comment (…)',
+        de: 'Schadensszenarien → Zellenkommentar (…)',
+      },
+      fields: [
         {
           id: 'damage-comment',
           label: {
@@ -415,8 +668,8 @@ window.PARAMETER_GUIDE = {
     {
       id: 'risk',
       title: {
-        en: 'Risk Analysis',
-        de: 'Risikoanalyse',
+        en: 'Risk Analysis → Add / Edit Risk',
+        de: 'Risikoanalyse → Risiko hinzufügen / bearbeiten',
       },
       fields: [
         {
@@ -604,26 +857,15 @@ window.PARAMETER_GUIDE = {
           },
           valueSource: 'probability.U',
         },
-        {
-          id: 'risk-notes',
-          label: {
-            en: 'Risk notes',
-            de: 'Risikonotizen',
-          },
-          kind: 'optional',
-          help: {
-            en: 'Use the saved risk’s note button for scope, assumptions and evidence applying to the whole risk.',
-            de: 'Über die Notizschaltfläche des gespeicherten Risikos Geltungsbereich, Annahmen und Nachweise für das Gesamtrisiko erfassen.',
-          },
-          values: {
-            en: 'Optional free text.',
-            de: 'Optionaler Freitext.',
-          },
-          example: {
-            en: 'Assessment assumes the product is connected to the customer network.',
-            de: 'Bewertung setzt eine Verbindung zum Kundennetz voraus.',
-          },
-        },
+      ],
+    },
+    {
+      id: 'risk-node-notes',
+      title: {
+        en: 'Risk Analysis → Path / impact note window',
+        de: 'Risikoanalyse → Notizfenster für Pfad / Auswirkung',
+      },
+      fields: [
         {
           id: 'risk-node-notes',
           label: {
@@ -647,10 +889,39 @@ window.PARAMETER_GUIDE = {
       ],
     },
     {
+      id: 'risk-notes',
+      title: {
+        en: 'Risk Analysis → Whole-risk note window',
+        de: 'Risikoanalyse → Notizfenster für das gesamte Risiko',
+      },
+      fields: [
+        {
+          id: 'risk-notes',
+          label: {
+            en: 'Risk notes',
+            de: 'Risikonotizen',
+          },
+          kind: 'optional',
+          help: {
+            en: 'Use the saved risk’s note button for scope, assumptions and evidence applying to the whole risk.',
+            de: 'Über die Notizschaltfläche des gespeicherten Risikos Geltungsbereich, Annahmen und Nachweise für das Gesamtrisiko erfassen.',
+          },
+          values: {
+            en: 'Optional free text.',
+            de: 'Optionaler Freitext.',
+          },
+          example: {
+            en: 'Assessment assumes the product is connected to the customer network.',
+            de: 'Bewertung setzt eine Verbindung zum Kundennetz voraus.',
+          },
+        },
+      ],
+    },
+    {
       id: 'lifecycle',
       title: {
-        en: 'Risk Lifecycle',
-        de: 'Risiko-Lebenszyklus',
+        en: 'Risk Lifecycle → Phase assignment',
+        de: 'Risiko-Lebenszyklus → Phasenzuordnung',
       },
       fields: [
         {
@@ -719,8 +990,8 @@ window.PARAMETER_GUIDE = {
     {
       id: 'goals',
       title: {
-        en: 'Security Goals',
-        de: 'Security-Ziele',
+        en: 'Security Goals → Add / Edit Goal',
+        de: 'Security-Ziele → Ziel hinzufügen / bearbeiten',
       },
       fields: [
         {
@@ -788,8 +1059,8 @@ window.PARAMETER_GUIDE = {
     {
       id: 'residual',
       title: {
-        en: 'Residual Risk',
-        de: 'Restrisiko',
+        en: 'Residual Risk → Edit window',
+        de: 'Restrisiko → Bearbeitungsfenster',
       },
       fields: [
         {
@@ -957,6 +1228,15 @@ window.PARAMETER_GUIDE = {
           },
           valueSource: 'probability.U',
         },
+      ],
+    },
+    {
+      id: 'residual-review',
+      title: {
+        en: 'Residual Risk → Risk card review',
+        de: 'Restrisiko → Prüfung auf der Risikokarte',
+      },
+      fields: [
         {
           id: 'residual-risk-note',
           label: {
@@ -1000,32 +1280,12 @@ window.PARAMETER_GUIDE = {
       ],
     },
     {
-      id: 'security',
+      id: 'security-targets',
       title: {
-        en: 'Security-level settings',
-        de: 'Security-Level-Einstellungen',
+        en: 'Settings → SL-T targets',
+        de: 'Einstellungen → SL-T-Ziele',
       },
       fields: [
-        {
-          id: 'sl-target-levels',
-          label: {
-            en: 'SL-T value meanings',
-            de: 'Bedeutung der SL-T-Werte',
-          },
-          kind: 'reference',
-          help: {
-            en: 'Choose an explicit target independently for each foundational requirement. These targets stay fixed when mitigation changes risk scores.',
-            de: 'Für jede grundlegende Anforderung unabhängig ein Ziel festlegen. Diese Ziele bleiben bei Änderungen der Risikowerte durch Mitigation fest.',
-          },
-          values: {
-            en: 'Not set = no target decision. 0 = explicit zero target, distinct from Not set. 1 = addresses accidental/casual violations. 2 = addresses intentional attacks with simple means, few resources and general skills. 3 = addresses sophisticated attacks with moderate resources and control-system skills. 4 = addresses sophisticated attacks with extensive resources, control-system skills and strong motivation. These short summaries are not a control-by-control assessment.',
-            de: 'Nicht festgelegt = keine Zielentscheidung. 0 = explizites Nullziel, nicht gleich leer. 1 = unbeabsichtigte/beiläufige Verstöße. 2 = gezielte Angriffe mit einfachen Mitteln, geringen Ressourcen und allgemeinen Kenntnissen. 3 = anspruchsvolle Angriffe mit mittleren Ressourcen und Automatisierungskenntnissen. 4 = anspruchsvolle Angriffe mit umfangreichen Ressourcen, Automatisierungskenntnissen und hoher Motivation. Diese Kurzfassungen ersetzen keine anforderungsweise Prüfung.',
-          },
-          example: {
-            en: 'Set the required protection from the threat assessment, then verify the applicable security requirements separately.',
-            de: 'Schutzbedarf aus der Bedrohungsbewertung ableiten und die anwendbaren Sicherheitsanforderungen separat prüfen.',
-          },
-        },
         {
           id: 'sl-FR1',
           label: {
@@ -1173,6 +1433,19 @@ window.PARAMETER_GUIDE = {
           },
           valueSource: 'target.FR7',
         },
+      ],
+      intro: {
+        en: 'Not set = no target decision. 0 = explicit zero target, distinct from Not set. 1 = addresses accidental/casual violations. 2 = addresses intentional attacks with simple means, few resources and general skills. 3 = addresses sophisticated attacks with moderate resources and control-system skills. 4 = addresses sophisticated attacks with extensive resources, control-system skills and strong motivation. These short summaries are not a control-by-control assessment.',
+        de: 'Nicht festgelegt = keine Zielentscheidung. 0 = explizites Nullziel, nicht gleich leer. 1 = unbeabsichtigte/beiläufige Verstöße. 2 = gezielte Angriffe mit einfachen Mitteln, geringen Ressourcen und allgemeinen Kenntnissen. 3 = anspruchsvolle Angriffe mit mittleren Ressourcen und Automatisierungskenntnissen. 4 = anspruchsvolle Angriffe mit umfangreichen Ressourcen, Automatisierungskenntnissen und hoher Motivation. Diese Kurzfassungen ersetzen keine anforderungsweise Prüfung.',
+      },
+    },
+    {
+      id: 'security-matrix',
+      title: {
+        en: 'Settings → Residual SL matrix',
+        de: 'Einstellungen → Restrisiko-SL-Matrix',
+      },
+      fields: [
         {
           id: 'sl-feasibility',
           label: {
@@ -1233,118 +1506,6 @@ window.PARAMETER_GUIDE = {
           example: {
             en: 'Record why a particular residual feasibility/impact pair maps to the chosen level.',
             de: 'Begründen, warum eine Kombination aus verbleibender Durchführbarkeit und Auswirkung dem gewählten Level zugeordnet wird.',
-          },
-        },
-      ],
-    },
-    {
-      id: 'calculated',
-      title: {
-        en: 'Calculated values and interpretation',
-        de: 'Berechnete Werte und Interpretation',
-      },
-      fields: [
-        {
-          id: 'calculated-protection',
-          label: {
-            en: 'Overall protection need',
-            de: 'Gesamtschutzbedarf',
-          },
-          kind: 'calculated',
-          help: {
-            en: 'The asset uses the highest selected level across the five protection criteria. N/A does not raise it.',
-            de: 'Das Asset verwendet die höchste gewählte Stufe der fünf Schutzkriterien. N/A erhöht sie nicht.',
-          },
-          values: {
-            en: 'Not directly editable. If no level is selected, the stored result is “-”; impact scoring falls back to the I weight. An unset assessment is not a completed low assessment.',
-            de: 'Nicht direkt editierbar. Ohne Auswahl wird „-“ gespeichert; die Auswirkungsberechnung verwendet ersatzweise das Gewicht von I. Eine leere Bewertung ist keine abgeschlossene niedrige Bewertung.',
-          },
-          example: {
-            en: 'Confidentiality I and integrity III produce overall III.',
-            de: 'Vertraulichkeit I und Integrität III ergeben insgesamt III.',
-          },
-          valueSource: 'weights',
-        },
-        {
-          id: 'calculated-impact',
-          label: {
-            en: 'Normalized impact I[norm]',
-            de: 'Normierte Auswirkung I[norm]',
-          },
-          kind: 'calculated',
-          help: {
-            en: 'For a leaf, multiply the assigned asset’s protection weight by each linked scenario’s severity factor, then take the maximum. Parent nodes and the root inherit the maximum impact.',
-            de: 'Je Blatt das Schutzbedarfsgewicht des zugeordneten Assets mit dem Schwerefaktor jedes verknüpften Szenarios multiplizieren und das Maximum wählen. Übergeordnete Knoten und Root erben die maximale Auswirkung.',
-          },
-          values: {
-            en: 'Not an average across assets. No applicable numeric scenario leaves impact unassessed.',
-            de: 'Kein Mittelwert über Assets. Ohne anwendbares numerisches Szenario bleibt die Auswirkung unbewertet.',
-          },
-          example: {
-            en: 'An asset with a higher protection weight produces a higher normalized impact for the same scenario severity.',
-            de: 'Ein höheres Schutzbedarfsgewicht ergibt bei gleicher Szenarioschwere eine höhere normierte Auswirkung.',
-          },
-        },
-        {
-          id: 'calculated-risk',
-          label: {
-            en: 'Feasibility and risk score',
-            de: 'Durchführbarkeit und Risikowert',
-          },
-          kind: 'calculated',
-          help: {
-            en: 'At each parent, K/S/T/U are inherited as the maximum per factor. R = I[norm] × (K + S + T + U). Values may therefore combine different leaves.',
-            de: 'Je übergeordnetem Knoten werden K/S/T/U faktorweise als Maximum geerbt. R = I[norm] × (K + S + T + U). Werte können daher aus verschiedenen Blättern stammen.',
-          },
-          values: {
-            en: 'A score is not a probability percentage. Missing values can leave a path unassessed; a scored parent does not prove every leaf is complete.',
-            de: 'Ein Wert ist keine prozentuale Wahrscheinlichkeit. Fehlende Werte können einen Pfad unbewertet lassen; ein berechneter Elternknoten belegt nicht die Vollständigkeit aller Blätter.',
-          },
-          example: {
-            en: 'Calculated example using the active configuration:',
-            de: 'Berechnetes Beispiel mit aktiver Konfiguration:',
-          },
-          valueSource: 'calculationExample',
-        },
-        {
-          id: 'calculated-classes',
-          label: {
-            en: 'Risk classes',
-            de: 'Risikoklassen',
-          },
-          kind: 'calculated',
-          help: {
-            en: 'The displayed class follows the configured lower boundaries, checked from highest to lowest.',
-            de: 'Die angezeigte Klasse folgt den konfigurierten Untergrenzen, geprüft von hoch nach niedrig.',
-          },
-          values: {
-            en: 'Classes describe this tool’s score ranges, not universal acceptable-risk limits. Unknown means no assessed numeric score.',
-            de: 'Klassen beschreiben die Wertebereiche dieses Werkzeugs, keine universellen Akzeptanzgrenzen. Unbekannt bedeutet kein bewerteter numerischer Wert.',
-          },
-          example: {
-            en: 'Agree acceptance and escalation rules with the organisation before using these classes for decisions.',
-            de: 'Akzeptanz- und Eskalationsregeln vor Entscheidungen mit der Organisation abstimmen.',
-          },
-          valueSource: 'thresholds',
-        },
-        {
-          id: 'calculated-residual',
-          label: {
-            en: 'Residual score and SL-C estimate',
-            de: 'Restrisikowert und SL-C-Planungswert',
-          },
-          kind: 'calculated',
-          help: {
-            en: 'Mitigated leaves use their reassessed K/S/T/U; other treatments retain original factors. The root is recomputed with the same impact and worst-case aggregation.',
-            de: 'Mitigierte Blätter verwenden neu bewertete K/S/T/U; andere Behandlungen behalten ursprüngliche Faktoren. Root wird mit derselben Auswirkung und ungünstigster Aggregation neu berechnet.',
-          },
-          values: {
-            en: 'Residual score is not manually editable. The SL-C planning estimate additionally needs a complete matrix, assigned asset and complete assessment.',
-            de: 'Restrisikowert nicht manuell editierbar. Der SL-C-Planungswert benötigt zusätzlich eine vollständige Matrix, ein zugeordnetes Asset und vollständige Bewertung.',
-          },
-          example: {
-            en: 'A treatment choice, security-goal link or evaluated checkbox alone does not reduce the residual score.',
-            de: 'Behandlungswahl, Zielverknüpfung oder Bewertungshäkchen allein senken den Restrisikowert nicht.',
           },
         },
       ],
