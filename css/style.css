@@ -2764,6 +2764,39 @@ html[data-theme='dark'] .cra-checklist-table input[type='url'] {
   font-weight: 600;
 }
 
+.parameter-rating-guide {
+  --rating-button-bg: #175f96;
+  --rating-button-active: #104c7a;
+  --rating-button-text: #ffffff;
+  --rating-button-border: #104c7a;
+  margin-top: 10px;
+}
+html[data-theme='dark'] .parameter-rating-guide {
+  --rating-button-bg: #9accf4;
+  --rating-button-active: #bfdef6;
+  --rating-button-text: #10263b;
+  --rating-button-border: #bfdef6;
+}
+.parameter-rating-guide > summary {
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--rating-button-border);
+  border-radius: 6px;
+  background: var(--rating-button-bg);
+  color: var(--rating-button-text);
+  font-weight: 700;
+  cursor: pointer;
+}
+.parameter-rating-guide > summary:hover,
+.parameter-rating-guide[open] > summary {
+  background: var(--rating-button-active);
+}
+.parameter-rating-guide > summary:focus-visible {
+  outline: 3px solid var(--text-heading);
+  outline-offset: 3px;
+}
+
 .parameter-interpretations > li + li {
   margin-top: 16px;
 }

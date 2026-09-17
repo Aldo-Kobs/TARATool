@@ -59,6 +59,19 @@
       return [];
     };
 
+    const renderInterpretations = (items) => {
+      const entries = (items || [])
+        .filter((item) => !item.value || VALID_IMPACT_VALUES.includes(item.value))
+        .map((item) => {
+          const label = item.value
+            ? `${item.value} — ${IMPACT_LABELS[item.value] || item.value}`
+            : local(item.label);
+          const ratings = item.ratings ? renderInterpretations(item.ratings) : '';
+          return `<li><strong>${esc(label)}</strong>: ${esc(local(item.meaning))}<p>${esc(ui('example'))}: ${esc(local(item.example))}</p>${ratings ? `<details class="parameter-rating-guide"><summary>${esc(ui('ratings'))}</summary>${ratings}</details>` : ''}</li>`;
+        });
+      return entries.length ? `<ul class="parameter-interpretations">${entries.join('')}</ul>` : '';
+    };
+
     container.innerHTML = `<h3>${esc(ui('title'))}</h3>
       <p>${esc(ui('intro'))}</p>
       <label for="parameterSearch">${esc(ui('search'))}</label>
@@ -77,18 +90,11 @@
           <tbody>${section.fields
             .map((field) => {
               const values = currentValues(field.valueSource);
-              const interpretations = (field.interpretations || [])
-                .filter((item) => !item.value || VALID_IMPACT_VALUES.includes(item.value))
-                .map((item) => {
-                  const label = item.value
-                    ? `${item.value} — ${IMPACT_LABELS[item.value] || item.value}`
-                    : local(item.label);
-                  return `<li><strong>${esc(label)}</strong>: ${esc(local(item.meaning))}<p>${esc(ui('example'))}: ${esc(local(item.example))}</p></li>`;
-                });
+              const interpretations = renderInterpretations(field.interpretations);
               return `<tr data-parameter-id="${esc(field.id)}">
               <th scope="row">${esc(local(field.label))}<span class="parameter-kind">${esc(ui(field.kind))}</span></th>
               <td>${esc(local(field.help))}</td>
-              <td>${esc(local(field.values))}${interpretations.length ? `<ul class="parameter-interpretations">${interpretations.join('')}</ul>` : ''}${values.length ? `<ul>${values.map((value) => `<li>${esc(value)}</li>`).join('')}</ul>` : ''}</td>
+              <td>${esc(local(field.values))}${interpretations}${values.length ? `<ul>${values.map((value) => `<li>${esc(value)}</li>`).join('')}</ul>` : ''}</td>
               <td>${esc(local(field.example))}</td>
             </tr>`;
             })

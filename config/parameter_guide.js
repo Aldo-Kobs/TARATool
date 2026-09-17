@@ -3,13 +3,17 @@
  */
 window.PARAMETER_GUIDE = {
   ui: {
+    ratings: {
+      en: 'Ratings and examples',
+      de: 'Bewertungsstufen und Beispiele',
+    },
     title: {
       en: 'Parameters',
       de: 'Parameter',
     },
     intro: {
-      en: 'Guide to the fields you fill in, grouped by tab and entry window, from Assets through Residual Risk and related Settings. The proposed protection and damage levels below are a starting point for discussion: adapt them to your company and product context.',
-      de: 'Anleitung zu auszufüllenden Feldern, nach Tab und Eingabefenster geordnet, von Assets bis Restrisiko und den zugehörigen Einstellungen. Die vorgeschlagenen Schutzbedarfs- und Schadensstufen dienen als Diskussionsgrundlage: Passen Sie sie an Ihr Unternehmen und den Produktkontext an.',
+      en: 'Guide to the fields you fill in, grouped by tab and entry window. Asset and damage examples focus on automated window systems and an Automation Manager that can control multiple windows. Adapt the proposed levels to the mechanisms, installation conditions and agreed company thresholds.',
+      de: 'Anleitung zu auszufüllenden Feldern, nach Tab und Eingabefenster geordnet. Asset- und Schadensbeispiele beziehen sich auf automatisierte Fenstersysteme und einen Automation Manager, der mehrere Fenster steuern kann. Die vorgeschlagenen Stufen an Mechanismen, Einbaubedingungen und vereinbarte Unternehmensgrenzen anpassen.',
     },
     search: {
       en: 'Find a parameter, value or example',
@@ -104,16 +108,16 @@ window.PARAMETER_GUIDE = {
           },
           kind: 'required',
           help: {
-            en: 'Identify the asset unambiguously within the analysed product. Required to save.',
-            de: 'Das Asset innerhalb des untersuchten Produkts eindeutig benennen. Zum Speichern erforderlich.',
+            en: 'Name the window-system asset and its scope: an individual window, a window group or the shared Automation Manager. Required to save.',
+            de: 'Das Asset des Fenstersystems und seinen Geltungsbereich benennen: einzelnes Fenster, Fenstergruppe oder gemeinsamer Automation Manager. Zum Speichern erforderlich.',
           },
           values: {
             en: 'Free text. IDs such as A01 are generated automatically.',
             de: 'Freitext. Kennungen wie A01 werden automatisch erzeugt.',
           },
           example: {
-            en: 'Service Ethernet interface; firmware image; shutdown function.',
-            de: 'Service-Ethernet-Schnittstelle; Firmware-Abbild; Abschaltfunktion.',
+            en: 'Window actuator and controller; Automation Manager; window-group configuration and cryptographic keys; obstacle-stop function.',
+            de: 'Fensterantrieb und Steuerung; Automation Manager; Fenstergruppenkonfiguration und kryptografische Schlüssel; Hindernisstoppfunktion.',
           },
         },
         {
@@ -132,8 +136,8 @@ window.PARAMETER_GUIDE = {
             de: 'Hardware (HW) und physische Schnittstellen gehören zu Komponente. Software (SW), Firmware und Informationen gehören zu Daten. Fähigkeiten oder Verhalten gehören zu Funktion. Den Schutzbedarf jedes Assets anhand seiner Rolle im Betrieb bewerten.',
           },
           example: {
-            en: 'HW: controller board or USB port. SW: service application. Firmware: bootloader or controller image. Data: production recipe or cryptographic keys. Function: calibration or system shutdown.',
-            de: 'HW: Steuerungsplatine oder USB-Port. SW: Serviceanwendung. Firmware: Bootloader oder Steuerungsabbild. Daten: Produktionsrezeptur oder kryptografische Schlüssel. Funktion: Kalibrierung oder Systemabschaltung.',
+            en: 'A window assembly combines its actuator and sensors with controller firmware, settings and opening/closing functions. The Automation Manager adds shared control software, window-group data, cryptographic keys and coordinated operation.',
+            de: 'Eine Fenstereinheit verbindet Antrieb und Sensoren mit Steuerungsfirmware, Einstellungen und Öffnungs-/Schließfunktionen. Der Automation Manager ergänzt gemeinsame Steuerungssoftware, Fenstergruppendaten, kryptografische Schlüssel und koordinierte Bedienung.',
           },
           valueSource: 'assetTypes',
         },
@@ -145,16 +149,16 @@ window.PARAMETER_GUIDE = {
           },
           kind: 'optional',
           help: {
-            en: 'Describe the boundary, role, interfaces and relevant dependencies.',
-            de: 'Abgrenzung, Rolle, Schnittstellen und relevante Abhängigkeiten beschreiben.',
+            en: 'Describe the mechanism, operating role, interfaces and dependencies. State which windows the asset can affect and which local controls remain available if the Automation Manager fails.',
+            de: 'Mechanismus, Betriebsaufgabe, Schnittstellen und Abhängigkeiten beschreiben. Angeben, welche Fenster das Asset beeinflussen kann und welche lokalen Bedienelemente bei Ausfall des Automation Managers verfügbar bleiben.',
           },
           values: {
             en: 'Optional free text; can be maintained in English and German.',
             de: 'Optionaler Freitext; auf Englisch und Deutsch pflegbar.',
           },
           example: {
-            en: 'Interface used by service staff to install signed updates.',
-            de: 'Schnittstelle zur Installation signierter Updates durch den Service.',
+            en: 'Automation Manager sends open/close commands to a defined window group. Record the group size, command permissions, network connection, local overrides and whether obstacle detection remains active independently.',
+            de: 'Der Automation Manager sendet Öffnungs-/Schließbefehle an eine festgelegte Fenstergruppe. Gruppengröße, Befehlsberechtigungen, Netzwerkverbindung, lokale Übersteuerung und die Unabhängigkeit der Hinderniserkennung dokumentieren.',
           },
         },
         {
@@ -169,12 +173,12 @@ window.PARAMETER_GUIDE = {
             de: 'Wie schwerwiegend wäre eine unbefugte Offenlegung? Das Formular erlaubt eine leere Auswahl; die Bewertung bewusst vervollständigen.',
           },
           values: {
-            en: 'Choose the level matching the highest credible consequence of this property failing in the intended operating context.',
-            de: 'Wählen Sie die Stufe entsprechend der höchsten plausiblen Folge eines Versagens dieser Eigenschaft im vorgesehenen Betriebskontext.',
+            en: 'Choose by the highest credible consequence for this window-system asset. Consider its mechanism, location, users, affected window group and dependence on the Automation Manager.',
+            de: 'Nach der höchsten plausiblen Folge für dieses Asset des Fenstersystems wählen. Mechanismus, Einbauort, Nutzer, betroffene Fenstergruppe und Abhängigkeit vom Automation Manager berücksichtigen.',
           },
           example: {
-            en: 'Select by consequence, not by the number or type of security controls already installed. Record the context and rationale in the asset description.',
-            de: 'Nach den Folgen auswählen, nicht nach Anzahl oder Art bereits vorhandener Schutzmaßnahmen. Kontext und Begründung in der Asset-Beschreibung festhalten.',
+            en: 'Compare one locally operated window with a Manager controlling many windows. Record whether local controls and protective functions remain effective, and the consequences if they do not. Asset type or window count alone does not determine the category.',
+            de: 'Ein lokal bedientes Fenster mit einem Manager für viele Fenster vergleichen. Dokumentieren, ob lokale Bedienung und Schutzfunktionen wirksam bleiben und welche Folgen ihr Ausfall hätte. Asset-Typ oder Fensteranzahl allein bestimmen die Kategorie nicht.',
           },
           valueSource: 'protection',
           interpretations: [
@@ -184,12 +188,12 @@ window.PARAMETER_GUIDE = {
                 de: 'I',
               },
               meaning: {
-                en: 'Limited disclosure — reveals internal details, but no sensitive records or secrets that grant access. The effects stay local and are easy to contain.',
-                de: 'Begrenzte Offenlegung — interne Details werden bekannt, jedoch keine sensiblen Datensätze oder Geheimnisse, die Zugang ermöglichen. Die Folgen bleiben lokal und leicht beherrschbar.',
+                en: 'Limited disclosure — exposes non-sensitive window-system details, without revealing access secrets, occupants’ behaviour or proprietary control knowledge.',
+                de: 'Begrenzte Offenlegung — nicht sensible Details des Fenstersystems werden bekannt, jedoch keine Zugangsgeheimnisse, Verhaltensmuster der Nutzer oder proprietären Steuerungskenntnisse.',
               },
               example: {
-                en: 'HW: board revision markings; SW: internal tool version list; Firmware: build identifier; Data: equipment inventory without credentials; Function: description of a non-sensitive status display.',
-                de: 'HW: Kennzeichnung der Platinenrevision; SW: Versionsliste interner Werkzeuge; Firmware: Build-Kennung; Daten: Geräteliste ohne Zugangsdaten; Funktion: Beschreibung einer unkritischen Statusanzeige.',
+                en: 'Someone reads the window model, public software version or general operating instructions. No access secrets or personal information are exposed.',
+                de: 'Jemand liest das Fenstermodell, die öffentliche Softwareversion oder allgemeine Bedienhinweise. Zugangsgeheimnisse oder personenbezogene Informationen werden nicht offengelegt.',
               },
             },
             {
@@ -198,12 +202,12 @@ window.PARAMETER_GUIDE = {
                 de: 'II',
               },
               meaning: {
-                en: 'Sensitive disclosure — reveals proprietary implementation details, business information or personal records. This can cause substantial harm to the affected product, team or people.',
-                de: 'Sensible Offenlegung — proprietäre Implementierungsdetails, Geschäftsinformationen oder personenbezogene Datensätze werden bekannt. Für das betroffene Produkt, Team oder Personen kann erheblicher Schaden entstehen.',
+                en: 'Sensitive disclosure — reveals proprietary design, customer installation details or patterns of window use that can expose occupants’ routines. The harm is substantial but contained.',
+                de: 'Sensible Offenlegung — proprietäre Konstruktion, kundenspezifische Installationsdetails oder Fenster-Nutzungsmuster werden bekannt, aus denen sich Gewohnheiten der Bewohner ableiten lassen. Der Schaden ist erheblich, aber begrenzt.',
               },
               example: {
-                en: 'HW: non-public circuit design; SW: proprietary application source code; Firmware: proprietary control algorithm; Data: customer service records; Function: confidential production sequence. Assume disclosure harms the business without exposing critical access secrets.',
-                de: 'HW: nicht öffentlicher Schaltungsentwurf; SW: proprietärer Anwendungsquellcode; Firmware: proprietärer Regelalgorithmus; Daten: Kunden-Serviceunterlagen; Funktion: vertraulicher Produktionsablauf. Annahme: Die Offenlegung schädigt das Geschäft, legt aber keine kritischen Zugangsgeheimnisse offen.',
+                en: 'Internal controller designs or customer ventilation schedules are disclosed, revealing proprietary know-how or occupants’ routines.',
+                de: 'Interne Steuerungsentwürfe oder kundenspezifische Lüftungszeitpläne werden offengelegt und verraten proprietäres Wissen oder Gewohnheiten der Bewohner.',
               },
             },
             {
@@ -212,12 +216,12 @@ window.PARAMETER_GUIDE = {
                 de: 'III',
               },
               meaning: {
-                en: 'Critical disclosure — reveals secrets or information whose exposure enables critical access or causes severe, lasting or widespread harm.',
-                de: 'Kritische Offenlegung — Geheimnisse oder Informationen werden bekannt, deren Preisgabe kritischen Zugang ermöglicht oder schwere, dauerhafte bzw. weitreichende Schäden verursacht.',
+                en: 'Critical disclosure — exposes secrets that enable dangerous or extensive control of windows, or highly sensitive occupancy information with severe consequences.',
+                de: 'Kritische Offenlegung — Geheimnisse werden bekannt, die gefährliche oder weitreichende Fenstersteuerung ermöglichen, oder hochsensible Belegungsinformationen mit schweren Folgen.',
               },
               example: {
-                en: 'HW: fleet credentials extracted from a secure memory component; SW: embedded credentials for a central administration service; Firmware: embedded master secret shared across devices; Data: private firmware-signing key; Function: recovery procedure that exposes a fleet-wide override secret.',
-                de: 'HW: aus einem sicheren Speicherbaustein ausgelesene Flotten-Zugangsdaten; SW: eingebettete Zugangsdaten für einen zentralen Administrationsdienst; Firmware: geräteübergreifend verwendetes Hauptgeheimnis; Daten: privater Firmware-Signaturschlüssel; Funktion: Wiederherstellungsablauf, der ein flottenweites Überbrückungsgeheimnis offenlegt.',
+                en: 'Automation Manager administrator credentials or a private firmware-signing key are exposed, enabling unauthorized control or malicious updates across many windows.',
+                de: 'Administrator-Zugangsdaten des Automation Managers oder ein privater Firmware-Signaturschlüssel werden offengelegt. Dadurch werden unbefugte Steuerung oder schädliche Updates vieler Fenster möglich.',
               },
             },
           ],
@@ -234,12 +238,12 @@ window.PARAMETER_GUIDE = {
             de: 'Wie schwerwiegend wäre eine unbefugte Veränderung? Das Formular erlaubt eine leere Auswahl; die Bewertung bewusst vervollständigen.',
           },
           values: {
-            en: 'Choose the level matching the highest credible consequence of this property failing in the intended operating context.',
-            de: 'Wählen Sie die Stufe entsprechend der höchsten plausiblen Folge eines Versagens dieser Eigenschaft im vorgesehenen Betriebskontext.',
+            en: 'Choose by the highest credible consequence for this window-system asset. Consider its mechanism, location, users, affected window group and dependence on the Automation Manager.',
+            de: 'Nach der höchsten plausiblen Folge für dieses Asset des Fenstersystems wählen. Mechanismus, Einbauort, Nutzer, betroffene Fenstergruppe und Abhängigkeit vom Automation Manager berücksichtigen.',
           },
           example: {
-            en: 'Select by consequence, not by the number or type of security controls already installed. Record the context and rationale in the asset description.',
-            de: 'Nach den Folgen auswählen, nicht nach Anzahl oder Art bereits vorhandener Schutzmaßnahmen. Kontext und Begründung in der Asset-Beschreibung festhalten.',
+            en: 'Compare one locally operated window with a Manager controlling many windows. Record whether local controls and protective functions remain effective, and the consequences if they do not. Asset type or window count alone does not determine the category.',
+            de: 'Ein lokal bedientes Fenster mit einem Manager für viele Fenster vergleichen. Dokumentieren, ob lokale Bedienung und Schutzfunktionen wirksam bleiben und welche Folgen ihr Ausfall hätte. Asset-Typ oder Fensteranzahl allein bestimmen die Kategorie nicht.',
           },
           valueSource: 'protection',
           interpretations: [
@@ -249,12 +253,12 @@ window.PARAMETER_GUIDE = {
                 de: 'I',
               },
               meaning: {
-                en: 'Locally correctable change — modification causes a minor error that routine work can correct. Control decisions, product quality and safety remain unaffected.',
-                de: 'Lokal korrigierbare Änderung — eine Manipulation verursacht einen kleinen Fehler, der sich im Routinebetrieb beheben lässt. Steuerungsentscheidungen, Produktqualität und Sicherheit bleiben unbeeinflusst.',
+                en: 'Locally correctable change — alters presentation or descriptive information while window movement, protective functions and meaningful operating decisions remain unaffected.',
+                de: 'Lokal korrigierbare Änderung — Darstellung oder beschreibende Informationen ändern sich; Fensterbewegung, Schutzfunktionen und wesentliche Betriebsentscheidungen bleiben unbeeinflusst.',
               },
               example: {
-                en: 'HW: altered label on a nonessential indicator; SW: changed dashboard layout; Firmware: changed welcome message; Data: modified descriptive asset note; Function: reordered nonessential report output.',
-                de: 'HW: veränderte Beschriftung einer unwesentlichen Anzeige; SW: geändertes Dashboard-Layout; Firmware: geänderte Begrüßungsmeldung; Daten: veränderte beschreibende Asset-Notiz; Funktion: umsortierte Ausgabe eines unwesentlichen Berichts.',
+                en: 'A display colour or descriptive installation note is changed. Window movement and protective functions remain unaffected.',
+                de: 'Eine Anzeigefarbe oder beschreibende Installationsnotiz wird verändert. Fensterbewegung und Schutzfunktionen bleiben unbeeinflusst.',
               },
             },
             {
@@ -263,12 +267,12 @@ window.PARAMETER_GUIDE = {
                 de: 'II',
               },
               meaning: {
-                en: 'Operationally significant change — modification produces incorrect results, rejected products or disruption in a bounded part of operations. Repair, rework or deliberate restoration is needed.',
-                de: 'Betrieblich erhebliche Änderung — eine Manipulation verursacht falsche Ergebnisse, Ausschuss oder Störungen in einem begrenzten Betriebsbereich. Reparatur, Nacharbeit oder gezielte Wiederherstellung sind erforderlich.',
+                en: 'Operationally significant change — changes window position, schedules or group assignment, causing contained disruption, loss of comfort or repair work. Assume local protective functions remain effective.',
+                de: 'Betrieblich erhebliche Änderung — Fensterposition, Zeitpläne oder Gruppenzuordnung ändern sich und verursachen begrenzte Störungen, Komfortverlust oder Reparaturaufwand. Annahme: Lokale Schutzfunktionen bleiben wirksam.',
               },
               example: {
-                en: 'HW: altered measurement circuit causes rejects; SW: changed scheduling logic delays orders; Firmware: changed calibration causes inaccurate output; Data: altered production recipe causes rework; Function: modified dosing sequence spoils a batch. Assume the effects remain contained without a safety hazard.',
-                de: 'HW: veränderte Messschaltung verursacht Ausschuss; SW: geänderte Planungslogik verzögert Aufträge; Firmware: geänderte Kalibrierung verfälscht Ausgaben; Daten: veränderte Produktionsrezeptur erfordert Nacharbeit; Funktion: manipulierter Dosierablauf verdirbt eine Charge. Annahme: Die Folgen bleiben begrenzt und verursachen keine Sicherheitsgefährdung.',
+                en: 'Changed calibration, schedules or window-group assignments disrupt ventilation in one zone and require service. Local protective functions remain effective.',
+                de: 'Geänderte Kalibrierung, Zeitpläne oder Fenstergruppenzuordnungen stören die Lüftung einer Zone und erfordern Service. Lokale Schutzfunktionen bleiben wirksam.',
               },
             },
             {
@@ -277,12 +281,12 @@ window.PARAMETER_GUIDE = {
                 de: 'III',
               },
               meaning: {
-                en: 'Critical change — modification can defeat a safeguard, cause dangerous behaviour or compromise trusted control across essential systems.',
-                de: 'Kritische Änderung — eine Manipulation kann eine Schutzvorkehrung außer Kraft setzen, gefährliches Verhalten auslösen oder die vertrauenswürdige Steuerung wesentlicher Systeme kompromittieren.',
+                en: 'Critical change — permits dangerous movement, defeats an obstacle-stop function or causes severe damage through coordinated commands. One accessible window can already have severe consequences.',
+                de: 'Kritische Änderung — gefährliche Bewegung wird möglich, ein Hindernisstopp wird außer Kraft gesetzt oder koordinierte Befehle verursachen schwere Schäden. Bereits ein einzelnes zugängliches Fenster kann schwere Folgen haben.',
               },
               example: {
-                en: 'HW: bypassed safety interlock circuit; SW: modified central update service distributes malicious packages; Firmware: altered motor-control limits permit dangerous movement; Data: changed safety limits or trusted signing certificates; Function: altered emergency shutdown logic fails to stop the machine.',
-                de: 'HW: überbrückter Sicherheitsverriegelungskreis; SW: manipulierter zentraler Update-Dienst verteilt schädliche Pakete; Firmware: veränderte Motorsteuerungsgrenzen erlauben gefährliche Bewegungen; Daten: geänderte Sicherheitsgrenzen oder vertrauenswürdige Signaturzertifikate; Funktion: manipulierte Notabschaltlogik stoppt die Maschine nicht.',
+                en: 'Manipulated control logic or force limits disable obstacle stop and permit dangerous closing. A compromised Automation Manager could send harmful commands to many windows at once.',
+                de: 'Manipulierte Steuerlogik oder Kraftgrenzen setzen den Hindernisstopp außer Kraft und erlauben gefährliches Schließen. Ein kompromittierter Automation Manager könnte schädliche Befehle gleichzeitig an viele Fenster senden.',
               },
             },
           ],
@@ -299,12 +303,12 @@ window.PARAMETER_GUIDE = {
             de: 'Wie schwerwiegend wäre der Ausfall von Zugriff oder Betrieb? Das Formular erlaubt eine leere Auswahl; die Bewertung bewusst vervollständigen.',
           },
           values: {
-            en: 'Choose the level matching the highest credible consequence of this property failing in the intended operating context.',
-            de: 'Wählen Sie die Stufe entsprechend der höchsten plausiblen Folge eines Versagens dieser Eigenschaft im vorgesehenen Betriebskontext.',
+            en: 'Choose by the highest credible consequence for this window-system asset. Consider its mechanism, location, users, affected window group and dependence on the Automation Manager.',
+            de: 'Nach der höchsten plausiblen Folge für dieses Asset des Fenstersystems wählen. Mechanismus, Einbauort, Nutzer, betroffene Fenstergruppe und Abhängigkeit vom Automation Manager berücksichtigen.',
           },
           example: {
-            en: 'Select by consequence, not by the number or type of security controls already installed. Record the context and rationale in the asset description.',
-            de: 'Nach den Folgen auswählen, nicht nach Anzahl oder Art bereits vorhandener Schutzmaßnahmen. Kontext und Begründung in der Asset-Beschreibung festhalten.',
+            en: 'Compare one locally operated window with a Manager controlling many windows. Record whether local controls and protective functions remain effective, and the consequences if they do not. Asset type or window count alone does not determine the category.',
+            de: 'Ein lokal bedientes Fenster mit einem Manager für viele Fenster vergleichen. Dokumentieren, ob lokale Bedienung und Schutzfunktionen wirksam bleiben und welche Folgen ihr Ausfall hätte. Asset-Typ oder Fensteranzahl allein bestimmen die Kategorie nicht.',
           },
           valueSource: 'protection',
           interpretations: [
@@ -314,12 +318,12 @@ window.PARAMETER_GUIDE = {
                 de: 'I',
               },
               meaning: {
-                en: 'Tolerable interruption — the asset can be temporarily unavailable while essential work continues. A practical workaround and routine recovery are sufficient.',
-                de: 'Tolerierbare Unterbrechung — das Asset kann vorübergehend ausfallen, während die wesentliche Arbeit weiterläuft. Eine praktikable Ersatzlösung und routinemäßige Wiederherstellung reichen aus.',
+                en: 'Tolerable interruption — a convenience feature is unavailable, but required window operation and protective functions remain usable through an accessible alternative.',
+                de: 'Tolerierbare Unterbrechung — eine Komfortfunktion fällt aus; erforderliche Fensterbedienung und Schutzfunktionen bleiben über eine zugängliche Alternative nutzbar.',
               },
               example: {
-                en: 'HW: optional display fails while control continues; SW: reporting tool is offline while production runs; Firmware: optional indicator module does not start; Data: archived reports are temporarily inaccessible; Function: statistics export is delayed.',
-                de: 'HW: optionales Display fällt aus, die Steuerung läuft weiter; SW: Berichtswerkzeug ist offline, die Produktion läuft weiter; Firmware: optionales Anzeigemodul startet nicht; Daten: Archivberichte sind vorübergehend unzugänglich; Funktion: Statistikexport verzögert sich.',
+                en: 'The Manager display or remote status view is temporarily unavailable. Users can still operate the windows with accessible local buttons.',
+                de: 'Manager-Anzeige oder entfernte Statusansicht fallen vorübergehend aus. Nutzer können die Fenster weiterhin über zugängliche lokale Taster bedienen.',
               },
             },
             {
@@ -328,12 +332,12 @@ window.PARAMETER_GUIDE = {
                 de: 'II',
               },
               meaning: {
-                en: 'Disruptive interruption — a machine, service or production area cannot perform important work until the asset is restored. Workarounds are limited and recovery takes significant effort.',
-                de: 'Störende Unterbrechung — eine Maschine, ein Dienst oder Produktionsbereich kann wichtige Aufgaben erst nach Wiederherstellung des Assets fortsetzen. Ersatzlösungen sind begrenzt, die Wiederherstellung ist aufwendig.',
+                en: 'Disruptive interruption — a window or defined window group cannot provide expected opening, closing or ventilation until service restores it. The outage causes substantial but contained harm.',
+                de: 'Störende Unterbrechung — ein Fenster oder eine abgegrenzte Fenstergruppe kann erst nach Wiederherstellung durch den Service wie vorgesehen öffnen, schließen oder lüften. Der Ausfall verursacht erhebliche, aber begrenzte Schäden.',
               },
               example: {
-                en: 'HW: controller failure stops one production cell; SW: scheduling service outage delays a shift; Firmware: failed startup requires a service reflash; Data: unavailable production recipes halt a batch; Function: calibration is unavailable until maintenance. Assume recovery is possible before severe harm occurs.',
-                de: 'HW: Steuerungsausfall stoppt eine Produktionszelle; SW: Ausfall des Planungsdienstes verzögert eine Schicht; Firmware: fehlgeschlagener Start erfordert erneutes Aufspielen durch den Service; Daten: fehlende Produktionsrezepturen stoppen eine Charge; Funktion: Kalibrierung ist bis zur Wartung nicht verfügbar. Annahme: Wiederherstellung ist möglich, bevor schwere Schäden entstehen.',
+                en: 'An actuator failure or lost group configuration interrupts automatic ventilation in one zone until an installer restores it. Local operation limits the disruption.',
+                de: 'Ein Antriebsdefekt oder eine verlorene Gruppenkonfiguration unterbricht die automatische Lüftung einer Zone bis zur Wiederherstellung durch einen Installateur. Lokale Bedienung begrenzt die Störung.',
               },
             },
             {
@@ -342,12 +346,12 @@ window.PARAMETER_GUIDE = {
                 de: 'III',
               },
               meaning: {
-                en: 'Critical interruption — an essential service or protective function is lost, with no adequate fallback within the tolerable outage. Severe harm or cascading failures can result.',
-                de: 'Kritische Unterbrechung — ein wesentlicher Dienst oder eine Schutzfunktion fällt aus, ohne ausreichende Ersatzlösung innerhalb der tolerierbaren Ausfallzeit. Schwere Schäden oder Folgeausfälle können entstehen.',
+                en: 'Critical interruption — required closing, ventilation or protective operation is lost beyond the tolerable outage, with no usable local fallback and severe consequences.',
+                de: 'Kritische Unterbrechung — erforderliches Schließen, Lüften oder Schutzverhalten fällt über die tolerierbare Dauer hinaus aus; eine nutzbare lokale Ersatzlösung fehlt und schwere Folgen entstehen.',
               },
               example: {
-                en: 'HW: sole controller for essential cooling fails; SW: central control service is unavailable across a site; Firmware: essential controllers cannot boot after a fleet update; Data: sole recovery configuration is lost during a critical outage; Function: emergency shutdown is unavailable when demanded.',
-                de: 'HW: einzige Steuerung für eine wesentliche Kühlung fällt aus; SW: zentraler Steuerungsdienst fällt standortweit aus; Firmware: wesentliche Steuerungen starten nach einem Flotten-Update nicht mehr; Daten: einzige Wiederherstellungskonfiguration geht während eines kritischen Ausfalls verloren; Funktion: Notabschaltung ist im Anforderungsfall nicht verfügbar.',
+                en: 'A shared power, firmware or Manager failure leaves exposed windows open before severe weather. They cannot be closed locally in time, resulting in extensive building damage.',
+                de: 'Ein gemeinsamer Stromversorgungs-, Firmware- oder Manager-Ausfall lässt exponierte Fenster vor Unwetter offen. Sie können nicht rechtzeitig lokal geschlossen werden, wodurch umfangreiche Gebäudeschäden entstehen.',
               },
             },
           ],
@@ -364,12 +368,12 @@ window.PARAMETER_GUIDE = {
             de: 'Autorisierung fragt: „Was darf diese Identität tun?“ Bewerten Sie, wie wichtig die Durchsetzung von Berechtigungen ist, auch bei korrekt authentifizierten Identitäten.',
           },
           values: {
-            en: 'Choose the level matching the highest credible consequence of this property failing in the intended operating context.',
-            de: 'Wählen Sie die Stufe entsprechend der höchsten plausiblen Folge eines Versagens dieser Eigenschaft im vorgesehenen Betriebskontext.',
+            en: 'Choose by the highest credible consequence for this window-system asset. Consider its mechanism, location, users, affected window group and dependence on the Automation Manager.',
+            de: 'Nach der höchsten plausiblen Folge für dieses Asset des Fenstersystems wählen. Mechanismus, Einbauort, Nutzer, betroffene Fenstergruppe und Abhängigkeit vom Automation Manager berücksichtigen.',
           },
           example: {
-            en: 'Select by consequence, not by the number or type of security controls already installed. Record the context and rationale in the asset description.',
-            de: 'Nach den Folgen auswählen, nicht nach Anzahl oder Art bereits vorhandener Schutzmaßnahmen. Kontext und Begründung in der Asset-Beschreibung festhalten.',
+            en: 'Compare one locally operated window with a Manager controlling many windows. Record whether local controls and protective functions remain effective, and the consequences if they do not. Asset type or window count alone does not determine the category.',
+            de: 'Ein lokal bedientes Fenster mit einem Manager für viele Fenster vergleichen. Dokumentieren, ob lokale Bedienung und Schutzfunktionen wirksam bleiben und welche Folgen ihr Ausfall hätte. Asset-Typ oder Fensteranzahl allein bestimmen die Kategorie nicht.',
           },
           valueSource: 'protectionNA',
           interpretations: [
@@ -379,12 +383,12 @@ window.PARAMETER_GUIDE = {
                 de: 'I',
               },
               meaning: {
-                en: 'Minor permission overreach — an identified user or process performs an action outside its role, but the effect is limited to easily corrected, nonessential settings or information.',
-                de: 'Geringfügige Rechteüberschreitung — ein identifizierter Benutzer oder Prozess führt eine Aktion außerhalb seiner Rolle aus. Die Folgen beschränken sich auf leicht korrigierbare, unwesentliche Einstellungen oder Informationen.',
+                en: 'Minor permission overreach — an identified user changes nonessential presentation or notes outside their role, without gaining control of window movement or access to sensitive data.',
+                de: 'Geringfügige Rechteüberschreitung — ein identifizierter Benutzer ändert außerhalb seiner Rolle unwesentliche Darstellungen oder Notizen, erhält aber keine Kontrolle über Fensterbewegung oder sensible Daten.',
               },
               example: {
-                en: 'HW: a viewer changes an optional display setting; SW: a user changes a shared dashboard layout; Firmware: an operator changes a nonessential indicator pattern; Data: a reader edits a descriptive note; Function: a viewer changes report sorting.',
-                de: 'HW: ein Betrachter ändert eine optionale Anzeigeeinstellung; SW: ein Benutzer ändert ein gemeinsames Dashboard-Layout; Firmware: ein Bediener ändert ein unwesentliches Anzeigemuster; Daten: ein Leser bearbeitet eine beschreibende Notiz; Funktion: ein Betrachter ändert die Berichtssortierung.',
+                en: 'A viewer changes a shared dashboard appearance or a nonessential note without permission, but cannot operate windows or change protective settings.',
+                de: 'Ein Betrachter ändert unberechtigt das gemeinsame Dashboard-Design oder eine unwesentliche Notiz, kann aber keine Fenster bedienen oder Schutzeinstellungen ändern.',
               },
             },
             {
@@ -393,12 +397,12 @@ window.PARAMETER_GUIDE = {
                 de: 'II',
               },
               meaning: {
-                en: 'Significant permission overreach — access beyond an assigned role exposes sensitive information or changes important settings for a bounded machine, service or dataset.',
-                de: 'Erhebliche Rechteüberschreitung — Zugriff über die zugewiesene Rolle hinaus legt sensible Informationen offen oder verändert wichtige Einstellungen einer abgegrenzten Maschine, eines Dienstes oder Datenbestands.',
+                en: 'Significant permission overreach — a user can operate windows or change schedules and settings outside their assigned room or group, causing contained disruption or disclosure.',
+                de: 'Erhebliche Rechteüberschreitung — ein Benutzer kann außerhalb seines zugewiesenen Raums oder seiner Gruppe Fenster bedienen, Zeitpläne oder Einstellungen ändern und dadurch begrenzte Störungen oder Offenlegung verursachen.',
               },
               example: {
-                en: 'HW: an operator reconfigures a service interface reserved for maintenance; SW: a user changes production scheduling rules; Firmware: an operator changes calibration reserved for service staff; Data: a clerk exports restricted customer records; Function: an operator invokes a maintenance reset that interrupts one cell.',
-                de: 'HW: ein Bediener konfiguriert eine dem Service vorbehaltene Schnittstelle um; SW: ein Benutzer ändert Regeln der Produktionsplanung; Firmware: ein Bediener ändert eine dem Service vorbehaltene Kalibrierung; Daten: ein Sachbearbeiter exportiert zugriffsbeschränkte Kundendaten; Funktion: ein Bediener löst einen Wartungsreset aus, der eine Zelle unterbricht.',
+                en: 'A room user changes another room’s ventilation schedule or accesses its usage logs beyond their assigned permissions. The effects remain limited to that group.',
+                de: 'Ein Raumnutzer ändert außerhalb seiner Berechtigungen den Lüftungszeitplan eines anderen Raums oder greift auf dessen Nutzungsprotokolle zu. Die Folgen bleiben auf diese Gruppe begrenzt.',
               },
             },
             {
@@ -407,12 +411,12 @@ window.PARAMETER_GUIDE = {
                 de: 'III',
               },
               meaning: {
-                en: 'Critical permission overreach — a user or process can bypass protective functions, alter the trust basis or administer many essential assets without the required authority.',
-                de: 'Kritische Rechteüberschreitung — ein Benutzer oder Prozess kann ohne die erforderliche Berechtigung Schutzfunktionen umgehen, die Vertrauensbasis ändern oder viele wesentliche Assets administrieren.',
+                en: 'Critical permission overreach — a user can disable protective functions, replace trusted firmware or command many windows without the required authority, with severe consequences.',
+                de: 'Kritische Rechteüberschreitung — ein Benutzer kann ohne erforderliche Berechtigung Schutzfunktionen deaktivieren, vertrauenswürdige Firmware ersetzen oder viele Fenster mit schweren Folgen steuern.',
               },
               example: {
-                en: 'HW: a service role disables a safety interlock; SW: an ordinary account grants fleet administrator rights; Firmware: a maintenance role replaces the trusted bootloader; Data: a user changes trusted signing keys; Function: an operator disables protective shutdown during operation.',
-                de: 'HW: eine Servicerolle deaktiviert eine Sicherheitsverriegelung; SW: ein gewöhnliches Konto vergibt Flottenadministratorrechte; Firmware: eine Wartungsrolle ersetzt den vertrauenswürdigen Bootloader; Daten: ein Benutzer ändert vertrauenswürdige Signaturschlüssel; Funktion: ein Bediener deaktiviert die Schutzabschaltung während des Betriebs.',
+                en: 'An ordinary account gains Manager administrator rights and can issue building-wide movement commands, replace trusted firmware or disable obstacle stop.',
+                de: 'Ein gewöhnliches Konto erhält Administratorrechte im Manager und kann gebäudeweite Bewegungsbefehle auslösen, vertrauenswürdige Firmware ersetzen oder den Hindernisstopp deaktivieren.',
               },
             },
           ],
@@ -429,12 +433,12 @@ window.PARAMETER_GUIDE = {
             de: 'Authentifizierung fragt: „Wer ist das?“ Bewerten Sie, wie wichtig die zuverlässige Prüfung der Benutzer-, Geräte- oder Dienstidentität ist.',
           },
           values: {
-            en: 'Choose the level matching the highest credible consequence of this property failing in the intended operating context.',
-            de: 'Wählen Sie die Stufe entsprechend der höchsten plausiblen Folge eines Versagens dieser Eigenschaft im vorgesehenen Betriebskontext.',
+            en: 'Choose by the highest credible consequence for this window-system asset. Consider its mechanism, location, users, affected window group and dependence on the Automation Manager.',
+            de: 'Nach der höchsten plausiblen Folge für dieses Asset des Fenstersystems wählen. Mechanismus, Einbauort, Nutzer, betroffene Fenstergruppe und Abhängigkeit vom Automation Manager berücksichtigen.',
           },
           example: {
-            en: 'Select by consequence, not by the number or type of security controls already installed. Record the context and rationale in the asset description.',
-            de: 'Nach den Folgen auswählen, nicht nach Anzahl oder Art bereits vorhandener Schutzmaßnahmen. Kontext und Begründung in der Asset-Beschreibung festhalten.',
+            en: 'Compare one locally operated window with a Manager controlling many windows. Record whether local controls and protective functions remain effective, and the consequences if they do not. Asset type or window count alone does not determine the category.',
+            de: 'Ein lokal bedientes Fenster mit einem Manager für viele Fenster vergleichen. Dokumentieren, ob lokale Bedienung und Schutzfunktionen wirksam bleiben und welche Folgen ihr Ausfall hätte. Asset-Typ oder Fensteranzahl allein bestimmen die Kategorie nicht.',
           },
           valueSource: 'protectionNA',
           interpretations: [
@@ -444,12 +448,12 @@ window.PARAMETER_GUIDE = {
                 de: 'I',
               },
               meaning: {
-                en: 'Low-consequence impersonation — accepting the wrong user, device or source identity affects only non-sensitive information or nonessential behaviour.',
-                de: 'Wenig folgenschweres Vortäuschen einer Identität — die Annahme einer falschen Benutzer-, Geräte- oder Quellenidentität betrifft nur nicht sensible Informationen oder unwesentliches Verhalten.',
+                en: 'Low-consequence impersonation — a false identity affects only non-sensitive displays or reports, with no ability to issue window commands or change protective settings.',
+                de: 'Wenig folgenschwere Identitätstäuschung — eine falsche Identität betrifft nur nicht sensible Anzeigen oder Berichte; Fensterbefehle oder Änderungen von Schutzeinstellungen sind nicht möglich.',
               },
               example: {
-                en: 'HW: an optional display accessory is mistaken for another; SW: a report viewer is impersonated; Firmware: a source is falsely credited for nonessential display text; Data: a descriptive note is attributed to the wrong author; Function: a report-preview request appears to come from another viewer.',
-                de: 'HW: ein optionales Anzeigezubehör wird mit einem anderen verwechselt; SW: ein Berichtsbetrachter wird vorgetäuscht; Firmware: die Quelle eines unwesentlichen Anzeigetexts wird falsch zugeordnet; Daten: eine beschreibende Notiz wird dem falschen Autor zugeschrieben; Funktion: eine Berichtsvorschau-Anfrage scheint von einem anderen Betrachter zu stammen.',
+                en: 'Someone impersonates a viewer of a public demonstration display. They can see non-sensitive information but cannot issue window commands.',
+                de: 'Jemand gibt sich als Betrachter einer öffentlichen Demonstrationsanzeige aus. Nicht sensible Informationen sind sichtbar, Fensterbefehle jedoch nicht möglich.',
               },
             },
             {
@@ -458,12 +462,12 @@ window.PARAMETER_GUIDE = {
                 de: 'II',
               },
               meaning: {
-                en: 'Operational impersonation — a false user, device or source identity is trusted with sensitive information or important actions for a bounded machine or service.',
-                de: 'Betrieblich erhebliche Identitätstäuschung — einer falschen Benutzer-, Geräte- oder Quellenidentität werden sensible Informationen oder wichtige Aktionen für eine abgegrenzte Maschine oder einen Dienst anvertraut.',
+                en: 'Operational impersonation — a false occupant, installer, device or service identity gains access to one window or a limited group, causing contained operational or privacy harm.',
+                de: 'Betrieblich erhebliche Identitätstäuschung — eine falsche Bewohner-, Installateur-, Geräte- oder Dienstidentität erhält Zugriff auf ein Fenster oder eine begrenzte Gruppe und verursacht begrenzte Betriebs- oder Datenschutzschäden.',
               },
               example: {
-                en: 'HW: a counterfeit measurement sensor is trusted and causes rejects; SW: a fake maintenance user accesses one machine; Firmware: an impersonated calibration service supplies incorrect calibration values; Data: a forged production recipe is accepted as approved; Function: a maintenance command is accepted from an impersonated local service tool.',
-                de: 'HW: einem gefälschten Messsensor wird vertraut, wodurch Ausschuss entsteht; SW: ein vorgetäuschter Wartungsbenutzer erhält Zugriff auf eine Maschine; Firmware: ein vorgetäuschter Kalibrierdienst liefert falsche Kalibrierwerte; Daten: eine gefälschte Produktionsrezeptur wird als freigegeben akzeptiert; Funktion: ein Wartungsbefehl eines vorgetäuschten lokalen Servicewerkzeugs wird angenommen.',
+                en: 'A fake installer or service tool is trusted and changes one window group’s calibration or schedule, causing contained operational disruption.',
+                de: 'Einem falschen Installateur oder Servicewerkzeug wird vertraut. Geänderte Kalibrierung oder Zeitpläne einer Fenstergruppe verursachen begrenzte Betriebsstörungen.',
               },
             },
             {
@@ -472,20 +476,20 @@ window.PARAMETER_GUIDE = {
                 de: 'III',
               },
               meaning: {
-                en: 'Critical impersonation — trusting a false administrator, device or update source enables dangerous actions or compromise of essential systems, potentially across a fleet.',
-                de: 'Kritische Identitätstäuschung — das Vertrauen in einen falschen Administrator, ein falsches Gerät oder eine falsche Update-Quelle ermöglicht gefährliche Aktionen oder die Kompromittierung wesentlicher Systeme, möglicherweise flottenweit.',
+                en: 'Critical impersonation — a false Manager, administrator, protective sensor or firmware supplier is trusted, allowing dangerous movement or compromise of many windows.',
+                de: 'Kritische Identitätstäuschung — einem falschen Manager, Administrator, Schutzsensor oder Firmware-Lieferanten wird vertraut; gefährliche Bewegung oder die Kompromittierung vieler Fenster wird möglich.',
               },
               example: {
-                en: 'HW: a counterfeit safety controller is accepted as trusted; SW: a fleet administrator is impersonated; Firmware: a malicious update is accepted from an impersonated trusted supplier; Data: forged safety configuration is accepted as originating from the approval authority; Function: a dangerous control command is accepted from a fake supervisory controller.',
-                de: 'HW: eine gefälschte Sicherheitssteuerung wird als vertrauenswürdig akzeptiert; SW: ein Flottenadministrator wird vorgetäuscht; Firmware: ein schädliches Update eines vorgetäuschten vertrauenswürdigen Lieferanten wird angenommen; Daten: eine gefälschte Sicherheitskonfiguration wird der Freigabestelle zugeschrieben; Funktion: ein gefährlicher Steuerbefehl einer gefälschten übergeordneten Steuerung wird angenommen.',
+                en: 'Window controllers trust a fake Automation Manager or firmware supplier and accept dangerous commands or malicious updates affecting many windows.',
+                de: 'Fenstersteuerungen vertrauen einem falschen Automation Manager oder Firmware-Lieferanten und akzeptieren gefährliche Befehle oder schädliche Updates für viele Fenster.',
               },
             },
           ],
         },
       ],
       intro: {
-        en: 'Choose I, II or III by what happens if protection fails. I: a local inconvenience or error handled through routine work; essential operation continues. II: substantial disruption, rework or sensitive disclosure affecting a product, service or group; deliberate recovery is needed. III: severe harm, loss of essential control or compromise of critical secrets, possibly across many assets. Apply this distinction separately to confidentiality, integrity, availability, authorization and authentication for hardware (HW), software (SW), firmware, data and functions. Any asset type can fall into any level: a status-display firmware and motor-control firmware need not have the same rating. For confidentiality, consider the information stored in, processed by or revealed through the asset; for authentication and authorization, consider its users, connected devices and services. I still requires protection. These are company guidance categories, not SL-T values. Use the examples as context, agree measurable boundaries and record the reason for each choice.',
-        de: 'I, II oder III danach wählen, was bei einem Versagen des Schutzes geschieht. I: lokale Unannehmlichkeit oder Fehler, im Routinebetrieb behebbar; der wesentliche Betrieb läuft weiter. II: erhebliche Störung, Nacharbeit oder sensible Offenlegung bei einem Produkt, Dienst oder einer Gruppe; gezielte Wiederherstellung ist nötig. III: schwere Schäden, Verlust wesentlicher Steuerung oder Offenlegung kritischer Geheimnisse, gegebenenfalls über viele Assets hinweg. Diese Unterscheidung für Vertraulichkeit, Integrität, Verfügbarkeit, Autorisierung und Authentifizierung jeweils getrennt auf Hardware (HW), Software (SW), Firmware, Daten und Funktionen anwenden. Jeder Asset-Typ kann jede Stufe haben: Firmware für eine Statusanzeige und Firmware für eine Motorsteuerung müssen nicht gleich eingestuft werden. Bei Vertraulichkeit die im Asset gespeicherten, verarbeiteten oder darüber offengelegten Informationen betrachten; bei Authentifizierung und Autorisierung seine Benutzer, angeschlossenen Geräte und Dienste. Auch I erfordert Schutz. Dies sind unternehmensbezogene Orientierungskategorien, keine SL-T-Werte. Beispiele im jeweiligen Kontext verwenden, messbare Grenzen vereinbaren und jede Auswahl begründen.',
+        en: 'For automated window systems, assess HW, SW, firmware, data and functions separately. I: local inconvenience handled through routine work while required window operation remains available. II: substantial but contained disruption, repair effort or sensitive disclosure involving a window, room or group. III: severe injury, major building damage, loss of essential control or exposure of critical secrets. Assess each security property separately. An Automation Manager can propagate commands, configuration changes or updates to many windows: document its actual reach and the independence of local controls. A single window can also be category III if dangerous movement can seriously injure someone. A Manager is not automatically III when local operation limits the consequences. Examples assume the named mechanism or feature exists; adapt them to the installation. These are protection-need categories, distinct from SL-T. Record the rationale and agreed company thresholds.',
+        de: 'Bei automatisierten Fenstersystemen HW, SW, Firmware, Daten und Funktionen getrennt bewerten. I: lokale Unannehmlichkeit, im Routinebetrieb behebbar; die erforderliche Fensterbedienung bleibt verfügbar. II: erhebliche, aber begrenzte Störung, Reparaturaufwand oder sensible Offenlegung bei einem Fenster, Raum oder einer Gruppe. III: schwere Verletzung, großer Gebäudeschaden, Verlust wesentlicher Steuerung oder Offenlegung kritischer Geheimnisse. Jede Sicherheitseigenschaft getrennt bewerten. Ein Automation Manager kann Befehle, Konfigurationsänderungen oder Updates an viele Fenster verteilen: tatsächliche Reichweite und Unabhängigkeit lokaler Steuerungen dokumentieren. Auch ein einzelnes Fenster kann Kategorie III haben, wenn gefährliche Bewegung schwere Verletzungen verursachen kann. Ein Manager ist nicht automatisch III, wenn lokale Bedienung die Folgen begrenzt. Beispiele setzen voraus, dass der genannte Mechanismus oder die Funktion vorhanden ist; an die Installation anpassen. Dies sind Schutzbedarfskategorien, getrennt von SL-T. Begründung und vereinbarte Unternehmensgrenzen dokumentieren.',
       },
     },
     {
@@ -511,8 +515,8 @@ window.PARAMETER_GUIDE = {
             de: 'Pflichttext für eigene Szenarien. Standardszenarien sind in der Bewertungskonfiguration definiert.',
           },
           example: {
-            en: 'Loss of calibrated measurement accuracy.',
-            de: 'Verlust der kalibrierten Messgenauigkeit.',
+            en: 'Injury from unintended window closing; rainwater damage from windows left open; loss of ventilation in an occupied building zone.',
+            de: 'Verletzung durch unbeabsichtigtes Fensterschließen; Regenwasserschaden durch offen bleibende Fenster; Ausfall der Lüftung einer belegten Gebäudezone.',
           },
         },
         {
@@ -531,8 +535,8 @@ window.PARAMETER_GUIDE = {
             de: 'Pflichttext, höchstens 10 Zeichen.',
           },
           example: {
-            en: 'Accuracy',
-            de: 'Genauigk.',
+            en: 'Pinching; Rainwater; VentLoss.',
+            de: 'Einklemmen; Regen; LüftAusf.',
           },
         },
         {
@@ -543,19 +547,325 @@ window.PARAMETER_GUIDE = {
           },
           kind: 'optional',
           help: {
-            en: 'Explain the harm, affected stakeholders and assumptions.',
-            de: 'Schaden, Betroffene und Annahmen erläutern.',
+            en: 'Describe the harmful outcome, affected people or property, and assumptions: mechanism, window accessibility, number of windows, weather, occupancy, local fallback and restoration time.',
+            de: 'Schädliche Folge, betroffene Personen oder Sachwerte und Annahmen beschreiben: Mechanismus, Zugänglichkeit der Fenster, Fensteranzahl, Wetter, Belegung, lokale Ersatzbedienung und Wiederherstellungsdauer.',
           },
           values: {
-            en: 'Optional free text.',
-            de: 'Optionaler Freitext.',
+            en: 'Optional free text for custom scenarios. The five standard damage scenarios below explain which type of harm to assess; one incident may affect several scenarios.',
+            de: 'Optionaler Freitext für eigene Szenarien. Die fünf Standardszenarien unten erläutern die jeweils zu bewertende Schadensart; ein Vorfall kann mehrere Szenarien betreffen.',
           },
           example: {
-            en: 'Incorrect readings cause unsuitable processing parameters.',
-            de: 'Fehlerhafte Messwerte führen zu ungeeigneten Prozessparametern.',
+            en: 'A compromised Automation Manager leaves an exposed window group open during heavy rain. Water damages interiors and customer equipment because the windows cannot be reached or closed locally in time. State the affected rooms, assumed conditions and available manual intervention.',
+            de: 'Ein kompromittierter Automation Manager lässt eine exponierte Fenstergruppe bei Starkregen offen. Wasser beschädigt Innenräume und Kundenausrüstung, weil die Fenster nicht rechtzeitig erreicht oder lokal geschlossen werden können. Betroffene Räume, angenommene Bedingungen und mögliche manuelle Eingriffe angeben.',
           },
+          interpretations: [
+            {
+              label: {
+                en: 'DS1 — Danger to life and limb',
+                de: 'DS1 — Gefahr für Leib und Leben',
+              },
+              meaning: {
+                en: 'Harm to occupants, installers or service staff caused by unsafe window behaviour. Consider unintended movement, trapping or crushing, and failure of protective functions. Assess the possible injury and who can be exposed; one window can already cause severe harm.',
+                de: 'Schaden für Bewohner, Installateure oder Servicepersonal durch unsicheres Fensterverhalten. Unbeabsichtigte Bewegung, Einklemmen oder Quetschen sowie ausgefallene Schutzfunktionen berücksichtigen. Mögliche Verletzung und gefährdete Personen bewerten; bereits ein Fenster kann schwere Schäden verursachen.',
+              },
+              example: {
+                en: 'A window closes while a hand is in the closing area and obstacle detection fails to stop the movement.',
+                de: 'Ein Fenster schließt, während sich eine Hand im Schließbereich befindet, und die Hinderniserkennung stoppt die Bewegung nicht.',
+              },
+              ratings: [
+                {
+                  value: 'N/A',
+                  meaning: {
+                    en: 'No credible path from this asset to injury in the assessed installation. Document why movement or protective functions cannot be affected.',
+                    de: 'Kein plausibler Weg von diesem Asset zu einer Verletzung in der bewerteten Installation. Begründen, warum Bewegung oder Schutzfunktionen nicht beeinflusst werden können.',
+                  },
+                  example: {
+                    en: 'An isolated copy of a public window illustration has no connection to the control system.',
+                    de: 'Eine isolierte Kopie einer öffentlichen Fensterabbildung hat keine Verbindung zum Steuerungssystem.',
+                  },
+                },
+                {
+                  value: '1',
+                  meaning: {
+                    en: 'Brief discomfort or minor, temporary harm with no lasting impairment. Assess the credible physical consequence, including who can reach the window.',
+                    de: 'Kurzes Unbehagen oder geringfügige, vorübergehende Beeinträchtigung ohne bleibende Folgen. Die plausible körperliche Folge bewerten, einschließlich der Personen, die das Fenster erreichen können.',
+                  },
+                  example: {
+                    en: 'Unexpected ventilation causes temporary discomfort; the documented installation rules out contact with moving parts.',
+                    de: 'Unerwartete Lüftung verursacht vorübergehendes Unbehagen; die dokumentierte Installation schließt Kontakt mit bewegten Teilen aus.',
+                  },
+                },
+                {
+                  value: '2',
+                  meaning: {
+                    en: 'A reversible injury with a meaningful recovery period or temporary restriction of normal activities, within the agreed company severity criteria.',
+                    de: 'Eine reversible Verletzung mit nennenswerter Erholungszeit oder vorübergehender Einschränkung normaler Tätigkeiten, innerhalb der vereinbarten Unternehmenskriterien.',
+                  },
+                  example: {
+                    en: 'Unintended closing causes a hand injury that temporarily prevents normal work, with no expected permanent impairment.',
+                    de: 'Unbeabsichtigtes Schließen verursacht eine Handverletzung, die normale Arbeit vorübergehend verhindert, ohne erwartete bleibende Beeinträchtigung.',
+                  },
+                },
+                {
+                  value: '3',
+                  meaning: {
+                    en: 'Serious injury, permanent impairment or a life-threatening outcome. One exposed person and one window are sufficient for this rating.',
+                    de: 'Schwere Verletzung, bleibende Beeinträchtigung oder lebensbedrohliche Folge. Bereits eine gefährdete Person und ein Fenster reichen für diese Einstufung aus.',
+                  },
+                  example: {
+                    en: 'Closing continues after obstacle detection fails and causes a severe crushing injury.',
+                    de: 'Nach Ausfall der Hinderniserkennung setzt sich die Schließbewegung fort und verursacht eine schwere Quetschverletzung.',
+                  },
+                },
+              ],
+            },
+            {
+              label: {
+                en: 'DS2 — Financial damage',
+                de: 'DS2 — Finanzieller Schaden',
+              },
+              meaning: {
+                en: 'Direct and indirect monetary loss for the customer, building operator or manufacturer. Include damaged windows or interiors, repair visits, replacement, downtime costs and service campaigns or recalls. Assess the total credible cost and how many installations could be affected.',
+                de: 'Direkte und indirekte finanzielle Verluste für Kunden, Gebäudebetreiber oder Hersteller. Beschädigte Fenster oder Innenräume, Reparatureinsätze, Ersatz, Ausfallkosten sowie Serviceaktionen oder Rückrufe berücksichtigen. Plausible Gesamtkosten und die Anzahl möglicherweise betroffener Installationen bewerten.',
+              },
+              example: {
+                en: 'The Automation Manager leaves several windows open during heavy rain. Water damages interiors and equipment, requiring repairs and customer compensation.',
+                de: 'Der Automation Manager lässt mehrere Fenster bei Starkregen offen. Wasser beschädigt Innenräume und Geräte; Reparaturen und Entschädigungen für Kunden werden erforderlich.',
+              },
+              ratings: [
+                {
+                  value: 'N/A',
+                  meaning: {
+                    en: 'No credible financial loss for the customer, operator or manufacturer from this asset/scenario pair. Explain the absence of repair, recovery and indirect costs.',
+                    de: 'Kein plausibler finanzieller Verlust für Kunden, Betreiber oder Hersteller durch dieses Asset/Szenario-Paar. Begründen, warum Reparatur-, Wiederherstellungs- und indirekte Kosten entfallen.',
+                  },
+                  example: {
+                    en: 'Someone reads an already public brochure; no additional cost or commercial loss is credible.',
+                    de: 'Jemand liest eine bereits öffentliche Broschüre; zusätzliche Kosten oder geschäftliche Verluste sind nicht plausibel.',
+                  },
+                },
+                {
+                  value: '1',
+                  meaning: {
+                    en: 'A small, local cost within the agreed routine-service threshold. No significant replacement, property damage or wider corrective action is needed.',
+                    de: 'Geringe lokale Kosten innerhalb der vereinbarten Grenze für Routine-Service. Kein erheblicher Ersatz, Sachschaden oder umfassender Korrekturbedarf.',
+                  },
+                  example: {
+                    en: 'An installer corrects one window setting during an already planned visit without replacing parts.',
+                    de: 'Ein Installateur korrigiert bei einem ohnehin geplanten Besuch eine Fenstereinstellung, ohne Teile auszutauschen.',
+                  },
+                },
+                {
+                  value: '2',
+                  meaning: {
+                    en: 'A substantial but contained cost requiring an unplanned repair, replacement or customer compensation. Use agreed financial bands and total credible costs.',
+                    de: 'Erhebliche, aber begrenzte Kosten durch ungeplante Reparatur, Ersatz oder Kundenentschädigung. Vereinbarte finanzielle Bandgrenzen und plausible Gesamtkosten verwenden.',
+                  },
+                  example: {
+                    en: 'A faulty window damages its actuator and nearby interior fittings, requiring a dedicated repair visit.',
+                    de: 'Ein fehlerhaftes Fenster beschädigt seinen Antrieb und nahe Innenausstattung; ein gesonderter Reparatureinsatz ist nötig.',
+                  },
+                },
+                {
+                  value: '3',
+                  meaning: {
+                    en: 'Major financial loss exceeding the agreed high-impact threshold, through extensive property damage, a large service campaign or other substantial direct and indirect costs.',
+                    de: 'Großer finanzieller Verlust oberhalb der vereinbarten Grenze für hohe Auswirkungen, durch umfangreiche Sachschäden, eine große Serviceaktion oder andere erhebliche direkte und indirekte Kosten.',
+                  },
+                  example: {
+                    en: 'The Manager leaves many exposed windows open during a storm, causing extensive water damage and compensation claims.',
+                    de: 'Der Manager lässt bei einem Sturm viele exponierte Fenster offen; umfangreiche Wasserschäden und Entschädigungsforderungen entstehen.',
+                  },
+                },
+              ],
+            },
+            {
+              label: {
+                en: 'DS3 — Operation damage',
+                de: 'DS3 — Betriebsschaden',
+              },
+              meaning: {
+                en: 'Loss or degradation of the intended window-system operation: opening, closing, ventilation, status feedback or coordinated group control. Assess the affected windows, outage duration and recovery effort. Check whether accessible local controls provide an effective alternative when the Automation Manager fails.',
+                de: 'Ausfall oder Einschränkung des vorgesehenen Fenstersystembetriebs: Öffnen, Schließen, Lüften, Statusrückmeldung oder koordinierte Gruppensteuerung. Betroffene Fenster, Ausfalldauer und Wiederherstellungsaufwand bewerten. Prüfen, ob zugängliche lokale Bedienelemente bei Ausfall des Automation Managers eine wirksame Alternative bieten.',
+              },
+              example: {
+                en: 'A corrupted Manager configuration stops scheduled ventilation in one building zone until an installer restores the window-group settings.',
+                de: 'Eine beschädigte Manager-Konfiguration unterbricht die zeitgesteuerte Lüftung einer Gebäudezone, bis ein Installateur die Fenstergruppeneinstellungen wiederherstellt.',
+              },
+              ratings: [
+                {
+                  value: 'N/A',
+                  meaning: {
+                    en: 'The asset does not support current window operation, monitoring, maintenance or recovery, and its loss cannot impair them in the assessed scope.',
+                    de: 'Das Asset unterstützt weder aktuellen Fensterbetrieb noch Überwachung, Wartung oder Wiederherstellung; sein Verlust kann diese im bewerteten Umfang nicht beeinträchtigen.',
+                  },
+                  example: {
+                    en: 'An obsolete duplicate demonstration file is neither used by the running system nor needed for service.',
+                    de: 'Eine veraltete doppelte Demonstrationsdatei wird weder vom laufenden System verwendet noch für den Service benötigt.',
+                  },
+                },
+                {
+                  value: '1',
+                  meaning: {
+                    en: 'A short or minor loss of convenience. Required opening, closing and protective functions remain available through a practical alternative.',
+                    de: 'Kurzer oder geringfügiger Komfortverlust. Erforderliches Öffnen, Schließen und Schutzfunktionen bleiben über eine praktikable Alternative verfügbar.',
+                  },
+                  example: {
+                    en: 'The Manager status screen is unavailable, but occupants can still operate the windows using accessible local buttons.',
+                    de: 'Die Statusanzeige des Managers fällt aus; Bewohner können die Fenster weiterhin über zugängliche lokale Taster bedienen.',
+                  },
+                },
+                {
+                  value: '2',
+                  meaning: {
+                    en: 'Important operation is interrupted for a window or group and needs deliberate recovery. A usable fallback contains the disruption within the agreed tolerable period.',
+                    de: 'Wichtiger Betrieb eines Fensters oder einer Gruppe ist unterbrochen und erfordert gezielte Wiederherstellung. Eine nutzbare Ersatzlösung begrenzt die Störung innerhalb der vereinbarten tolerierbaren Dauer.',
+                  },
+                  example: {
+                    en: 'Scheduled ventilation stops in one zone until an installer restores the Manager settings; staff can temporarily operate those windows locally.',
+                    de: 'Zeitgesteuerte Lüftung einer Zone fällt bis zur Wiederherstellung der Manager-Einstellungen aus; Personal kann die Fenster vorübergehend lokal bedienen.',
+                  },
+                },
+                {
+                  value: '3',
+                  meaning: {
+                    en: 'Required operation is lost beyond the maximum tolerable outage with no effective fallback. Assess the essential function and consequences, not only the number of windows.',
+                    de: 'Erforderlicher Betrieb fällt über die maximal tolerierbare Ausfallzeit hinaus aus, ohne wirksame Ersatzlösung. Wesentliche Funktion und Folgen bewerten, nicht nur die Fensteranzahl.',
+                  },
+                  example: {
+                    en: 'A failed shared update leaves inaccessible windows open and unable to close when weather protection is needed.',
+                    de: 'Ein fehlgeschlagenes gemeinsames Update lässt unzugängliche Fenster offen; sie können trotz erforderlichen Wetterschutzes nicht geschlossen werden.',
+                  },
+                },
+              ],
+            },
+            {
+              label: {
+                en: 'DS4 — Loss of privacy/data',
+                de: 'DS4 — Verlust Privatsphäre/Daten',
+              },
+              meaning: {
+                en: 'Loss of confidentiality or control over personal, customer or sensitive technical information. Window-use histories can reveal occupancy and routines; installation details, credentials and proprietary designs can also be sensitive. Assess what is exposed, who is affected and the extent of the disclosure.',
+                de: 'Verlust der Vertraulichkeit oder Kontrolle über personenbezogene, kundenbezogene oder sensible technische Informationen. Fenster-Nutzungsverläufe können Belegung und Gewohnheiten offenbaren; auch Installationsdetails, Zugangsdaten und proprietäre Entwürfe können sensibel sein. Offengelegte Informationen, Betroffene und Umfang der Offenlegung bewerten.',
+              },
+              example: {
+                en: 'An unauthorized person downloads Manager logs linking window opening times to named rooms and occupants, revealing when those rooms are used.',
+                de: 'Eine unbefugte Person lädt Manager-Protokolle herunter, die Fensteröffnungszeiten mit benannten Räumen und Bewohnern verknüpfen und deren Nutzung offenlegen.',
+              },
+              ratings: [
+                {
+                  value: 'N/A',
+                  meaning: {
+                    en: 'No personal, confidential customer or sensitive technical information can be exposed through this asset in the assessed context. Record what information is actually present.',
+                    de: 'Über dieses Asset können im bewerteten Kontext keine personenbezogenen, vertraulichen Kunden- oder sensiblen technischen Informationen offengelegt werden. Tatsächlich vorhandene Informationen dokumentieren.',
+                  },
+                  example: {
+                    en: 'A standalone public demonstration contains only published product information and has no customer connection or credentials.',
+                    de: 'Eine eigenständige öffentliche Demonstration enthält nur veröffentlichte Produktinformationen und weder Kundenanbindung noch Zugangsdaten.',
+                  },
+                },
+                {
+                  value: '1',
+                  meaning: {
+                    en: 'Limited disclosure of low-sensitivity internal information, without access secrets or identifiable occupant behaviour. Consequences are local and minor.',
+                    de: 'Begrenzte Offenlegung wenig sensibler interner Informationen, ohne Zugangsgeheimnisse oder identifizierbares Bewohnerverhalten. Die Folgen sind lokal und gering.',
+                  },
+                  example: {
+                    en: 'An internal list of window models and software versions is exposed without customer names, addresses or usage histories.',
+                    de: 'Eine interne Liste von Fenstermodellen und Softwareversionen wird ohne Kundennamen, Adressen oder Nutzungsverläufe offengelegt.',
+                  },
+                },
+                {
+                  value: '2',
+                  meaning: {
+                    en: 'Disclosure of sensitive customer, technical or personal information causes substantial but contained harm. Consider identifiability, detail and likely use of the information.',
+                    de: 'Offenlegung sensibler Kunden-, Technik- oder Personendaten verursacht erheblichen, aber begrenzten Schaden. Identifizierbarkeit, Detailgrad und mögliche Nutzung der Informationen berücksichtigen.',
+                  },
+                  example: {
+                    en: 'Opening histories for one installation are disclosed with room and occupant details, revealing daily routines.',
+                    de: 'Öffnungsverläufe einer Installation werden mit Raum- und Bewohnerangaben offengelegt und verraten Tagesabläufe.',
+                  },
+                },
+                {
+                  value: '3',
+                  meaning: {
+                    en: 'Exposure of critical secrets or highly sensitive information causes severe or lasting harm. Extensive disclosure can increase severity, but one critical secret may already qualify.',
+                    de: 'Offenlegung kritischer Geheimnisse oder hochsensibler Informationen verursacht schwere oder dauerhafte Schäden. Ein großer Umfang kann die Schwere erhöhen; bereits ein kritisches Geheimnis kann genügen.',
+                  },
+                  example: {
+                    en: 'Manager administrator credentials for many installations or the manufacturer’s private firmware-signing key are disclosed.',
+                    de: 'Manager-Administratorzugangsdaten vieler Installationen oder der private Firmware-Signaturschlüssel des Herstellers werden offengelegt.',
+                  },
+                },
+              ],
+            },
+            {
+              label: {
+                en: 'DS5 — Legal consequences',
+                de: 'DS5 — Rechtliche Konsequenzen',
+              },
+              meaning: {
+                en: 'Consequences of failing applicable legal or regulatory obligations, such as those concerning product safety or data protection. Record the relevant obligation and the credible consequence, which may include corrective action, restrictions on supply, liability or penalties. Rate this separately from the associated injury, outage or financial loss.',
+                de: 'Folgen der Nichterfüllung anwendbarer gesetzlicher oder regulatorischer Pflichten, etwa zur Produktsicherheit oder zum Datenschutz. Relevante Pflicht und plausible Folge festhalten, beispielsweise Korrekturmaßnahmen, Beschränkungen der Bereitstellung, Haftung oder Sanktionen. Diese Folgen getrennt von zugehöriger Verletzung, Betriebsausfall oder finanziellem Verlust bewerten.',
+              },
+              example: {
+                en: 'A defect disables a required protective function. Assess the legal consequences of supplying the affected window systems against the obligations applicable to that product and market.',
+                de: 'Ein Defekt deaktiviert eine erforderliche Schutzfunktion. Die rechtlichen Folgen der Bereitstellung betroffener Fenstersysteme anhand der für Produkt und Markt anwendbaren Pflichten bewerten.',
+              },
+              ratings: [
+                {
+                  value: 'N/A',
+                  meaning: {
+                    en: 'No applicable legal or regulatory obligation can credibly be affected by this asset/scenario pair. Document the scope and basis; uncertainty about obligations is not N/A.',
+                    de: 'Durch dieses Asset/Szenario-Paar kann plausibel keine anwendbare gesetzliche oder regulatorische Pflicht betroffen sein. Umfang und Grundlage dokumentieren; unklare Pflichten bedeuten nicht N/A.',
+                  },
+                  example: {
+                    en: 'An isolated demonstration theme has no role in the delivered product, required information or personal-data handling, as documented in the assessment.',
+                    de: 'Ein isoliertes Demonstrationsdesign hat laut dokumentierter Bewertung keine Rolle im ausgelieferten Produkt, in vorgeschriebenen Informationen oder bei der Verarbeitung personenbezogener Daten.',
+                  },
+                },
+                {
+                  value: '1',
+                  meaning: {
+                    en: 'A limited compliance issue with minor consequences that can be corrected through routine action. The applicable obligation and expected consequence must support this rating.',
+                    de: 'Begrenzte Abweichung mit geringen Folgen, die durch Routinekorrektur behoben werden kann. Anwendbare Pflicht und erwartete Folge müssen diese Einstufung tragen.',
+                  },
+                  example: {
+                    en: 'A minor error in required product information needs correction, with no credible effect on safe use or privacy and no substantial further consequence under the applicable obligation.',
+                    de: 'Ein kleiner Fehler in erforderlichen Produktinformationen muss korrigiert werden; nach der anwendbaren Pflicht bestehen keine plausiblen Folgen für sichere Nutzung oder Privatsphäre und keine erheblichen weiteren Konsequenzen.',
+                  },
+                },
+                {
+                  value: '2',
+                  meaning: {
+                    en: 'A material but contained failure to meet an applicable obligation requires formal corrective action or creates significant liability. Assess the actual obligation, rather than assuming every breach has the same consequence.',
+                    de: 'Wesentliche, aber begrenzte Nichterfüllung einer anwendbaren Pflicht erfordert formelle Korrekturmaßnahmen oder begründet erhebliche Haftung. Die konkrete Pflicht bewerten, statt jede Verletzung gleich einzustufen.',
+                  },
+                  example: {
+                    en: 'Improper handling of one customer’s Manager logs leads to a substantiated complaint and a documented formal correction process.',
+                    de: 'Fehlerhafter Umgang mit Manager-Protokollen eines Kunden führt zu einer begründeten Beschwerde und einem dokumentierten formellen Korrekturverfahren.',
+                  },
+                },
+                {
+                  value: '3',
+                  meaning: {
+                    en: 'Severe consequences under the applicable obligations, potentially including restrictions on supply, a mandatory recall, major penalties or serious liability. State the basis for these consequences; they are not automatic.',
+                    de: 'Schwere Folgen nach den anwendbaren Pflichten, möglicherweise einschließlich Bereitstellungsbeschränkungen, verpflichtendem Rückruf, erheblichen Sanktionen oder schwerwiegender Haftung. Die Grundlage dieser Folgen angeben; sie treten nicht automatisch ein.',
+                  },
+                  example: {
+                    en: 'A defect defeats a required protective function across a delivered window range. The documented legal assessment identifies a mandatory recall or restriction on further supply.',
+                    de: 'Ein Defekt setzt eine erforderliche Schutzfunktion einer ausgelieferten Fensterbaureihe außer Kraft. Die dokumentierte rechtliche Bewertung ergibt einen verpflichtenden Rückruf oder eine Beschränkung weiterer Bereitstellung.',
+                  },
+                },
+              ],
+            },
+          ],
         },
       ],
+      intro: {
+        en: 'Describe the harmful outcome for occupants, customers, building operators or the manufacturer. Examples include injury from window movement, water damage and repair costs, loss of ventilation, or exposure of occupancy information. Choose the matching configured damage category, including legal consequences where applicable. A forged Manager command is a possible cause; the resulting injury or damage is the scenario to assess.',
+        de: 'Die schädliche Folge für Bewohner, Kunden, Gebäudebetreiber oder Hersteller beschreiben. Beispiele sind Verletzungen durch Fensterbewegung, Wasserschäden und Reparaturkosten, Lüftungsausfall oder Offenlegung von Belegungsinformationen. Die passende konfigurierte Schadenskategorie wählen, gegebenenfalls einschließlich rechtlicher Folgen. Ein gefälschter Manager-Befehl ist eine mögliche Ursache; die daraus folgende Verletzung oder der Schaden ist das zu bewertende Szenario.',
+      },
     },
     {
       id: 'damage-matrix',
@@ -580,60 +890,60 @@ window.PARAMETER_GUIDE = {
             de: 'Bewerten Sie die plausible Folge für dieses Asset und dieses Szenario, nicht die Angriffswahrscheinlichkeit. Verwenden Sie die höchste zutreffende Folge innerhalb des Szenarios. Nutzen Sie für alle Assets dieselben vereinbarten Annahmen und Grenzwerte.',
           },
           example: {
-            en: 'For each scenario, agree company thresholds for outage duration, recovery effort, financial loss, affected people and data sensitivity. If evidence is missing, state the uncertainty in the mandatory comment and arrange a review.',
-            de: 'Je Szenario Unternehmensgrenzen für Ausfalldauer, Wiederherstellungsaufwand, finanzielle Verluste, Betroffene und Datensensibilität vereinbaren. Fehlende Nachweise im Pflichtkommentar als Unsicherheit festhalten und eine Prüfung veranlassen.',
+            en: 'Compare the consequence of a failed window actuator with the same failure affecting all windows managed together. Agree limits for service downtime, repair/recall costs, affected rooms and people, and data sensitivity. Document accessible local controls, weather exposure and the agreed maximum tolerable outage.',
+            de: 'Die Folgen eines ausgefallenen Fensterantriebs mit demselben Ausfall aller gemeinsam verwalteten Fenster vergleichen. Grenzen für Betriebsausfall, Reparatur-/Rückrufkosten, betroffene Räume und Personen sowie Datensensibilität vereinbaren. Zugängliche lokale Bedienung, Witterungsexposition und die vereinbarte maximal tolerierbare Ausfallzeit dokumentieren.',
           },
           interpretations: [
             {
               value: 'N/A',
               meaning: {
-                en: 'Not applicable: this asset cannot credibly produce the stated damage in the assessed context. Do not use it for low impact or uncertainty. An untouched cell also displays N/A; record an explicit justification.',
-                de: 'Nicht anwendbar: Dieses Asset kann den beschriebenen Schaden im bewerteten Kontext plausibel nicht auslösen. Nicht für geringe Folgen oder Unsicherheit verwenden. Auch eine unberührte Zelle zeigt N/A; ausdrücklich begründen.',
+                en: 'Not applicable: this asset cannot credibly cause the specific damage in the assessed installation. Do not use it for low impact or uncertainty. An untouched cell also displays N/A; record an explicit justification.',
+                de: 'Nicht anwendbar: Dieses Asset kann den konkreten Schaden in der bewerteten Installation plausibel nicht verursachen. Nicht für geringe Folgen oder Unsicherheit verwenden. Auch eine unberührte Zelle zeigt N/A; ausdrücklich begründen.',
               },
               example: {
-                en: 'Financial-record disclosure for a component that neither stores nor handles those records.',
-                de: 'Offenlegung von Finanzunterlagen bei einer Komponente, die diese weder speichert noch verarbeitet.',
+                en: 'An isolated public window brochure cannot control an actuator or affect obstacle detection. Record this separation when marking personal injury as not applicable.',
+                de: 'Eine isolierte öffentliche Fensterbroschüre kann keinen Antrieb steuern oder die Hinderniserkennung beeinflussen. Diese Trennung bei der Einstufung von Personenschäden als nicht anwendbar dokumentieren.',
               },
             },
             {
               value: '1',
               meaning: {
-                en: 'Limited, local and readily recoverable harm. Normal procedures or a practical workaround keep the consequences within routine tolerance; no credible injury or major knock-on effect.',
-                de: 'Begrenzter, lokaler und leicht behebbarer Schaden. Routineverfahren oder eine praktikable Ersatzlösung halten die Folgen innerhalb der üblichen Toleranz; keine plausible Verletzung oder größere Folgewirkung.',
+                en: 'Low — limited, local harm handled through routine work or an effective alternative. Required window operation remains available and there is no credible serious injury or major secondary damage.',
+                de: 'Gering — begrenzter, lokaler Schaden, durch Routinearbeit oder wirksame Ersatzlösung beherrschbar. Erforderliche Fensterbedienung bleibt möglich; schwere Verletzung oder großer Folgeschaden ist nicht plausibel.',
               },
               example: {
-                en: 'DS3 Operation damage: a nonessential interface stops, but the component’s main operation continues via a usable alternative.',
-                de: 'DS3 Betriebsschaden: Eine unwesentliche Schnittstelle fällt aus; der Hauptbetrieb der Komponente läuft über eine nutzbare Alternative weiter.',
+                en: 'The Manager display stops working, but local buttons and protective functions remain available. The result is a temporary inconvenience resolved during routine service.',
+                de: 'Die Manager-Anzeige fällt aus, lokale Taster und Schutzfunktionen bleiben jedoch verfügbar. Es entsteht eine vorübergehende Unannehmlichkeit, die beim regulären Service behoben wird.',
               },
             },
             {
               value: '2',
               meaning: {
-                en: 'Significant but contained harm. Service, production, finances or affected people are materially impacted; dedicated recovery, rework or specialist intervention is needed.',
-                de: 'Erheblicher, aber begrenzter Schaden. Dienstleistung, Produktion, Finanzen oder Betroffene werden spürbar beeinträchtigt; gezielte Wiederherstellung, Nacharbeit oder fachlicher Eingriff sind erforderlich.',
+                en: 'Medium — substantial but contained harm to people, window operation, customer property or the manufacturer. Dedicated repair, recovery or corrective action is needed.',
+                de: 'Mittel — erheblicher, aber begrenzter Schaden für Personen, Fensterbetrieb, Kundeneigentum oder Hersteller. Gezielte Reparatur, Wiederherstellung oder Korrekturmaßnahmen sind nötig.',
               },
               example: {
-                en: 'DS3 Operation damage: the component stops a production cell; specialist recovery and rework are needed, while the rest of the site operates.',
-                de: 'DS3 Betriebsschaden: Die Komponente legt eine Produktionszelle still; fachliche Wiederherstellung und Nacharbeit sind nötig, während der übrige Standort weiterarbeitet.',
+                en: 'One window group loses automatic ventilation and needs an installer to restore it. Local controls contain the disruption, but the customer faces a service visit, repair costs and temporary loss of comfort.',
+                de: 'Die automatische Lüftung einer Fenstergruppe fällt aus und muss durch einen Installateur wiederhergestellt werden. Lokale Bedienung begrenzt die Störung, für den Kunden entstehen jedoch Servicebesuch, Reparaturkosten und vorübergehender Komfortverlust.',
               },
             },
             {
               value: '3',
               meaning: {
-                en: 'Severe, widespread or difficult-to-reverse harm. Examples include serious personal harm, loss of an essential service beyond the tolerable outage, major business loss or extensive exposure of highly sensitive data.',
-                de: 'Schwerer, weitreichender oder schwer rückgängig zu machender Schaden. Beispiele sind schwere Personenschäden, Ausfall eines wesentlichen Dienstes über die tolerierbare Dauer hinaus, große Geschäftsverluste oder umfangreiche Offenlegung hochsensibler Daten.',
+                en: 'High — severe harm, widespread disruption or damage that is difficult to reverse. A single window can qualify through serious injury; shared Manager control can increase the number of affected windows and people.',
+                de: 'Hoch — schwerer Schaden, weitreichende Störung oder schwer rückgängig zu machende Folgen. Ein einzelnes Fenster kann durch schwere Verletzung genügen; gemeinsame Manager-Steuerung kann die Anzahl betroffener Fenster und Personen erhöhen.',
               },
               example: {
-                en: 'DS3 Operation damage: loss of the component stops an essential process without a workable fallback and exceeds the agreed maximum tolerable outage.',
-                de: 'DS3 Betriebsschaden: Der Komponentenausfall stoppt einen wesentlichen Prozess ohne nutzbare Ersatzlösung und überschreitet die vereinbarte maximal tolerierbare Ausfallzeit.',
+                en: 'Dangerous closing causes serious injury, or a Manager failure leaves many windows open during severe weather and causes extensive water damage. Loss of required operation without fallback beyond the maximum tolerable outage can also qualify.',
+                de: 'Gefährliches Schließen verursacht schwere Verletzungen, oder ein Manager-Ausfall lässt viele Fenster bei Unwetter offen und verursacht umfangreiche Wasserschäden. Auch der Ausfall erforderlicher Bedienung ohne Ersatzlösung über die maximal tolerierbare Ausfallzeit hinaus kann diese Stufe begründen.',
               },
             },
           ],
         },
       ],
       intro: {
-        en: 'Proposed impact guidance for discussion and company adaptation. Assess the actual harmful outcome per scenario. The same Low / Medium / High principle applies to safety, financial, operation, privacy and legal consequences, with thresholds appropriate to each scenario.',
-        de: 'Vorgeschlagene Auswirkungsbewertung zur Diskussion und unternehmensspezifischen Anpassung. Den tatsächlichen Schaden je Szenario bewerten. Dasselbe Prinzip Gering / Mittel / Hoch gilt für Sicherheits-, Finanz-, Betriebs-, Datenschutz- und rechtliche Folgen, mit zum jeweiligen Szenario passenden Grenzen.',
+        en: 'Rate each asset against each damage scenario in the installed window system. I/II/III describe an asset’s protection need; Low/Medium/High describe a particular harmful outcome, so do not copy the labels mechanically. Consider actuator force and travel, reachable closing areas, weather exposure, room use, number of jointly controlled windows and available local operation. An Automation Manager may spread a fault across a group or building; independent local protective functions may limit that harm. State these assumptions rather than assigning a higher rating solely because more windows are connected. Use only mechanisms and functions present in the product, and agree company thresholds for each damage category.',
+        de: 'Jedes Asset gegen jedes Schadensszenario im installierten Fenstersystem bewerten. I/II/III beschreiben den Schutzbedarf eines Assets; Gering/Mittel/Hoch beschreiben eine konkrete schädliche Folge. Die Stufen daher nicht schematisch übertragen. Antriebskraft und -weg, erreichbare Schließbereiche, Witterung, Raumnutzung, Anzahl gemeinsam gesteuerter Fenster und lokale Bedienbarkeit berücksichtigen. Ein Automation Manager kann einen Fehler auf eine Gruppe oder ein Gebäude ausweiten; unabhängige lokale Schutzfunktionen können den Schaden begrenzen. Diese Annahmen dokumentieren, statt allein wegen mehr angeschlossener Fenster höher zu bewerten. Nur im Produkt vorhandene Mechanismen und Funktionen verwenden und Unternehmensgrenzen je Schadenskategorie vereinbaren.',
       },
     },
     {
@@ -659,8 +969,8 @@ window.PARAMETER_GUIDE = {
             de: 'Für jedes Asset/Szenario-Paar einschließlich N/A erforderlich. Fehlende Kommentare verhindern den PDF-Export.',
           },
           example: {
-            en: 'High: loss of operation requires on-site replacement. N/A: this component stores no personal data.',
-            de: 'High: Betriebsausfall erfordert Austausch vor Ort. N/A: Diese Komponente speichert keine personenbezogenen Daten.',
+            en: 'Medium for DS3: the Automation Manager serves 12 windows in one zone. Automatic ventilation stops, but accessible local buttons remain usable and obstacle detection runs independently. An installer can restore the configuration during the agreed service period. Record evidence and any unverified assumptions.',
+            de: 'Mittel bei DS3: Der Automation Manager bedient 12 Fenster einer Zone. Automatische Lüftung fällt aus, zugängliche lokale Taster bleiben nutzbar und Hinderniserkennung arbeitet unabhängig. Ein Installateur kann die Konfiguration innerhalb der vereinbarten Servicefrist wiederherstellen. Nachweise und ungeprüfte Annahmen festhalten.',
           },
         },
       ],
