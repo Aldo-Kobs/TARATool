@@ -128,12 +128,12 @@ window.PARAMETER_GUIDE = {
             de: 'Die Kategorie wählen, die das zu schützende Objekt beschreibt.',
           },
           values: {
-            en: 'Component: hardware or interfaces. Data: information and software artefacts. Function: a capability or behaviour.',
-            de: 'Komponente: Hardware oder Schnittstellen. Daten: Informationen und Softwareartefakte. Funktion: Fähigkeit oder Verhalten.',
+            en: 'Hardware (HW) and physical interfaces use Component. Software (SW), firmware and information use Data. A capability or behaviour uses Function. Assess the protection needs of each asset in its operating role.',
+            de: 'Hardware (HW) und physische Schnittstellen gehören zu Komponente. Software (SW), Firmware und Informationen gehören zu Daten. Fähigkeiten oder Verhalten gehören zu Funktion. Den Schutzbedarf jedes Assets anhand seiner Rolle im Betrieb bewerten.',
           },
           example: {
-            en: 'Component: controller, USB port. Data: firmware, cryptographic keys. Function: internal diagnostics, system shutdown.',
-            de: 'Komponente: Steuerung, USB-Port. Daten: Firmware, kryptografische Schlüssel. Funktion: interne Diagnose, Systemabschaltung.',
+            en: 'HW: controller board or USB port. SW: service application. Firmware: bootloader or controller image. Data: production recipe or cryptographic keys. Function: calibration or system shutdown.',
+            de: 'HW: Steuerungsplatine oder USB-Port. SW: Serviceanwendung. Firmware: Bootloader oder Steuerungsabbild. Daten: Produktionsrezeptur oder kryptografische Schlüssel. Funktion: Kalibrierung oder Systemabschaltung.',
           },
           valueSource: 'assetTypes',
         },
@@ -184,12 +184,12 @@ window.PARAMETER_GUIDE = {
                 de: 'I',
               },
               meaning: {
-                en: 'Disclosure causes limited inconvenience and is readily contained.',
-                de: 'Offenlegung verursacht begrenzte, leicht beherrschbare Nachteile.',
+                en: 'Limited disclosure — reveals internal details, but no sensitive records or secrets that grant access. The effects stay local and are easy to contain.',
+                de: 'Begrenzte Offenlegung — interne Details werden bekannt, jedoch keine sensiblen Datensätze oder Geheimnisse, die Zugang ermöglichen. Die Folgen bleiben lokal und leicht beherrschbar.',
               },
               example: {
-                en: 'Internal equipment inventory without credentials or personal information.',
-                de: 'Interne Geräteliste ohne Zugangsdaten oder personenbezogene Informationen.',
+                en: 'HW: board revision markings; SW: internal tool version list; Firmware: build identifier; Data: equipment inventory without credentials; Function: description of a non-sensitive status display.',
+                de: 'HW: Kennzeichnung der Platinenrevision; SW: Versionsliste interner Werkzeuge; Firmware: Build-Kennung; Daten: Geräteliste ohne Zugangsdaten; Funktion: Beschreibung einer unkritischen Statusanzeige.',
               },
             },
             {
@@ -198,12 +198,12 @@ window.PARAMETER_GUIDE = {
                 de: 'II',
               },
               meaning: {
-                en: 'Disclosure exposes sensitive business or personal information and causes significant harm to affected people or business activities.',
-                de: 'Offenlegung sensibler Geschäfts- oder Personendaten schädigt Betroffene oder Geschäftsabläufe erheblich.',
+                en: 'Sensitive disclosure — reveals proprietary implementation details, business information or personal records. This can cause substantial harm to the affected product, team or people.',
+                de: 'Sensible Offenlegung — proprietäre Implementierungsdetails, Geschäftsinformationen oder personenbezogene Datensätze werden bekannt. Für das betroffene Produkt, Team oder Personen kann erheblicher Schaden entstehen.',
               },
               example: {
-                en: 'Customer contact records or non-public engineering drawings.',
-                de: 'Kundenkontaktdaten oder nicht öffentliche Konstruktionszeichnungen.',
+                en: 'HW: non-public circuit design; SW: proprietary application source code; Firmware: proprietary control algorithm; Data: customer service records; Function: confidential production sequence. Assume disclosure harms the business without exposing critical access secrets.',
+                de: 'HW: nicht öffentlicher Schaltungsentwurf; SW: proprietärer Anwendungsquellcode; Firmware: proprietärer Regelalgorithmus; Daten: Kunden-Serviceunterlagen; Funktion: vertraulicher Produktionsablauf. Annahme: Die Offenlegung schädigt das Geschäft, legt aber keine kritischen Zugangsgeheimnisse offen.',
               },
             },
             {
@@ -212,12 +212,12 @@ window.PARAMETER_GUIDE = {
                 de: 'III',
               },
               meaning: {
-                en: 'Disclosure can cause severe or widespread harm, compromise essential secrets, or enable control of critical systems.',
-                de: 'Offenlegung kann schwere oder weitreichende Schäden verursachen, wesentliche Geheimnisse preisgeben oder Zugriff auf kritische Systeme ermöglichen.',
+                en: 'Critical disclosure — reveals secrets or information whose exposure enables critical access or causes severe, lasting or widespread harm.',
+                de: 'Kritische Offenlegung — Geheimnisse oder Informationen werden bekannt, deren Preisgabe kritischen Zugang ermöglicht oder schwere, dauerhafte bzw. weitreichende Schäden verursacht.',
               },
               example: {
-                en: 'A private firmware-signing key or administrator credentials for an entire fleet.',
-                de: 'Privater Firmware-Signaturschlüssel oder Administrator-Zugangsdaten für eine gesamte Geräteflotte.',
+                en: 'HW: fleet credentials extracted from a secure memory component; SW: embedded credentials for a central administration service; Firmware: embedded master secret shared across devices; Data: private firmware-signing key; Function: recovery procedure that exposes a fleet-wide override secret.',
+                de: 'HW: aus einem sicheren Speicherbaustein ausgelesene Flotten-Zugangsdaten; SW: eingebettete Zugangsdaten für einen zentralen Administrationsdienst; Firmware: geräteübergreifend verwendetes Hauptgeheimnis; Daten: privater Firmware-Signaturschlüssel; Funktion: Wiederherstellungsablauf, der ein flottenweites Überbrückungsgeheimnis offenlegt.',
               },
             },
           ],
@@ -249,12 +249,12 @@ window.PARAMETER_GUIDE = {
                 de: 'I',
               },
               meaning: {
-                en: 'Incorrect or changed information has limited consequences and can be detected and corrected through routine work.',
-                de: 'Fehlerhafte oder veränderte Informationen haben begrenzte Folgen und lassen sich im Routinebetrieb erkennen und korrigieren.',
+                en: 'Locally correctable change — modification causes a minor error that routine work can correct. Control decisions, product quality and safety remain unaffected.',
+                de: 'Lokal korrigierbare Änderung — eine Manipulation verursacht einen kleinen Fehler, der sich im Routinebetrieb beheben lässt. Steuerungsentscheidungen, Produktqualität und Sicherheit bleiben unbeeinflusst.',
               },
               example: {
-                en: 'A nonessential dashboard label is changed; control decisions are unaffected.',
-                de: 'Eine unwesentliche Dashboard-Beschriftung wird geändert; Steuerungsentscheidungen bleiben unbeeinflusst.',
+                en: 'HW: altered label on a nonessential indicator; SW: changed dashboard layout; Firmware: changed welcome message; Data: modified descriptive asset note; Function: reordered nonessential report output.',
+                de: 'HW: veränderte Beschriftung einer unwesentlichen Anzeige; SW: geändertes Dashboard-Layout; Firmware: geänderte Begrüßungsmeldung; Daten: veränderte beschreibende Asset-Notiz; Funktion: umsortierte Ausgabe eines unwesentlichen Berichts.',
               },
             },
             {
@@ -263,12 +263,12 @@ window.PARAMETER_GUIDE = {
                 de: 'II',
               },
               meaning: {
-                en: 'Unauthorised changes can materially affect decisions, product quality or operations and require deliberate recovery.',
-                de: 'Unbefugte Änderungen können Entscheidungen, Produktqualität oder Betrieb erheblich beeinträchtigen und gezielte Wiederherstellung erfordern.',
+                en: 'Operationally significant change — modification produces incorrect results, rejected products or disruption in a bounded part of operations. Repair, rework or deliberate restoration is needed.',
+                de: 'Betrieblich erhebliche Änderung — eine Manipulation verursacht falsche Ergebnisse, Ausschuss oder Störungen in einem begrenzten Betriebsbereich. Reparatur, Nacharbeit oder gezielte Wiederherstellung sind erforderlich.',
               },
               example: {
-                en: 'A production recipe is altered, causing rejected batches and rework.',
-                de: 'Eine Produktionsrezeptur wird verändert und verursacht Ausschuss und Nacharbeit.',
+                en: 'HW: altered measurement circuit causes rejects; SW: changed scheduling logic delays orders; Firmware: changed calibration causes inaccurate output; Data: altered production recipe causes rework; Function: modified dosing sequence spoils a batch. Assume the effects remain contained without a safety hazard.',
+                de: 'HW: veränderte Messschaltung verursacht Ausschuss; SW: geänderte Planungslogik verzögert Aufträge; Firmware: geänderte Kalibrierung verfälscht Ausgaben; Daten: veränderte Produktionsrezeptur erfordert Nacharbeit; Funktion: manipulierter Dosierablauf verdirbt eine Charge. Annahme: Die Folgen bleiben begrenzt und verursachen keine Sicherheitsgefährdung.',
               },
             },
             {
@@ -277,12 +277,12 @@ window.PARAMETER_GUIDE = {
                 de: 'III',
               },
               meaning: {
-                en: 'Unauthorised changes can cause dangerous behaviour, loss of trusted control or severe, widespread damage.',
-                de: 'Unbefugte Änderungen können gefährliches Verhalten, Verlust vertrauenswürdiger Steuerung oder schwere, weitreichende Schäden verursachen.',
+                en: 'Critical change — modification can defeat a safeguard, cause dangerous behaviour or compromise trusted control across essential systems.',
+                de: 'Kritische Änderung — eine Manipulation kann eine Schutzvorkehrung außer Kraft setzen, gefährliches Verhalten auslösen oder die vertrauenswürdige Steuerung wesentlicher Systeme kompromittieren.',
               },
               example: {
-                en: 'Manipulated safety limits, control firmware or trusted update packages.',
-                de: 'Manipulierte Sicherheitsgrenzen, Steuerungsfirmware oder vertrauenswürdige Update-Pakete.',
+                en: 'HW: bypassed safety interlock circuit; SW: modified central update service distributes malicious packages; Firmware: altered motor-control limits permit dangerous movement; Data: changed safety limits or trusted signing certificates; Function: altered emergency shutdown logic fails to stop the machine.',
+                de: 'HW: überbrückter Sicherheitsverriegelungskreis; SW: manipulierter zentraler Update-Dienst verteilt schädliche Pakete; Firmware: veränderte Motorsteuerungsgrenzen erlauben gefährliche Bewegungen; Daten: geänderte Sicherheitsgrenzen oder vertrauenswürdige Signaturzertifikate; Funktion: manipulierte Notabschaltlogik stoppt die Maschine nicht.',
               },
             },
           ],
@@ -314,12 +314,12 @@ window.PARAMETER_GUIDE = {
                 de: 'I',
               },
               meaning: {
-                en: 'Interruption causes limited inconvenience; normal work can continue with a practical workaround and routine recovery.',
-                de: 'Eine Unterbrechung verursacht begrenzte Nachteile; die Arbeit kann mit einer praktikablen Ersatzlösung und routinemäßiger Wiederherstellung fortgesetzt werden.',
+                en: 'Tolerable interruption — the asset can be temporarily unavailable while essential work continues. A practical workaround and routine recovery are sufficient.',
+                de: 'Tolerierbare Unterbrechung — das Asset kann vorübergehend ausfallen, während die wesentliche Arbeit weiterläuft. Eine praktikable Ersatzlösung und routinemäßige Wiederherstellung reichen aus.',
               },
               example: {
-                en: 'A reporting dashboard is offline while the controlled process keeps running.',
-                de: 'Ein Berichts-Dashboard fällt aus, während der gesteuerte Prozess weiterläuft.',
+                en: 'HW: optional display fails while control continues; SW: reporting tool is offline while production runs; Firmware: optional indicator module does not start; Data: archived reports are temporarily inaccessible; Function: statistics export is delayed.',
+                de: 'HW: optionales Display fällt aus, die Steuerung läuft weiter; SW: Berichtswerkzeug ist offline, die Produktion läuft weiter; Firmware: optionales Anzeigemodul startet nicht; Daten: Archivberichte sind vorübergehend unzugänglich; Funktion: Statistikexport verzögert sich.',
               },
             },
             {
@@ -328,12 +328,12 @@ window.PARAMETER_GUIDE = {
                 de: 'II',
               },
               meaning: {
-                en: 'Interruption materially disrupts service or production; workarounds are limited and recovery effort is significant.',
-                de: 'Eine Unterbrechung stört Dienstleistung oder Produktion erheblich; Ersatzlösungen sind begrenzt und die Wiederherstellung ist aufwendig.',
+                en: 'Disruptive interruption — a machine, service or production area cannot perform important work until the asset is restored. Workarounds are limited and recovery takes significant effort.',
+                de: 'Störende Unterbrechung — eine Maschine, ein Dienst oder Produktionsbereich kann wichtige Aufgaben erst nach Wiederherstellung des Assets fortsetzen. Ersatzlösungen sind begrenzt, die Wiederherstellung ist aufwendig.',
               },
               example: {
-                en: 'One production cell stops until a controller is restored.',
-                de: 'Eine Produktionszelle steht still, bis eine Steuerung wiederhergestellt ist.',
+                en: 'HW: controller failure stops one production cell; SW: scheduling service outage delays a shift; Firmware: failed startup requires a service reflash; Data: unavailable production recipes halt a batch; Function: calibration is unavailable until maintenance. Assume recovery is possible before severe harm occurs.',
+                de: 'HW: Steuerungsausfall stoppt eine Produktionszelle; SW: Ausfall des Planungsdienstes verzögert eine Schicht; Firmware: fehlgeschlagener Start erfordert erneutes Aufspielen durch den Service; Daten: fehlende Produktionsrezepturen stoppen eine Charge; Funktion: Kalibrierung ist bis zur Wartung nicht verfügbar. Annahme: Wiederherstellung ist möglich, bevor schwere Schäden entstehen.',
               },
             },
             {
@@ -342,12 +342,12 @@ window.PARAMETER_GUIDE = {
                 de: 'III',
               },
               meaning: {
-                en: 'Interruption can stop an essential function, exceed the tolerable outage or cause severe cascading or safety consequences.',
-                de: 'Eine Unterbrechung kann eine wesentliche Funktion stilllegen, die tolerierbare Ausfallzeit überschreiten oder schwere Folge- bzw. Sicherheitsschäden verursachen.',
+                en: 'Critical interruption — an essential service or protective function is lost, with no adequate fallback within the tolerable outage. Severe harm or cascading failures can result.',
+                de: 'Kritische Unterbrechung — ein wesentlicher Dienst oder eine Schutzfunktion fällt aus, ohne ausreichende Ersatzlösung innerhalb der tolerierbaren Ausfallzeit. Schwere Schäden oder Folgeausfälle können entstehen.',
               },
               example: {
-                en: 'Loss of an essential monitoring or control function with no workable fallback.',
-                de: 'Ausfall einer wesentlichen Überwachungs- oder Steuerungsfunktion ohne nutzbare Ersatzlösung.',
+                en: 'HW: sole controller for essential cooling fails; SW: central control service is unavailable across a site; Firmware: essential controllers cannot boot after a fleet update; Data: sole recovery configuration is lost during a critical outage; Function: emergency shutdown is unavailable when demanded.',
+                de: 'HW: einzige Steuerung für eine wesentliche Kühlung fällt aus; SW: zentraler Steuerungsdienst fällt standortweit aus; Firmware: wesentliche Steuerungen starten nach einem Flotten-Update nicht mehr; Daten: einzige Wiederherstellungskonfiguration geht während eines kritischen Ausfalls verloren; Funktion: Notabschaltung ist im Anforderungsfall nicht verfügbar.',
               },
             },
           ],
@@ -379,12 +379,12 @@ window.PARAMETER_GUIDE = {
                 de: 'I',
               },
               meaning: {
-                en: 'Exceeding assigned permissions affects only low-consequence actions or information and is easily corrected.',
-                de: 'Eine Überschreitung zugewiesener Rechte betrifft nur wenig folgenschwere Aktionen oder Informationen und lässt sich leicht korrigieren.',
+                en: 'Minor permission overreach — an identified user or process performs an action outside its role, but the effect is limited to easily corrected, nonessential settings or information.',
+                de: 'Geringfügige Rechteüberschreitung — ein identifizierter Benutzer oder Prozess führt eine Aktion außerhalb seiner Rolle aus. Die Folgen beschränken sich auf leicht korrigierbare, unwesentliche Einstellungen oder Informationen.',
               },
               example: {
-                en: 'A viewer changes a nonessential display preference shared by a small team.',
-                de: 'Ein Betrachter ändert eine unwesentliche Anzeigeeinstellung für ein kleines Team.',
+                en: 'HW: a viewer changes an optional display setting; SW: a user changes a shared dashboard layout; Firmware: an operator changes a nonessential indicator pattern; Data: a reader edits a descriptive note; Function: a viewer changes report sorting.',
+                de: 'HW: ein Betrachter ändert eine optionale Anzeigeeinstellung; SW: ein Benutzer ändert ein gemeinsames Dashboard-Layout; Firmware: ein Bediener ändert ein unwesentliches Anzeigemuster; Daten: ein Leser bearbeitet eine beschreibende Notiz; Funktion: ein Betrachter ändert die Berichtssortierung.',
               },
             },
             {
@@ -393,12 +393,12 @@ window.PARAMETER_GUIDE = {
                 de: 'II',
               },
               meaning: {
-                en: 'Exceeding permissions can alter important settings, expose sensitive data or disrupt a bounded part of operations.',
-                de: 'Eine Rechteüberschreitung kann wichtige Einstellungen ändern, sensible Daten offenlegen oder einen begrenzten Betriebsbereich stören.',
+                en: 'Significant permission overreach — access beyond an assigned role exposes sensitive information or changes important settings for a bounded machine, service or dataset.',
+                de: 'Erhebliche Rechteüberschreitung — Zugriff über die zugewiesene Rolle hinaus legt sensible Informationen offen oder verändert wichtige Einstellungen einer abgegrenzten Maschine, eines Dienstes oder Datenbestands.',
               },
               example: {
-                en: 'An operator changes maintenance settings outside their assigned role.',
-                de: 'Ein Bediener ändert Wartungseinstellungen außerhalb seiner zugewiesenen Rolle.',
+                en: 'HW: an operator reconfigures a service interface reserved for maintenance; SW: a user changes production scheduling rules; Firmware: an operator changes calibration reserved for service staff; Data: a clerk exports restricted customer records; Function: an operator invokes a maintenance reset that interrupts one cell.',
+                de: 'HW: ein Bediener konfiguriert eine dem Service vorbehaltene Schnittstelle um; SW: ein Benutzer ändert Regeln der Produktionsplanung; Firmware: ein Bediener ändert eine dem Service vorbehaltene Kalibrierung; Daten: ein Sachbearbeiter exportiert zugriffsbeschränkte Kundendaten; Funktion: ein Bediener löst einen Wartungsreset aus, der eine Zelle unterbricht.',
               },
             },
             {
@@ -407,12 +407,12 @@ window.PARAMETER_GUIDE = {
                 de: 'III',
               },
               meaning: {
-                en: 'Exceeding permissions can bypass critical safeguards or grant broad administrative control with severe consequences.',
-                de: 'Eine Rechteüberschreitung kann kritische Schutzmaßnahmen umgehen oder umfassende Administratorrechte mit schweren Folgen gewähren.',
+                en: 'Critical permission overreach — a user or process can bypass protective functions, alter the trust basis or administer many essential assets without the required authority.',
+                de: 'Kritische Rechteüberschreitung — ein Benutzer oder Prozess kann ohne die erforderliche Berechtigung Schutzfunktionen umgehen, die Vertrauensbasis ändern oder viele wesentliche Assets administrieren.',
               },
               example: {
-                en: 'A normal user disables safety controls or deploys software across the fleet.',
-                de: 'Ein normaler Benutzer deaktiviert Schutzfunktionen oder verteilt Software in der gesamten Flotte.',
+                en: 'HW: a service role disables a safety interlock; SW: an ordinary account grants fleet administrator rights; Firmware: a maintenance role replaces the trusted bootloader; Data: a user changes trusted signing keys; Function: an operator disables protective shutdown during operation.',
+                de: 'HW: eine Servicerolle deaktiviert eine Sicherheitsverriegelung; SW: ein gewöhnliches Konto vergibt Flottenadministratorrechte; Firmware: eine Wartungsrolle ersetzt den vertrauenswürdigen Bootloader; Daten: ein Benutzer ändert vertrauenswürdige Signaturschlüssel; Funktion: ein Bediener deaktiviert die Schutzabschaltung während des Betriebs.',
               },
             },
           ],
@@ -444,12 +444,12 @@ window.PARAMETER_GUIDE = {
                 de: 'I',
               },
               meaning: {
-                en: 'Mistaking an identity has limited consequences because the identity can access only low-consequence functions or information.',
-                de: 'Eine falsche Identitätszuordnung hat begrenzte Folgen, da die Identität nur auf wenig folgenschwere Funktionen oder Informationen zugreifen kann.',
+                en: 'Low-consequence impersonation — accepting the wrong user, device or source identity affects only non-sensitive information or nonessential behaviour.',
+                de: 'Wenig folgenschweres Vortäuschen einer Identität — die Annahme einer falschen Benutzer-, Geräte- oder Quellenidentität betrifft nur nicht sensible Informationen oder unwesentliches Verhalten.',
               },
               example: {
-                en: 'Impersonating a user of a nonsensitive, read-only status portal.',
-                de: 'Nachahmen eines Benutzers eines unkritischen Statusportals mit reinem Lesezugriff.',
+                en: 'HW: an optional display accessory is mistaken for another; SW: a report viewer is impersonated; Firmware: a source is falsely credited for nonessential display text; Data: a descriptive note is attributed to the wrong author; Function: a report-preview request appears to come from another viewer.',
+                de: 'HW: ein optionales Anzeigezubehör wird mit einem anderen verwechselt; SW: ein Berichtsbetrachter wird vorgetäuscht; Firmware: die Quelle eines unwesentlichen Anzeigetexts wird falsch zugeordnet; Daten: eine beschreibende Notiz wird dem falschen Autor zugeschrieben; Funktion: eine Berichtsvorschau-Anfrage scheint von einem anderen Betrachter zu stammen.',
               },
             },
             {
@@ -458,12 +458,12 @@ window.PARAMETER_GUIDE = {
                 de: 'II',
               },
               meaning: {
-                en: 'Impersonating a user, device or service can expose sensitive information or disrupt a bounded part of operations.',
-                de: 'Das Vortäuschen einer Benutzer-, Geräte- oder Dienstidentität kann sensible Informationen offenlegen oder einen begrenzten Betriebsbereich stören.',
+                en: 'Operational impersonation — a false user, device or source identity is trusted with sensitive information or important actions for a bounded machine or service.',
+                de: 'Betrieblich erhebliche Identitätstäuschung — einer falschen Benutzer-, Geräte- oder Quellenidentität werden sensible Informationen oder wichtige Aktionen für eine abgegrenzte Maschine oder einen Dienst anvertraut.',
               },
               example: {
-                en: 'A fake maintenance user gains access to one machine’s configuration.',
-                de: 'Ein vorgetäuschter Wartungsbenutzer erhält Zugriff auf die Konfiguration einer Maschine.',
+                en: 'HW: a counterfeit measurement sensor is trusted and causes rejects; SW: a fake maintenance user accesses one machine; Firmware: an impersonated calibration service supplies incorrect calibration values; Data: a forged production recipe is accepted as approved; Function: a maintenance command is accepted from an impersonated local service tool.',
+                de: 'HW: einem gefälschten Messsensor wird vertraut, wodurch Ausschuss entsteht; SW: ein vorgetäuschter Wartungsbenutzer erhält Zugriff auf eine Maschine; Firmware: ein vorgetäuschter Kalibrierdienst liefert falsche Kalibrierwerte; Daten: eine gefälschte Produktionsrezeptur wird als freigegeben akzeptiert; Funktion: ein Wartungsbefehl eines vorgetäuschten lokalen Servicewerkzeugs wird angenommen.',
               },
             },
             {
@@ -472,20 +472,20 @@ window.PARAMETER_GUIDE = {
                 de: 'III',
               },
               meaning: {
-                en: 'A false identity can gain critical privileges or trusted access with severe or widespread consequences.',
-                de: 'Eine falsche Identität kann kritische Rechte oder vertrauenswürdigen Zugang mit schweren oder weitreichenden Folgen erhalten.',
+                en: 'Critical impersonation — trusting a false administrator, device or update source enables dangerous actions or compromise of essential systems, potentially across a fleet.',
+                de: 'Kritische Identitätstäuschung — das Vertrauen in einen falschen Administrator, ein falsches Gerät oder eine falsche Update-Quelle ermöglicht gefährliche Aktionen oder die Kompromittierung wesentlicher Systeme, möglicherweise flottenweit.',
               },
               example: {
-                en: 'Impersonating a fleet administrator or a trusted firmware update service.',
-                de: 'Vortäuschen eines Flottenadministrators oder eines vertrauenswürdigen Firmware-Update-Dienstes.',
+                en: 'HW: a counterfeit safety controller is accepted as trusted; SW: a fleet administrator is impersonated; Firmware: a malicious update is accepted from an impersonated trusted supplier; Data: forged safety configuration is accepted as originating from the approval authority; Function: a dangerous control command is accepted from a fake supervisory controller.',
+                de: 'HW: eine gefälschte Sicherheitssteuerung wird als vertrauenswürdig akzeptiert; SW: ein Flottenadministrator wird vorgetäuscht; Firmware: ein schädliches Update eines vorgetäuschten vertrauenswürdigen Lieferanten wird angenommen; Daten: eine gefälschte Sicherheitskonfiguration wird der Freigabestelle zugeschrieben; Funktion: ein gefährlicher Steuerbefehl einer gefälschten übergeordneten Steuerung wird angenommen.',
               },
             },
           ],
         },
       ],
       intro: {
-        en: 'Proposed protection needs: I = limited consequences, II = significant consequences, III = severe consequences. Assess each property separately; I still means protection is needed. These are company guidance levels, not IEC security levels. Examples illustrate possible contexts, not automatic classifications. Agree measurable boundaries and record assumptions.',
-        de: 'Vorgeschlagener Schutzbedarf: I = begrenzte Folgen, II = erhebliche Folgen, III = schwere Folgen. Jede Eigenschaft getrennt bewerten; auch I erfordert Schutz. Dies sind unternehmensbezogene Orientierungsstufen, keine IEC-Security-Levels. Beispiele zeigen mögliche Kontexte, keine automatischen Einstufungen. Messbare Grenzen vereinbaren und Annahmen dokumentieren.',
+        en: 'Choose I, II or III by what happens if protection fails. I: a local inconvenience or error handled through routine work; essential operation continues. II: substantial disruption, rework or sensitive disclosure affecting a product, service or group; deliberate recovery is needed. III: severe harm, loss of essential control or compromise of critical secrets, possibly across many assets. Apply this distinction separately to confidentiality, integrity, availability, authorization and authentication for hardware (HW), software (SW), firmware, data and functions. Any asset type can fall into any level: a status-display firmware and motor-control firmware need not have the same rating. For confidentiality, consider the information stored in, processed by or revealed through the asset; for authentication and authorization, consider its users, connected devices and services. I still requires protection. These are company guidance categories, not SL-T values. Use the examples as context, agree measurable boundaries and record the reason for each choice.',
+        de: 'I, II oder III danach wählen, was bei einem Versagen des Schutzes geschieht. I: lokale Unannehmlichkeit oder Fehler, im Routinebetrieb behebbar; der wesentliche Betrieb läuft weiter. II: erhebliche Störung, Nacharbeit oder sensible Offenlegung bei einem Produkt, Dienst oder einer Gruppe; gezielte Wiederherstellung ist nötig. III: schwere Schäden, Verlust wesentlicher Steuerung oder Offenlegung kritischer Geheimnisse, gegebenenfalls über viele Assets hinweg. Diese Unterscheidung für Vertraulichkeit, Integrität, Verfügbarkeit, Autorisierung und Authentifizierung jeweils getrennt auf Hardware (HW), Software (SW), Firmware, Daten und Funktionen anwenden. Jeder Asset-Typ kann jede Stufe haben: Firmware für eine Statusanzeige und Firmware für eine Motorsteuerung müssen nicht gleich eingestuft werden. Bei Vertraulichkeit die im Asset gespeicherten, verarbeiteten oder darüber offengelegten Informationen betrachten; bei Authentifizierung und Autorisierung seine Benutzer, angeschlossenen Geräte und Dienste. Auch I erfordert Schutz. Dies sind unternehmensbezogene Orientierungskategorien, keine SL-T-Werte. Beispiele im jeweiligen Kontext verwenden, messbare Grenzen vereinbaren und jede Auswahl begründen.',
       },
     },
     {
