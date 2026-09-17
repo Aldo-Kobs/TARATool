@@ -259,7 +259,7 @@ window.openImpactComment = function (assetId, dsId) {
     titleEl.textContent =
       typeof tf === 'function'
         ? tf('impact.comment.title', { assetId, dsId })
-        : `Kommentar – ${assetId} / ${dsId}`;
+        : `Begründung der Auswahl – ${assetId} / ${dsId}`;
   }
   textEl.value = existing || getImpactComment(analysis, assetId, dsId);
   textEl.setCustomValidity('');

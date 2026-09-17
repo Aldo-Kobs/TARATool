@@ -31,6 +31,7 @@ def card(page, entry):
 
 def link_goals(page, entry, goal_ids):
     card(page, entry).locator('.rr-edit-btn').click()
+    page.locator('.rr-treatment').first.select_option('Mitigiert')
     for goal_id in goal_ids:
         page.locator(f'.rr-goal-checkbox[value="{goal_id}"]').check()
     page.click('#btnCloseResidualRiskModalFooter')
@@ -93,18 +94,22 @@ def test_risk_and_goal_deletion_keep_remaining_links_and_status(app):
     assert analysis['residualRisk']['entries'][0]['uid'] == second['uid']
 
 
-def test_goals_available_without_impact_leaves_and_empty_state_is_clear(app):
+def test_goals_hidden_without_impact_leaves_and_empty_state_is_clear(app):
     first, _ = setup_risks(app, goals=False, assessed=False)
     card(app, first).locator('.rr-edit-btn').click()
-    expect(app.locator('.rr-goal-picker')).to_contain_text('Create a goal in the Security goals tab first.')
+    expect(app.locator('.rr-goal-picker')).to_be_hidden()
+    expect(app.locator('.rr-treatment')).to_have_count(0)
     app.click('#btnCloseResidualRiskModalFooter')
     switch_tab(app, 'security_goals')
     app.click('#btnAddSecurityGoal')
     app.fill('#sgName', 'Goal for draft risk')
+    app.locator('#sgRootRefs input[value="R01"]').check()
     app.locator('#securityGoalForm button[type="submit"]').click()
     switch_tab(app, 'residual_risk')
-    link_goals(app, first, ['SO01'])
     expect(card(app, first).locator('.rr-goal-summary')).to_contain_text('Goal for draft risk')
+    card(app, first).locator('.rr-edit-btn').click()
+    expect(app.locator('.rr-goal-picker')).to_be_hidden()
+
 
 
 def test_goals_and_status_survive_versions_copy_export_and_import(app):
@@ -133,8 +138,11 @@ def test_goals_and_status_survive_versions_copy_export_and_import(app):
 
 def test_pdf_includes_each_risks_status_and_goals(app):
     import pymupdf
-    first, _ = setup_risks(app, assessed=False)
+    first, _ = setup_risks(app)
     link_goals(app, first, ['SO01', 'SO02'])
+    card(app, first).locator('.rr-edit-btn').click()
+    app.locator('.rr-security').fill('Verify update signatures before installation.')
+    app.click('#btnCloseResidualRiskModalFooter')
     card(app, first).locator('.rr-evaluated-checkbox').check()
     app.evaluate('''() => {
         const a = getActiveAnalysis();
@@ -144,6 +152,9 @@ def test_pdf_includes_each_risks_status_and_goals(app):
     with app.expect_download() as download:
         app.evaluate('generateReportPdf()')
     with pymupdf.open(download.value.path()) as pdf:
+        all_text = ' '.join(' '.join(page.get_text().split()) for page in pdf)
+        assert 'Detailed Control Measure' in all_text
+        assert 'Verify update signatures before installation.' in all_text
         pages = [page.get_text() for page in pdf if '1 of 2 risks evaluated' in page.get_text()]
         assert pages
         text = ' '.join('\n'.join(pages).split())
@@ -151,3 +162,50 @@ def test_pdf_includes_each_risks_status_and_goals(app):
                          'Evaluated', 'Not evaluated', 'SO01: Protect operation',
                          'SO02: Authenticate commands', 'No security goals linked']:
             assert expected in text
+
+
+@pytest.mark.parametrize('lang',['en','de'])
+def test_goal_picker_is_at_bottom_and_tracks_mitigated_impacts(app,lang):
+    first,_=setup_risks(app)
+    app.evaluate("""uid=>{
+      const a=getActiveAnalysis();
+      const impacts=a.riskEntries.find(r=>r.uid===uid).treeV2.children[0].impacts;
+      impacts.push({...structuredClone(impacts[0]),uid:generateUID('leaf'),text:'Second impact'});
+      saveAnalyses();
+      renderResidualRisk(a);
+    }""",first['uid'])
+    app.evaluate('(lang)=>TaraPrefs.setLang(lang)',lang)
+    card(app,first).locator('.rr-edit-btn').click()
+    picker=app.locator('#residualRiskModal .rr-goal-picker')
+    choices=app.locator('#residualRiskModal .rr-treatment')
+    for treatment in ['', 'Akzeptiert', 'Delegiert']:
+        choices.nth(0).select_option(treatment)
+        expect(picker).to_be_hidden()
+    choices.nth(0).select_option('Mitigiert')
+    expect(picker).to_be_visible()
+    assert picker.evaluate('(el)=>el===el.parentElement.lastElementChild')
+    table=app.locator('#residualRiskModal .rr-leaf-table').bounding_box()
+    assert picker.bounding_box()['y'] >= table['y']+table['height']
+    label='Detailed Control Measure' if lang=='en' else 'Detaillierte Kontrollmaßnahme'
+    expect(app.locator('.rr-col-sec')).to_have_text(label)
+    expect(app.locator('.rr-security').first).to_have_attribute('placeholder',label+'...')
+    app.locator('.rr-security').first.fill('Existing control text')
+    picker.locator('input[value="SO01"]').check()
+    choices.nth(1).select_option('Mitigiert')
+    choices.nth(0).select_option('Akzeptiert')
+    expect(picker).to_be_visible()
+    choices.nth(1).select_option('Delegiert')
+    expect(picker).to_be_hidden()
+    assert get_active_analysis(app)['securityGoals'][0]['rootRefs']==['R01']
+    app.click('#btnCloseResidualRiskModalFooter')
+    app.reload()
+    switch_tab(app,'residual_risk')
+    card(app,first).locator('.rr-edit-btn').click()
+    expect(picker).to_be_hidden()
+    choices.nth(0).select_option('Mitigiert')
+    expect(picker).to_be_visible()
+    expect(picker.locator('input[value="SO01"]')).to_be_checked()
+    expect(app.locator('.rr-security').first).to_have_value('Existing control text')
+    app.evaluate('(lang)=>TaraPrefs.setLang(lang)','de' if lang=='en' else 'en')
+    expect(picker).to_be_visible()
+    expect(picker.locator('input[value="SO01"]')).to_be_checked()

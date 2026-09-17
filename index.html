@@ -411,6 +411,7 @@
                     <p class="muted-hint" data-i18n="risk.assetHint">Alle Angriffspfade dieses Risikos beziehen sich auf dieses Asset.</p>
                 </div>
                 <div id="atDamageScenarioImpactPreview" class="at-impact-preview"></div>
+                <div id="atSecurityLevelPreview" aria-live="polite"></div>
                 <div class="at-card at-root-card" style="background:#f0f0f0; border-color:#ccc; margin-bottom:10px;">
                     <div class="at-card-header">
                         <strong style="white-space:nowrap;" data-i18n="risk.modal.root">Angriffsziel (Root):</strong>
@@ -457,8 +458,8 @@
     <div id="impactCommentModal" role="dialog" aria-modal="true" aria-labelledby="impactCommentTitle" class="modal" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
         <div class="modal-content" style="width:500px;">
             <span class="close-button" onclick="document.getElementById('impactCommentModal').style.display='none'">&times;</span>
-            <h2 id="impactCommentTitle" data-i18n="impact.comment.label">Kommentar</h2>
-            <textarea id="impactCommentText" required class="rr-textarea" style="width:100%; min-height:150px; resize:vertical;" placeholder="Kommentar zur Bewertung..." data-i18n-placeholder="impact.comment.ph"></textarea>
+            <h2 id="impactCommentTitle" data-i18n="impact.comment.label">Begründung der Auswahl</h2>
+            <textarea id="impactCommentText" aria-labelledby="impactCommentTitle" required class="rr-textarea" style="width:100%; min-height:150px; resize:vertical;" placeholder="Begründen Sie die gewählte Auswirkungsbewertung..." data-i18n-placeholder="impact.comment.ph"></textarea>
             <input type="hidden" id="impactCommentAssetId">
             <input type="hidden" id="impactCommentDsId">
             <div style="margin-top:12px; display:flex; justify-content:flex-end; gap:8px;">
@@ -610,8 +611,8 @@
     </div>
 
     <div id="aboutModal" class="modal" style="display:none;">
-        <div class="modal-content about-modal-content">
-            <span class="close-button" onclick="closeAboutModal()">&times;</span>
+        <div class="modal-content about-modal-content" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+            <button type="button" class="close-button" onclick="closeAboutModal()" aria-label="About schließen" data-i18n-aria-label="about.close">&times;</button>
             <div id="aboutBodyContent"></div>
         </div>
     </div>

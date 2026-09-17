@@ -41,7 +41,7 @@ function validSecurityLevelMatrix(settings, allowUnset = false) {
 }
 
 function securityLevelTitle(analysis, lang) {
-  return t('sl.capabilityEstimate', lang);
+  return t('sl.recommendedTarget', lang);
 }
 
 function securityLevelBandRange(bounds, index) {
@@ -52,14 +52,15 @@ function securityLevelBandRange(bounds, index) {
       : `${bounds[index - 1]} < x <= ${bounds[index]}`;
 }
 
-function securityLevelForRisk(analysis, entry, residual = false) {
+function securityLevelForRisk(analysis, entry) {
   const settings = getSecurityLevelMatrix(analysis);
   if (!validSecurityLevelMatrix(settings)) return { status: 'notConfigured' };
-  const base = analysis.riskEntries?.find((risk) => risk.uid === entry?.uid);
+  // Accept editor drafts and saved risks; never read residual assessments.
+  const base =
+    entry?.treeV2 || entry?.branches
+      ? entry
+      : analysis.riskEntries?.find((risk) => risk.uid === entry?.uid);
   if (!base || !getRiskAsset(analysis, base)) return { status: 'unassessed' };
-  const assessedEntry = residual
-    ? analysis.residualRisk?.entries?.find((risk) => risk.uid === base.uid)
-    : base;
   const numeric = (value) =>
     (typeof value === 'number' || typeof value === 'string') &&
     String(value).trim() !== '' &&
@@ -67,13 +68,12 @@ function securityLevelForRisk(analysis, entry, residual = false) {
     Number(value) >= 0;
   let leaves = 0;
   let complete = true;
-  rrIterateLeaves(assessedEntry, ({ leaf }) => {
+  rrIterateLeaves(base, ({ leaf }) => {
     leaves++;
-    const values = residual && leaf.rr?.treatment === 'Mitigiert' ? leaf.rr : leaf;
-    if (![leaf.i_norm, values.k, values.s, values.t, values.u].every(numeric)) complete = false;
+    if (![leaf.i_norm, leaf.k, leaf.s, leaf.t, leaf.u].every(numeric)) complete = false;
   });
   if (!leaves || !complete) return { status: 'unassessed' };
-  const metrics = residual ? computeResidualTreeMetrics(analysis, base.uid) : base;
+  const metrics = base;
   if (
     ![
       metrics?.i_norm,
@@ -105,12 +105,12 @@ function securityLevelForRisk(analysis, entry, residual = false) {
 }
 
 function securityLevelResultText(result, lang) {
-  return result.status === 'ok' ? `SL-C ${result.value}` : t('sl.' + result.status, lang);
+  return result.status === 'ok' ? `SL-T ${result.value}` : t('sl.' + result.status, lang);
 }
 
-function renderSecurityLevelResult(analysis, entry, residual = false) {
-  const result = securityLevelForRisk(analysis, entry, residual);
-  return `<div class="security-level-result" data-sl-risk="${escapeHtml(entry?.uid || '')}" data-sl-residual="${residual}">
+function renderSecurityLevelResult(analysis, entry) {
+  const result = securityLevelForRisk(analysis, entry);
+  return `<div class="security-level-result" data-sl-risk="${escapeHtml(entry?.uid || '')}">
     <strong>${securityLevelTitle(analysis)}: ${escapeHtml(securityLevelResultText(result))}</strong>
     ${result.status === 'ok' ? `<div class="muted-hint">A = ${result.feasibility} (${t('sl.band.' + SECURITY_LEVEL_BANDS[result.feasibilityBand])}); I = ${result.impact} (${t('sl.band.' + SECURITY_LEVEL_BANDS[result.impactBand])})</div>` : ''}
   </div>`;
@@ -120,7 +120,12 @@ function defaultSecurityLevelMatrix() {
   return {
     feasibilityBounds: [0.8, 1.4, 1.8],
     impactBounds: [0.3, 0.6, 0.8],
-    matrix: Array.from({ length: 4 }, () => Array(4).fill(null)),
+    matrix: [
+      [0, 0, 1, 2],
+      [0, 1, 2, 3],
+      [1, 2, 3, 4],
+      [2, 3, 4, 4],
+    ],
   };
 }
 
@@ -172,12 +177,12 @@ function securityLevelTargetText(value, lang) {
 }
 
 function renderSecurityLevelTargets(analysis) {
-  return `<section class="sl-target-summary" aria-labelledby="slTargetSummaryTitle">
-    <h4 id="slTargetSummaryTitle">${t('sl.settingsTitle')}</h4>
+  return `<section class="sl-target-summary" aria-label="${escapeHtml(t('sl.settingsTitle'))}">
+    <h4>${t('sl.settingsTitle')}</h4>
     <p class="muted-hint">${t('sl.fixedTargets')}</p>
     <div class="sl-target-grid">${SECURITY_LEVEL_REQUIREMENTS.map(
       ({ id, abbreviation }) =>
-        `<div data-sl-target-summary="${id}"><span title="${escapeHtml(t('sl.requirement.' + id))}">${id} · ${abbreviation}</span><strong>${securityLevelTargetText(getSecurityLevelTarget(analysis, id))}</strong></div>`
+        `<div data-sl-target-summary="${id}"><span title="${escapeHtml(t('sl.requirement.' + id))}">${id} · ${abbreviation}</span><strong>${securityLevelTargetText(getSecurityLevelTarget(analysis, id))}</strong><small>${t('sl.requirement.' + id)}</small></div>`
     ).join('')}</div>
   </section>`;
 }
@@ -312,6 +317,9 @@ function renderSecurityLevelTargets(analysis) {
     analysis.securityLevelSettings = draft;
     saveAnalyses();
     renderActiveTab(analysis);
+    if (document.getElementById('attackTreeModal')?.style.display === 'block') {
+      window.atV2?.updateSummaries();
+    }
     close();
     showToast(t('sl.saved'), 'success');
   });

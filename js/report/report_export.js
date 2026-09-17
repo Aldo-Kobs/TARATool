@@ -358,6 +358,33 @@
       );
       pdf.addSpacer(4);
     }
+    if (validSecurityLevelMatrix(getSecurityLevelMatrix(analysis))) {
+      const settings = getSecurityLevelMatrix(analysis);
+      pdf.addH2(t('sl.matrixTitle', lang));
+      pdf.addText(t('sl.standardNote', lang), 9, 4.2);
+      pdf.addText(t('sl.formula', lang), 9, 4.2);
+      pdf.addTableGrid(
+        [
+          t('sl.feasibility', lang) + ' / ' + t('sl.impact', lang),
+          ...SECURITY_LEVEL_BANDS.map(
+            (band, index) =>
+              t('sl.band.' + band, lang) +
+              '\n' +
+              securityLevelBandRange(settings.impactBounds, index)
+          ),
+        ],
+        SECURITY_LEVEL_BANDS.map((band, index) => [
+          t('sl.band.' + band, lang) +
+            '\n' +
+            securityLevelBandRange(settings.feasibilityBounds, index),
+          ...settings.matrix[index].map((value) => `SL-T ${value}`),
+        ]),
+        [44, 34, 34, 34, 34],
+        { zebra: true }
+      );
+      pdf.addSpacer(4);
+    }
+
     if (risks.length === 0) {
       pdf.addText(L.noTrees);
     } else {
@@ -378,13 +405,22 @@
           h.fmtNumComma(rScore, 2),
           riskLabel(cls.label),
           h.sanitizePdfText((entry.notes || '').trim() || '-', true),
+          securityLevelResultText(securityLevelForRisk(analysis, entry), lang),
         ];
       });
       pdf.addH2(L.rootOverview);
       pdf.addTableGrid(
-        [L.colRoot, L.colP, L.colInorm, L.colR, L.colRiskClass, L.colComment],
+        [
+          L.colRoot,
+          L.colP,
+          L.colInorm,
+          L.colR,
+          L.colRiskClass,
+          L.colComment,
+          securityLevelTitle(analysis, lang),
+        ],
         overviewRows,
-        [40, 35, 16, 14, 24, 39],
+        [32, 28, 14, 12, 20, 32, 30],
         {
           zebra: true,
           noWrapCols: [1, 2, 3, 4],
@@ -578,6 +614,20 @@
     pdf.setY(pdf.margin);
     pdf.addH1(L.secObjectives);
 
+    pdf.addH2(t('sl.settingsTitle', lang));
+    pdf.addText(t('sl.fixedTargets', lang), 9, 4.2);
+    pdf.addTableGrid(
+      [L.colId, t('sl.requirement', lang), t('sl.target', lang)],
+      SECURITY_LEVEL_REQUIREMENTS.map(({ id, abbreviation }) => [
+        id,
+        t('sl.requirement.' + id, lang) + ' (' + abbreviation + ')',
+        securityLevelTargetText(getSecurityLevelTarget(analysis, id), lang),
+      ]),
+      [20, 115, 45],
+      { zebra: true }
+    );
+    pdf.addSpacer(4);
+
     const secGoals = Array.isArray(analysis.securityGoals) ? analysis.securityGoals : [];
     if (secGoals.length === 0) {
       pdf.addText(L.noSecObj);
@@ -587,12 +637,19 @@
       );
 
       pdf.addTable(
-        [L.colId, L.colName, L.colDesc, L.colRefRisks],
+        [L.colId, L.colName, L.colDesc, L.colRefRisks, securityLevelTitle(analysis, lang)],
         sortedSG.map((sg) => {
           const refs = Array.isArray(sg.rootRefs) ? sg.rootRefs.join(', ') : '-';
-          return [sg.id || '-', sg.name || '-', sg.description || '-', refs];
+          const recommendations =
+            (sg.rootRefs || [])
+              .map((id) => {
+                const risk = risks.find((entry) => entry.id === id);
+                return `${id}: ${securityLevelResultText(risk ? securityLevelForRisk(analysis, risk) : { status: 'unassessed' }, lang)}`;
+              })
+              .join('\n') || '-';
+          return [sg.id || '-', sg.name || '-', sg.description || '-', refs, recommendations];
         }),
-        [15, 40, 85, 40]
+        [15, 30, 60, 35, 40]
       );
     }
 
@@ -629,33 +686,6 @@
       { zebra: true }
     );
     pdf.addSpacer(4);
-
-    if (validSecurityLevelMatrix(getSecurityLevelMatrix(analysis))) {
-      const settings = getSecurityLevelMatrix(analysis);
-      pdf.addH2(t('sl.matrixTitle', lang));
-      pdf.addText(t('sl.standardNote', lang), 9, 4.2);
-      pdf.addText(t('sl.formula', lang), 9, 4.2);
-      pdf.addTableGrid(
-        [
-          t('sl.feasibility', lang) + ' / ' + t('sl.impact', lang),
-          ...SECURITY_LEVEL_BANDS.map(
-            (band, index) =>
-              t('sl.band.' + band, lang) +
-              '\n' +
-              securityLevelBandRange(settings.impactBounds, index)
-          ),
-        ],
-        SECURITY_LEVEL_BANDS.map((band, index) => [
-          t('sl.band.' + band, lang) +
-            '\n' +
-            securityLevelBandRange(settings.feasibilityBounds, index),
-          ...settings.matrix[index].map((value) => `SL-C ${value}`),
-        ]),
-        [44, 34, 34, 34, 34],
-        { zebra: true }
-      );
-      pdf.addSpacer(4);
-    }
 
     const evaluationEntries = analysis.residualRisk?.entries || [];
     if (evaluationEntries.length) {
@@ -726,23 +756,14 @@
           origR,
           resR,
           riskLabel(resMeta.label),
-          securityLevelResultText(securityLevelForRisk(analysis, rrEntry, true), lang),
         ]);
       });
       if (rrOverviewRows.length > 0) {
         pdf.addH2(L.rootOverviewRr);
         pdf.addTableGrid(
-          [
-            L.colRoot,
-            L.colPrr,
-            L.colInorm,
-            L.colR,
-            L.colRR,
-            L.colRiskClass,
-            securityLevelTitle(analysis, lang),
-          ],
+          [L.colRoot, L.colPrr, L.colInorm, L.colR, L.colRR, L.colRiskClass],
           rrOverviewRows,
-          [52, 38, 18, 16, 16, 28, 40],
+          [72, 38, 18, 16, 16, 48],
           {
             zebra: true,
             noWrapCols: [1, 2, 3, 4, 5],
@@ -800,8 +821,17 @@
 
           const rr = leaf.rr || {};
           const treatment = (rr.treatment || '').trim() || '-';
-          const sec = (rr.securityConcept || '').trim() || '';
-          const note = (rr.note || '').trim() || '';
+          const sec = (
+            getLocalizedField(rr, 'securityConcept', lang, { fallback: true }) || ''
+          ).trim();
+          const requirementLink = String(rr.requirementLink || '').trim();
+          const measureText = [
+            sec,
+            requirementLink ? `${L.requirementLink}: ${requirementLink}` : '',
+          ]
+            .filter(Boolean)
+            .join('\n\n');
+          const note = (getLocalizedField(rr, 'note', lang, { fallback: true }) || '').trim();
 
           const path = (meta.breadcrumb || meta?.branch?.name || '').toString();
           const leafText = (oLeaf.text || oLeaf.name || oLeaf.label || '').toString();
@@ -862,7 +892,7 @@
             ri && ri.mapTreatment ? ri.mapTreatment(treatment, lang) : treatment,
             oR,
             rrTxt,
-            sec,
+            measureText,
             note,
           ]);
         });

@@ -195,12 +195,37 @@ function _buildSbomTableRows() {
     .join('');
 }
 
+let _aboutReturnFocus = null;
+
+/** Close About without discarding the analysis or the current tab. */
+function closeAboutModal() {
+  const modal = document.getElementById('aboutModal');
+  if (!modal || modal.style.display === 'none') return;
+  modal.style.display = 'none';
+  document.removeEventListener('keydown', _handleAboutKeydown);
+  if (_aboutReturnFocus?.isConnected) _aboutReturnFocus.focus();
+  _aboutReturnFocus = null;
+}
+
+function _handleAboutKeydown(event) {
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    closeAboutModal();
+  }
+}
+
+function _handleAboutBackdrop(event) {
+  if (event.target === event.currentTarget) closeAboutModal();
+}
+
 /**
  * Opens the About modal.
  */
 function openAboutModal() {
   const modal = document.getElementById('aboutModal');
   if (!modal) return;
+  const opening = modal.style.display !== 'block';
+  if (opening) _aboutReturnFocus = document.activeElement;
 
   const _t = (key, fallback) => (typeof t === 'function' ? t(key) : fallback);
 
@@ -209,7 +234,7 @@ function openAboutModal() {
             <div class="about-title-row">
                 <i class="fas fa-shield-alt about-icon"></i>
                 <div>
-                    <h2 style="margin:0;">TARA Tool</h2>
+                    <h2 id="aboutTitle" style="margin:0;">TARA Tool</h2>
                     <span class="about-version-badge">v${TARA_TOOL_VERSION}</span>
                 </div>
             </div>
@@ -266,4 +291,7 @@ function openAboutModal() {
     `;
 
   modal.style.display = 'block';
+  modal.addEventListener('click', _handleAboutBackdrop);
+  document.addEventListener('keydown', _handleAboutKeydown);
+  if (opening) modal.querySelector('.close-button').focus();
 }

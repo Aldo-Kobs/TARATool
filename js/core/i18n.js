@@ -12,11 +12,14 @@
     de: {
       'nav.new': 'Neu',
       'nav.settings': 'Einstellungen',
-      'sl.capabilityEstimate': 'SL-C-Planungswert',
+      'sl.recommendedTarget': 'Empfohlenes SL-T',
+      'sl.goalHint':
+        'Planen Sie die Maßnahmen anhand des empfohlenen SL-T jedes verknüpften Risikos und der geforderten Ziele aus den Einstellungen.',
+      'sl.selectRisks': 'Risiken auswählen, um deren empfohlenes SL-T anzuzeigen.',
       'sl.standardNote':
-        'Benutzerdefinierte Planungsmatrix: IEC 62443-3-2 verwendet SL-T für risikobasierte Ziele. SL-C erfordert Nachweise zu den anwendbaren Sicherheitsanforderungen. Diese Berechnung weist keine IEC-Konformität oder erreichte Fähigkeit nach.',
+        'Die benutzerdefinierte Matrix empfiehlt ein SL-T anhand der ursprünglichen Risikobewertung. Die festgelegten Ziele je grundlegender Anforderung bleiben unverändert.',
       'sl.formula':
-        'A = K + S + T + U am Risiko-Root (höher = leichter durchführbar); I = I[norm] des zugeordneten Assets. Für Restrisiken werden die neu bewerteten K/S/T/U-Werte verwendet.',
+        'A = K + S + T + U am Risiko-Root (höher = leichter durchführbar); I = I[norm] des zugeordneten Assets. Die Empfehlung verwendet die ursprünglichen Werte vor Maßnahmen.',
       'sl.setupHint':
         'Die Bandgrenzen sind bearbeitbare Startwerte. Wählen Sie für alle 16 Zellen einen Level. Es wird keine IEC-Standardmatrix angenommen.',
       'sl.feasibility': 'Angriffsdurchführbarkeit A',
@@ -33,7 +36,7 @@
       'sl.choose': 'Level wählen',
       'sl.notConfigured': 'Matrix in Einstellungen konfigurieren',
       'sl.unassessed': 'Bewertung unvollständig',
-      'sl.matrixTitle': 'SL-C-Matrix für Restrisiken',
+      'sl.matrixTitle': 'Matrix für empfohlenes SL-T',
       'sl.dialogTitle': 'Security-Level-Einstellungen',
       'sl.settingsTitle': 'SL-T-Ziele je grundlegender Anforderung',
       'sl.requirement': 'Grundlegende Anforderung',
@@ -47,7 +50,7 @@
       'sl.notSet': 'Nicht festgelegt',
       'sl.progress': '{count} von 7 Zielen festgelegt',
       'sl.legacyNotice':
-        'Die bisherige Matrix wird als Altdaten erhalten. Daraus werden keine SL-T-Ziele abgeleitet.',
+        'Die bisherige Matrix wird als Altdaten erhalten. Sie wird für SL-T-Empfehlungen verwendet; Ziele je Anforderung werden separat festgelegt.',
       'sl.save': 'Einstellungen speichern',
       'sl.invalid':
         'Wählen Sie SL-T 0–4 oder „Nicht festgelegt“ für jede Anforderung. Geben Sie positive, streng aufsteigende Matrixgrenzen und SL 0–4 oder leere Matrixzellen ein.',
@@ -337,9 +340,9 @@
         'Bewerten Sie die Auswirkung (Impact) jedes Schadensszenarios auf jedes Asset (1=Low, 3=High, N/A=Nicht anwendbar).',
       'ds.needAssets': 'Bitte legen Sie zuerst Assets im Reiter "Assets" an.',
       'ds.needDs': 'Bitte definieren Sie zuerst Schadensszenarien.',
-      'impact.comment.title': 'Kommentar – {assetId} / {dsId}',
-      'impact.comment.label': 'Kommentar',
-      'impact.comment.ph': 'Kommentar zur Bewertung...',
+      'impact.comment.title': 'Begründung der Auswahl – {assetId} / {dsId}',
+      'impact.comment.label': 'Begründung der Auswahl',
+      'impact.comment.ph': 'Begründen Sie die gewählte Auswirkungsbewertung...',
       'impact.comment.saved': 'Kommentar gespeichert.',
       'impact.scenario': 'Schadenstyp',
       'impact.rating': 'Schadensauswirkung',
@@ -396,13 +399,15 @@
       'rr.colTreat': 'Behandlung',
       'rr.colKstu': 'Restrisiko Bewertung (K/S/T/U)',
       'rr.colNote': 'Anmerkungen',
-      'rr.colSec': 'Maßnahme aus Security Konzept',
+      'rr.colSec': 'Detaillierte Kontrollmaßnahme',
       'rr.pleaseSelect': 'Bitte wählen…',
       'rr.treat.accept': 'Akzeptiert',
       'rr.treat.delegate': 'Delegiert',
       'rr.treat.mitigate': 'Mitigiert',
       'rr.notePh': 'Anmerkungen (optional bei Mitigiert)...',
-      'rr.secPh': 'Maßnahme aus Security Konzept...',
+      'rr.secPh': 'Detaillierte Kontrollmaßnahme...',
+      'rr.requirementLink': 'Link zur Anforderung',
+      'rr.requirementLinkPh': 'URL oder Anforderungs-ID (optional)',
       'rr.treeNotePh': 'Anmerkungen zum Restrisiko...',
       'rr.noteRequired': '(Pflicht bei Kritisch/Hoch)',
       'rr.noteOptional': '(optional)',
@@ -584,6 +589,7 @@
       'analysis.defaultName': 'Neue Analyse',
       'analysis.unknownAuthor': 'Unbekannt',
 
+      'about.close': 'About schließen',
       'about.tagline':
         'Browser-basiertes Werkzeug für Bedrohungs- und Risikoanalysen (TARA)<br>im Kontext des <strong>EU Cyber Resilience Act (CRA)</strong>',
       'about.author': 'Autor',
@@ -607,11 +613,14 @@
     en: {
       'nav.new': 'New',
       'nav.settings': 'Settings',
-      'sl.capabilityEstimate': 'SL-C planning estimate',
+      'sl.recommendedTarget': 'Recommended SL-T',
+      'sl.goalHint':
+        'Plan measures using the recommended SL-T for each linked risk and the required targets from Settings.',
+      'sl.selectRisks': 'Select risks to see their recommended SL-T.',
       'sl.standardNote':
-        'User-defined planning matrix: IEC 62443-3-2 uses SL-T for risk-based targets. SL-C requires evidence against the applicable security requirements. This calculation does not verify IEC conformity or demonstrated capability.',
+        'The user-defined matrix recommends SL-T from the original risk assessment. The configured targets for each foundational requirement remain unchanged.',
       'sl.formula':
-        'A = K + S + T + U at the risk root (higher = more feasible); I = I[norm] for the assigned asset. Residual risks use the reassessed K/S/T/U values.',
+        'A = K + S + T + U at the risk root (higher = more feasible); I = I[norm] for the assigned asset. The recommendation uses the original values before mitigation.',
       'sl.setupHint':
         'The band boundaries are editable starting values. Choose a level for all 16 cells. No default IEC matrix is assumed.',
       'sl.feasibility': 'Attack feasibility A',
@@ -628,7 +637,7 @@
       'sl.choose': 'Choose SL',
       'sl.notConfigured': 'Configure matrix in Settings',
       'sl.unassessed': 'Assessment incomplete',
-      'sl.matrixTitle': 'Residual SL-C matrix',
+      'sl.matrixTitle': 'Recommended SL-T matrix',
       'sl.dialogTitle': 'Security level settings',
       'sl.settingsTitle': 'SL-T targets by foundational requirement',
       'sl.requirement': 'Foundational requirement',
@@ -642,7 +651,7 @@
       'sl.notSet': 'Not set',
       'sl.progress': '{count} of 7 targets set',
       'sl.legacyNotice':
-        'The previous matrix is retained as legacy data. No SL-T targets are inferred from it.',
+        'The previous matrix is retained as legacy data. It supplies SL-T recommendations; per-requirement targets are set separately.',
       'sl.save': 'Save settings',
       'sl.invalid':
         'Choose SL-T 0–4 or “Not set” for each requirement. Enter positive, strictly increasing matrix boundaries and SL 0–4 or blank matrix cells.',
@@ -929,9 +938,9 @@
         'Rate the impact of each damage scenario on each asset (1=Low, 3=High, N/A=Not applicable).',
       'ds.needAssets': 'Please create assets in the Assets tab first.',
       'ds.needDs': 'Please define damage scenarios first.',
-      'impact.comment.title': 'Comment – {assetId} / {dsId}',
-      'impact.comment.label': 'Comment',
-      'impact.comment.ph': 'Comment on the rating...',
+      'impact.comment.title': 'Justification for selection – {assetId} / {dsId}',
+      'impact.comment.label': 'Justification for selection',
+      'impact.comment.ph': 'Explain why this impact rating was selected...',
       'impact.comment.saved': 'Comment saved.',
       'impact.scenario': 'Damage type',
       'impact.rating': 'Impact',
@@ -986,13 +995,15 @@
       'rr.colTreat': 'Treatment',
       'rr.colKstu': 'Residual risk assessment (K/S/T/U)',
       'rr.colNote': 'Notes',
-      'rr.colSec': 'Security concept measure',
+      'rr.colSec': 'Detailed Control Measure',
       'rr.pleaseSelect': 'Please select…',
       'rr.treat.accept': 'Accepted',
       'rr.treat.delegate': 'Delegated',
       'rr.treat.mitigate': 'Mitigated',
       'rr.notePh': 'Notes (optional when mitigated)...',
-      'rr.secPh': 'Security concept measure...',
+      'rr.secPh': 'Detailed Control Measure...',
+      'rr.requirementLink': 'Link to requirement',
+      'rr.requirementLinkPh': 'URL or requirement ID (optional)',
       'rr.treeNotePh': 'Notes on residual risk...',
       'rr.noteRequired': '(required for Critical/High)',
       'rr.noteOptional': '(optional)',
@@ -1169,6 +1180,7 @@
       'analysis.defaultName': 'New analysis',
       'analysis.unknownAuthor': 'Unknown',
 
+      'about.close': 'Close About',
       'about.tagline':
         'Browser-based tool for threat and risk analyses (TARA)<br>in the context of the <strong>EU Cyber Resilience Act (CRA)</strong>',
       'about.author': 'Author',

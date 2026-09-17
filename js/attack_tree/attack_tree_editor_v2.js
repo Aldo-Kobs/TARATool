@@ -823,6 +823,9 @@
     }
 
     const entry = editor.getEntryData({ computeOnly: true });
+    const securityLevelPreview = document.getElementById('atSecurityLevelPreview');
+    if (securityLevelPreview)
+      securityLevelPreview.innerHTML = renderSecurityLevelResult(analysis, entry);
 
     const impactPreview = document.getElementById('atDamageScenarioImpactPreview');
     if (impactPreview) {

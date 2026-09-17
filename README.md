@@ -67,6 +67,8 @@ Der **Cyber Resilience Act (CRA)** – Verordnung (EU) 2024/2847 – ist seit De
 
 ## Schnellstart
 
+Die aktuelle englische Schritt-für-Schritt-Anleitung ist als [Markdown](docs/user-guide.md) und [PDF](docs/user-guide.pdf) verfügbar.
+
 ### Voraussetzungen
 
 - Ein moderner Webbrowser (Chrome, Firefox, Edge, Safari)

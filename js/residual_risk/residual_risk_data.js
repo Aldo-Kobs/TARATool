@@ -4,7 +4,8 @@
  *              Two parallel stores exist within analysis.residualRisk:
  *                - entries[] (primary, hierarchical – tree clones with .rr per leaf)
  *                - leaves{}  (legacy, flat dict – kept for migration of older formats only)
- *              entries[] is the authoritative store; leaves{} is rebuilt from entries on each sync.
+ *              entries[] is the authoritative treatment store; leaves{} is rebuilt on each sync.
+ *              treeNotes{} holds shared risk notes, mirrored into leaf notes for compatibility.
  * @author      Nico Peper
  * @organization SCHUNK SE & Co. KG
  * @copyright   2026 SCHUNK SE & Co. KG
@@ -47,6 +48,7 @@
       treatment: '',
       note: '',
       securityConcept: '',
+      requirementLink: '',
       k: '',
       s: '',
       t: '',
@@ -181,7 +183,9 @@
       const rr = rrDefaultLeafRR();
       rr.treatment = v.treatment || v.rrTreatment || v.status || '';
       rr.note = v.note || v.rrNote || v.anmerkung || '';
+      rr.note_en = v.note_en || '';
       rr.securityConcept = v.securityConcept || v.rrSecurityConcept || v.massnahme || '';
+      rr.requirementLink = typeof v.requirementLink === 'string' ? v.requirementLink : '';
       rr.k = v.k || v.rrK || '';
       rr.s = v.s || v.rrS || '';
       rr.t = v.t || v.rrT || '';
@@ -189,6 +193,47 @@
       map[leafKey] = rr;
     });
   }
+
+  // The overview and editor share one bilingual note per risk. Leaf copies are
+  // maintained only for compatibility with existing reports and older exports.
+  function rrSyncSharedNote(analysis, entry) {
+    const old = analysis.residualRisk.treeNotes[entry.uid];
+    const note = old && typeof old === 'object' ? old : { text: old ? String(old) : '' };
+    if (note.scope !== 'risk') {
+      for (const [target, source] of [
+        ['text', 'note'],
+        ['text_en', 'note_en'],
+      ]) {
+        const parts = [];
+        const add = (value) => {
+          const text = String(value || '').trim();
+          if (text && !parts.includes(text)) parts.push(text);
+        };
+        add(note[target]);
+        rrIterateLeaves(entry, ({ leaf }) => add(leaf.rr?.[source]));
+        note[target] = parts.join('\n\n');
+      }
+      // Retain this marker even when cleared, so old notes cannot reappear.
+      note.scope = 'risk';
+    }
+    analysis.residualRisk.treeNotes[entry.uid] = note;
+    rrIterateLeaves(entry, ({ leaf }) => {
+      if (!leaf.rr) leaf.rr = rrDefaultLeafRR();
+      leaf.rr.note = note.text || '';
+      leaf.rr.note_en = note.text_en || '';
+    });
+    return note;
+  }
+
+  window.setResidualRiskNote = function (analysis, uid, value) {
+    rrEnsureStructure(analysis);
+    const entry = analysis.residualRisk.entries.find((item) => item.uid === uid);
+    if (!entry) return;
+    const note = rrSyncSharedNote(analysis, entry);
+    setLocalizedField(note, 'text', value);
+    rrSyncSharedNote(analysis, entry);
+    rrRebuildLegacyLeavesDict(analysis);
+  };
 
   function rrRebuildLegacyLeavesDict(analysis) {
     rrEnsureStructure(analysis);
@@ -262,6 +307,7 @@
         leaf.rr = existing ? existing : rrDefaultLeafRR();
       });
 
+      rrSyncSharedNote(analysis, cloned);
       next.push(cloned);
     });
 

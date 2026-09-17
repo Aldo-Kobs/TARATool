@@ -137,6 +137,7 @@ export default [
         computeResidualTreeMetrics: 'readonly',
         rrIterateLeaves: 'readonly',
         rrLegacyKey: 'readonly',
+        setResidualRiskNote: 'readonly',
         // report/
         generateReportPdf: 'readonly',
         // config_loader.js
