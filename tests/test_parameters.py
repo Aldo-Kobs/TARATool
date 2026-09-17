@@ -18,10 +18,10 @@ def open_parameters(page):
 def test_final_tab_covers_only_inputs_grouped_by_tab_and_window(app):
     open_parameters(app)
     expect(app.locator('.tab-navigation .tab-button').last).to_have_attribute('data-tab','tabParameters')
-    expect(app.locator('[data-parameter-id]')).to_have_count(50)
-    expect(app.locator('#parameterCount')).to_have_text('50 parameters shown')
+    expect(app.locator('[data-parameter-id]')).to_have_count(51)
+    expect(app.locator('#parameterCount')).to_have_text('51 parameters shown')
     assert app.locator('[data-parameter-section]').evaluate_all('(nodes) => nodes.map(n => n.dataset.parameterSection)') == ['assets','damage','damage-matrix','damage-comment','risk','risk-node-notes','risk-notes','lifecycle','goals','residual','residual-review','security-targets','security-matrix']
-    for field in ['asset-confidentiality','asset-integrity','asset-availability','asset-authorization','asset-authentication','damage-comment','risk-asset','risk-root','risk-path','risk-impact','risk-scenarios','risk-notes','risk-node-notes','lifecycle-phases','lifecycle-custom','lifecycle-notes','goal-name','goal-description','goal-risks','residual-goals','residual-treatment','residual-note','residual-measure','residual-risk-note','residual-evaluated','sl-matrix']:
+    for field in ['asset-confidentiality','asset-integrity','asset-availability','asset-authorization','asset-authentication','damage-comment','risk-asset','risk-root','risk-path','risk-impact','risk-scenarios','risk-notes','risk-node-notes','lifecycle-phases','lifecycle-custom','lifecycle-notes','goal-name','goal-description','goal-risks','residual-goals','residual-treatment','residual-note','residual-measure','residual-requirement-link','residual-risk-note','residual-evaluated','sl-matrix']:
         expect(entry(app,field)).to_be_attached()
     for factor in 'KSTU':
         expect(entry(app,'risk-'+factor)).to_be_attached()
@@ -68,12 +68,12 @@ def test_search_and_german_guide(app):
     expect(app.locator('#parameterNoResults')).to_be_visible()
     expect(app.locator('#parameterCount')).to_have_text('0 parameters shown')
     app.locator('#parameterSearch').fill('')
-    expect(app.locator('#parameterCount')).to_have_text('50 parameters shown')
+    expect(app.locator('#parameterCount')).to_have_text('51 parameters shown')
     app.locator('#parameterSearch').fill('cell comment')
     expect(entry(app,'damage-comment')).to_be_visible()
     expect(app.locator('[data-parameter-id]:visible')).to_have_count(1)
     app.evaluate("TaraPrefs.setLang('de')")
-    expect(app.locator('#parameterCount')).to_have_text('50 Parameter angezeigt')
+    expect(app.locator('#parameterCount')).to_have_text('51 Parameter angezeigt')
     expect(entry(app,'asset-authorization')).to_contain_text('Autorisierung')
     expect(entry(app,'residual-treatment')).to_contain_text('Delegiert')
     expect(entry(app,'risk-K')).to_contain_text('Bekannte Schwachstellen')

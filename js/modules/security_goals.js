@@ -103,7 +103,7 @@
         const checked = selectedSet.has(id) ? 'checked' : '';
         return `<label class="sg-root-ref-item">
                     <input type="checkbox" value="${escapeHtml(id)}" ${checked}>
-                    <span>${escapeHtml(label)}</span>
+                    <span>${escapeHtml(label)}<span class="muted-hint sl-ref-recommendation">${t('sl.recommendedTarget')}: ${escapeHtml(securityLevelResultText(securityLevelForRisk(analysis, e)))}</span></span>
                 </label>`;
       })
       .join('');
@@ -157,7 +157,33 @@
     }
 
     modal.style.display = 'block';
+    renderGoalSecurityLevels(a);
   }
+
+  function renderGoalSecurityLevels(analysis) {
+    let preview = document.getElementById('sgSecurityLevelPreview');
+    if (!preview) {
+      preview = document.createElement('div');
+      preview.id = 'sgSecurityLevelPreview';
+      preview.setAttribute('aria-live', 'polite');
+      rootRefsList.after(preview);
+    }
+    const selected = new Set(readRootRefsSelect());
+    const risks = (analysis.riskEntries || []).filter((risk) => selected.has(risk.id));
+    preview.innerHTML =
+      `<p class="muted-hint">${t('sl.goalHint')}</p>` +
+      (risks.length
+        ? risks
+            .map(
+              (risk) =>
+                `<div><strong>${escapeHtml(risk.id)}</strong>${renderSecurityLevelResult(analysis, risk)}</div>`
+            )
+            .join('')
+        : `<p>${t('sl.selectRisks')}</p>`) +
+      renderSecurityLevelTargets(analysis);
+  }
+
+  rootRefsList?.addEventListener('change', () => renderGoalSecurityLevels(getActiveAnalysis()));
 
   function closeModal() {
     if (modal) modal.style.display = 'none';
@@ -290,6 +316,14 @@
                     <div style="margin-bottom:12px;">
                         <div style="font-weight:600; font-size:0.9em;">${typeof t === 'function' ? t('sg.refsTitle') : 'Referenzierte Angriffsziele (Root)'}</div>
                         ${refsMarkup}
+                        ${refs
+                          .map((id) => riskById.get(id))
+                          .filter(Boolean)
+                          .map(
+                            (risk) =>
+                              `<div><strong>${escapeHtml(risk.id)}</strong>${renderSecurityLevelResult(analysis, risk)}</div>`
+                          )
+                          .join('')}
                     </div>
 
                     <div class="asset-card-footer">
@@ -307,6 +341,10 @@
     const a = analysis || getActiveAnalysis();
     if (!a) return;
     renderCards(a);
+    if (modal.style.display === 'block') {
+      renderRootRefsSelect(a, readRootRefsSelect());
+      renderGoalSecurityLevels(a);
+    }
   };
 
   window.editSecurityGoal = function (id) {

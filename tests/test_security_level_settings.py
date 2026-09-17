@@ -48,6 +48,9 @@ def test_seven_independent_targets_include_zero_and_unset(app):
     app.click('#btnSettings')
     expect(app.locator('[data-sl-target]')).to_have_count(7)
     expect(app.locator('#slTargetProgress')).to_have_text('0 of 7 targets set')
+    for row, values in enumerate([[0, 0, 1, 2], [0, 1, 2, 3], [1, 2, 3, 4], [2, 3, 4, 4]]):
+        for col, value in enumerate(values):
+            expect(app.locator(f'[data-sl-cell="{row}-{col}"]')).to_have_value(str(value))
     expected = ['Identification and authentication control', 'Use control', 'System integrity',
                 'Data confidentiality', 'Restricted data flow', 'Timely response to events',
                 'Resource availability']
@@ -58,7 +61,7 @@ def test_seven_independent_targets_include_zero_and_unset(app):
     app.locator('#securityLevelSettingsForm button[type="submit"]').click()
     assert targets(app) == TARGETS
     assert 'SL-C' not in app.locator('#riskAnalysisContainer').inner_text()
-    expect(app.locator('#riskAnalysisContainer .security-level-result')).to_have_count(0)
+    expect(app.locator('#riskAnalysisContainer .security-level-result').first).to_contain_text('Recommended SL-T: SL-T 3')
     switch_tab(app, 'residual_risk')
     for requirement, value in TARGETS.items():
         expect(app.locator(f'[data-sl-target-summary="{requirement}"] strong')).to_have_text('Not set' if value is None else f'SL-T {value}')
@@ -107,7 +110,7 @@ def test_mitigation_changes_residual_risk_but_keeps_targets(app):
     assert float(after['riskValue']) < float(before['riskValue'])
     assert targets(app) == TARGETS
     expect(app.locator('[data-sl-target-summary="FR4"] strong')).to_have_text('SL-T 4')
-    expect(app.locator('#residualRiskContainer .security-level-result').first).to_contain_text('Configure matrix in Settings')
+    expect(app.locator('#residualRiskContainer .security-level-result')).to_have_count(0)
     rate(app, 'A01', 'DS3', '1')
     assert targets(app) == TARGETS
 
@@ -121,7 +124,7 @@ def test_old_matrix_is_preserved_without_inventing_targets(app):
     switch_tab(app, 'risk_analysis')
     assert 'SL-C' not in app.locator('#riskAnalysisContainer').inner_text()
     app.click('#btnSettings')
-    expect(app.locator('#securityLevelSettingsBody')).to_contain_text('No SL-T targets are inferred')
+    expect(app.locator('#securityLevelSettingsBody')).to_contain_text('per-requirement targets are set separately')
     expect(app.locator('#slTargetProgress')).to_have_text('0 of 7 targets set')
     app.click('#cancelSecurityLevelSettings')
     assert get_active_analysis(app)['securityLevelSettings'] == legacy
@@ -169,7 +172,7 @@ def test_targets_survive_versions_copy_import_and_stay_per_analysis(app):
 
 
 @pytest.mark.parametrize('lang', ['en', 'de'])
-def test_pdf_lists_targets_matrix_and_residual_slc(app, lang):
+def test_pdf_lists_targets_matrix_and_recommended_slt(app, lang):
     import pymupdf
     prepare(app)
     configure(app)
@@ -185,8 +188,9 @@ def test_pdf_lists_targets_matrix_and_residual_slc(app, lang):
     with pymupdf.open(download.value.path()) as pdf:
         texts = [page.get_text() for page in pdf]
         all_text = ' '.join('\n'.join(texts).split())
-        assert 'SL-C 3' in all_text
-        assert ('Residual SL-C matrix' if lang == 'en' else 'SL-C-Matrix für Restrisiken') in all_text
+        assert 'SL-C' not in all_text
+        assert 'SL-T 3' in all_text
+        assert ('Recommended SL-T matrix' if lang == 'en' else 'Matrix für empfohlenes SL-T') in all_text
         assert 'CRA Documentation Checklist' not in all_text
         title = 'SL-T targets by foundational requirement' if lang == 'en' else 'SL-T-Ziele je grundlegender Anforderung'
         section = ' '.join(next(text for text in texts if title in text).split())
@@ -206,27 +210,28 @@ def configure_matrix(page, matrix):
     expect(page.locator('#securityLevelSettingsModal')).to_be_hidden()
 
 
-def test_matrix_recalculates_residual_and_preserves_targets(app):
+def test_recommendation_uses_original_risk_and_ignores_mitigation(app):
     entry = prepare(app)
     configure(app)
     matrix = [[row] * 4 for row in range(4)]
     configure_matrix(app, matrix)
+    expect(app.locator('#riskAnalysisContainer .security-level-result').first).to_contain_text('Recommended SL-T: SL-T 3')
+    before = app.evaluate('(uid) => securityLevelForRisk(getActiveAnalysis(), {uid})', entry['uid'])
     switch_tab(app, 'residual_risk')
-    expect(app.locator('[data-sl-residual="true"]').first).to_contain_text('SL-C 3')
+    expect(app.locator('#residualRiskContainer .security-level-result')).to_have_count(0)
     app.locator(f'[data-rr-edit="{entry["uid"]}"]').click()
+    assert 'SL-C' not in app.locator('#residualRiskModal').inner_text()
+    expect(app.locator('#residualSecurityLevelPreview')).to_have_count(0)
     app.locator('.rr-treatment').select_option('Mitigiert')
     for select in app.locator('select.rr-kstu').all():
         select.select_option('0.1')
-    expect(app.locator('#residualSecurityLevelPreview')).to_contain_text('SL-C 0')
     app.click('#btnCloseResidualRiskModalFooter')
-    expect(app.locator('[data-sl-residual="true"]').first).to_contain_text('SL-C 0')
+    assert app.evaluate('(uid) => securityLevelForRisk(getActiveAnalysis(), {uid})', entry['uid']) == before
     assert targets(app) == TARGETS
     app.reload()
-    switch_tab(app, 'residual_risk')
-    expect(app.locator('[data-sl-residual="true"]').first).to_contain_text('SL-C 0')
-    assert get_active_analysis(app)['securityLevelSettings']['matrix'] == matrix
     switch_tab(app, 'risk_analysis')
-    assert 'SL-C' not in app.locator('#riskAnalysisContainer').inner_text()
+    expect(app.locator('.security-level-result').first).to_contain_text('SL-T 3')
+    assert get_active_analysis(app)['securityLevelSettings']['matrix'] == matrix
 
 
 def test_restores_archived_matrix_and_validates_boundaries(app):
@@ -240,8 +245,8 @@ def test_restores_archived_matrix_and_validates_boundaries(app):
         saveAnalyses();
     }''', matrix)
     app.reload()
-    switch_tab(app, 'residual_risk')
-    expect(app.locator('[data-sl-residual="true"]').first).to_contain_text('SL-C 4')
+    switch_tab(app, 'risk_analysis')
+    expect(app.locator('.security-level-result').first).to_contain_text('SL-T 4')
     app.click('#btnSettings')
     expect(app.locator('[data-sl-cell="0-0"]')).to_have_value('4')
     bounds = app.locator('[data-sl-bound="feasibility"]')
@@ -256,7 +261,7 @@ def test_restores_archived_matrix_and_validates_boundaries(app):
     app.locator('#securityLevelSettingsForm button[type="submit"]').click()
     assert get_active_analysis(app)['securityLevelSettings']['matrix'][0][0] == 2
     assert targets(app) == TARGETS
-    assert app.evaluate('(uid) => securityLevelForRisk(getActiveAnalysis(), {uid}, true).value', entry['uid']) == 4
+    assert app.evaluate('(uid) => securityLevelForRisk(getActiveAnalysis(), {uid}).value', entry['uid']) == 4
 
 
 def test_matrix_boundaries_missing_assessment_and_incomplete_setup(app):
@@ -267,19 +272,75 @@ def test_matrix_boundaries_missing_assessment_and_incomplete_setup(app):
     for value, expected in [('0.2', 0), ('0.20001', 1)]:
         result = app.evaluate('''([uid, value]) => {
             const a = getActiveAnalysis();
-            const leaf = a.residualRisk.entries.find(r => r.uid === uid).treeV2.children[0].impacts[0];
-            leaf.rr = {...leaf.rr, treatment:'Mitigiert', k:value,s:value,t:value,u:value};
-            return securityLevelForRisk(a, {uid}, true);
+            const leaf = a.riskEntries.find(r => r.uid === uid).treeV2.children[0].impacts[0];
+            Object.assign(leaf, {k:value,s:value,t:value,u:value});
+            syncAssetRisks(a);
+            return securityLevelForRisk(a, {uid});
         }''', [entry['uid'], value])
         assert result['value'] == expected
     # Missing reassessment data must not become a zero-level result.
     assert app.evaluate('''(uid) => {
         const a = getActiveAnalysis();
-        a.residualRisk.entries.find(r => r.uid === uid).treeV2.children[0].impacts[0].rr.k = '';
-        return securityLevelForRisk(a, {uid}, true).status;
+        a.riskEntries.find(r => r.uid === uid).treeV2.children[0].impacts[0].k = '';
+        return securityLevelForRisk(a, {uid}).status;
     }''', entry['uid']) == 'unassessed'
     app.click('#btnSettings')
     app.locator('[data-sl-cell="0-0"]').select_option('')
     app.locator('#securityLevelSettingsForm button[type="submit"]').click()
-    assert app.evaluate('(uid) => securityLevelForRisk(getActiveAnalysis(), {uid}, true).status', entry['uid']) == 'notConfigured'
+    assert app.evaluate('(uid) => securityLevelForRisk(getActiveAnalysis(), {uid}).status', entry['uid']) == 'notConfigured'
     assert targets(app) == TARGETS
+
+
+def test_editor_preview_uses_unsaved_draft_and_asset_selection(app):
+    entry = prepare(app)
+    configure_matrix(app, [[row] * 4 for row in range(4)])
+    app.evaluate('(id) => editAttackTree(id)', entry['id'])
+    expect(app.locator('#atSecurityLevelPreview')).to_contain_text('Recommended SL-T: SL-T 3')
+    app.evaluate("""() => {
+        Object.assign(atV2.root.children[0].impacts[0], {k:'0.1',s:'0.1',t:'0.1',u:'0.1'});
+        atV2.rerender();
+    }""")
+    expect(app.locator('#atSecurityLevelPreview')).to_contain_text('SL-T 0')
+    # Preview must use the draft without changing the saved risk.
+    assert app.evaluate('(uid) => securityLevelForRisk(getActiveAnalysis(), {uid}).value', entry['uid']) == 3
+    app.select_option('#at_asset', 'A02')
+    expect(app.locator('#atSecurityLevelPreview')).to_contain_text('Assessment incomplete')
+    app.select_option('#at_asset', 'A01')
+    app.evaluate("TaraPrefs.setLang('de')")
+    expect(app.locator('#atSecurityLevelPreview')).to_contain_text('Empfohlenes SL-T: SL-T 0')
+    app.evaluate("TaraPrefs.setLang('en')")
+    app.locator('#attackTreeForm button[type="submit"]').click()
+    assert app.evaluate('(uid) => securityLevelForRisk(getActiveAnalysis(), {uid}).value', entry['uid']) == 0
+    # A new risk has no saved UID and must still get a draft recommendation.
+    create_risk(app, 'A01', 'New recommended risk')
+    expect(app.locator('#riskAnalysisContainer .security-level-result').last).to_contain_text('SL-T 0')
+
+
+def test_goal_recommendations_follow_links_and_show_required_settings(app):
+    first = prepare(app)
+    second = create_risk(app, 'A01', 'Lower feasibility')
+    configure(app)
+    configure_matrix(app, [[row] * 4 for row in range(4)])
+    switch_tab(app, 'security_goals')
+    app.click('#btnAddSecurityGoal')
+    preview = app.locator('#sgSecurityLevelPreview')
+    expect(preview).to_contain_text('Select risks')
+    expect(preview.locator('[data-sl-target-summary="FR4"]')).to_contain_text('SL-T 4')
+    expect(preview.locator('[data-sl-target-summary="FR6"]')).to_contain_text('Not set')
+    app.locator(f'#sgRootRefs input[value="{first["id"]}"]').check()
+    expect(preview.locator('.security-level-result')).to_have_count(1)
+    expect(preview).to_contain_text('SL-T 3')
+    app.locator(f'#sgRootRefs input[value="{second["id"]}"]').check()
+    expect(preview.locator('.security-level-result')).to_have_count(2)
+    expect(preview).to_contain_text('SL-T 0')
+    app.locator(f'#sgRootRefs input[value="{first["id"]}"]').uncheck()
+    expect(preview.locator('.security-level-result')).to_have_count(1)
+    app.fill('#sgName', 'Protect service access')
+    app.locator('#securityGoalForm button[type="submit"]').click()
+    expect(app.locator('#securityGoalsCardContainer .security-level-result')).to_contain_text('Recommended SL-T: SL-T 0')
+    configure_matrix(app, [[2] * 4 for _ in range(4)])
+    expect(app.locator('#securityGoalsCardContainer .security-level-result')).to_contain_text('SL-T 2')
+    app.reload()
+    switch_tab(app, 'security_goals')
+    app.evaluate("editSecurityGoal('SO01')")
+    expect(app.locator('#sgSecurityLevelPreview .security-level-result')).to_contain_text('SL-T 2')

@@ -1071,8 +1071,8 @@ window.PARAMETER_GUIDE = {
           },
           kind: 'optional',
           help: {
-            en: 'Select existing goals that address this risk. Create new goals in Security Goals first.',
-            de: 'Vorhandene Ziele auswählen, die dieses Risiko adressieren. Neue Ziele zuerst unter Security-Ziele anlegen.',
+            en: 'When at least one impact is Mitigated, select existing goals at the bottom of the editor. Create new goals in Security Goals first.',
+            de: 'Wenn mindestens eine Auswirkung mitigiert ist, vorhandene Ziele unten im Bearbeitungsfenster auswählen. Neue Ziele zuerst unter Security-Ziele anlegen.',
           },
           values: {
             en: 'Zero, one or several goal checkboxes. Linking a goal alone does not lower the score.',
@@ -1107,17 +1107,17 @@ window.PARAMETER_GUIDE = {
         {
           id: 'residual-note',
           label: {
-            en: 'Leaf notes / rationale',
-            de: 'Blattnotizen / Begründung',
+            en: 'Notes (shared with overview)',
+            de: 'Anmerkungen (gemeinsam mit Übersicht)',
           },
           kind: 'conditional',
           help: {
-            en: 'Explain the treatment decision and evidence.',
-            de: 'Behandlungsentscheidung und Nachweise erläutern.',
+            en: 'Enter treatment decisions, evidence and remaining limitations for this risk. This is the same Notes field as in the overview. Editing either view updates the other; all impact rows share this note.',
+            de: 'Behandlungsentscheidungen, Nachweise und verbleibende Einschränkungen für dieses Risiko eingeben. Dasselbe Feld Anmerkungen wird in der Übersicht verwendet. Änderungen aktualisieren beide Ansichten; alle Auswirkungszeilen teilen diese Notiz.',
           },
           values: {
-            en: 'Required for a complete Accepted or Delegated leaf; optional for Mitigated.',
-            de: 'Für ein vollständiges akzeptiertes oder delegiertes Blatt erforderlich; bei Mitigiert optional.',
+            en: 'Required for completion if any impact is Accepted or Delegated, or if the remaining risk is High or Critical; otherwise optional.',
+            de: 'Für die Vollständigkeit erforderlich, wenn eine Auswirkung akzeptiert oder delegiert ist oder das Restrisiko hoch oder kritisch bleibt; sonst optional.',
           },
           example: {
             en: 'Integrator contract assigns network isolation; reference the agreement and owner.',
@@ -1127,8 +1127,8 @@ window.PARAMETER_GUIDE = {
         {
           id: 'residual-measure',
           label: {
-            en: 'Security concept measure',
-            de: 'Maßnahme aus Security-Konzept',
+            en: 'Detailed Control Measure',
+            de: 'Detaillierte Kontrollmaßnahme',
           },
           kind: 'conditional',
           help: {
@@ -1142,6 +1142,23 @@ window.PARAMETER_GUIDE = {
           example: {
             en: 'Verify signed updates before installation; negative tests reject altered packages.',
             de: 'Signierte Updates vor Installation prüfen; Negativtests weisen veränderte Pakete zurück.',
+          },
+        },
+        {
+          id: 'residual-requirement-link',
+          label: { en: 'Link to requirement', de: 'Link zur Anforderung' },
+          kind: 'optional',
+          help: {
+            en: 'Reference the requirement addressed by this Detailed Control Measure. Enter it in the small field beneath the measure.',
+            de: 'Die durch diese detaillierte Kontrollmaßnahme adressierte Anforderung referenzieren. Das kleine Feld unter der Maßnahme verwenden.',
+          },
+          values: {
+            en: 'Optional URL or requirement ID per impact, editable when Mitigated. The reference is shared across display languages and included in the PDF. It does not affect scores or completion.',
+            de: 'Optionale URL oder Anforderungs-ID je Auswirkung, bei Mitigiert editierbar. Die Referenz gilt für beide Anzeigesprachen und wird ins PDF übernommen. Sie beeinflusst weder Bewertung noch Vollständigkeit.',
+          },
+          example: {
+            en: 'REQ-SEC-012 or https://requirements.example.com/REQ-SEC-012',
+            de: 'REQ-SEC-012 oder https://requirements.example.com/REQ-SEC-012',
           },
         },
         {
@@ -1240,17 +1257,17 @@ window.PARAMETER_GUIDE = {
         {
           id: 'residual-risk-note',
           label: {
-            en: 'Whole-risk residual notes',
-            de: 'Restrisikonotiz zum gesamten Risiko',
+            en: 'Notes (shared with editor)',
+            de: 'Anmerkungen (gemeinsam mit Bearbeitungsfenster)',
           },
           kind: 'conditional',
           help: {
-            en: 'Record the overall residual-risk decision and remaining limitations.',
-            de: 'Gesamtentscheidung zum Restrisiko und verbleibende Einschränkungen dokumentieren.',
+            en: 'The same Notes value as in the residual-risk editor. Record treatment decisions, supporting evidence and remaining limitations here or in the editor; changes are shared.',
+            de: 'Derselbe Wert Anmerkungen wie im Restrisiko-Bearbeitungsfenster. Behandlungsentscheidungen, Nachweise und verbleibende Einschränkungen hier oder im Bearbeitungsfenster dokumentieren; Änderungen werden geteilt.',
           },
           values: {
-            en: 'Required for the completion indicator when the residual class is High or Critical; optional for lower classes.',
-            de: 'Für die Vollständigkeitsanzeige bei hohem oder kritischem Restrisiko erforderlich; bei niedrigeren Klassen optional.',
+            en: 'Required for completion if any impact is Accepted or Delegated, or if the remaining risk is High or Critical; otherwise optional.',
+            de: 'Für die Vollständigkeit erforderlich, wenn eine Auswirkung akzeptiert oder delegiert ist oder das Restrisiko hoch oder kritisch bleibt; sonst optional.',
           },
           example: {
             en: 'Remaining exposure requires owner approval and a time-limited remediation plan.',
@@ -1442,8 +1459,8 @@ window.PARAMETER_GUIDE = {
     {
       id: 'security-matrix',
       title: {
-        en: 'Settings → Residual SL matrix',
-        de: 'Einstellungen → Restrisiko-SL-Matrix',
+        en: 'Settings → Recommended SL-T matrix',
+        de: 'Einstellungen → Matrix für empfohlenes SL-T',
       },
       fields: [
         {
@@ -1491,8 +1508,8 @@ window.PARAMETER_GUIDE = {
         {
           id: 'sl-matrix',
           label: {
-            en: 'Residual SL-C planning matrix',
-            de: 'Planungsmatrix für Restrisiko-SL-C',
+            en: 'Recommended SL-T matrix',
+            de: 'Matrix für empfohlenes SL-T',
           },
           kind: 'conditional',
           help: {
@@ -1500,12 +1517,12 @@ window.PARAMETER_GUIDE = {
             de: 'Für jede Kombination aus Durchführbarkeits- und Auswirkungsband einen Ergebnislevel festlegen.',
           },
           values: {
-            en: 'Each of 16 cells accepts blank or SL 0–4. Complete all cells to enable the result. This is a company-defined planning lookup, not evidence of IEC 62443 capability or a prescribed IEC matrix. It does not change SL-T.',
-            de: 'Jede der 16 Zellen erlaubt leer oder SL 0–4. Alle Zellen für ein Ergebnis ausfüllen. Unternehmensdefinierte Planungszuordnung, kein Nachweis einer IEC-62443-Fähigkeit und keine vorgeschriebene IEC-Matrix. SL-T bleibt unverändert.',
+            en: 'Each of 16 cells accepts blank or SL 0–4. Complete all cells to enable the result. This is a company-defined planning lookup, not evidence of IEC 62443 capability or a prescribed IEC matrix. It recommends SL-T for original risks without changing the configured per-requirement targets.',
+            de: 'Jede der 16 Zellen erlaubt leer oder SL 0–4. Alle Zellen für ein Ergebnis ausfüllen. Unternehmensdefinierte Planungszuordnung, kein Nachweis einer IEC-62443-Fähigkeit und keine vorgeschriebene IEC-Matrix. Sie empfiehlt SL-T für ursprüngliche Risiken; die festgelegten Ziele je Anforderung bleiben unverändert.',
           },
           example: {
-            en: 'Record why a particular residual feasibility/impact pair maps to the chosen level.',
-            de: 'Begründen, warum eine Kombination aus verbleibender Durchführbarkeit und Auswirkung dem gewählten Level zugeordnet wird.',
+            en: 'Record why a particular original feasibility/impact pair maps to the chosen level.',
+            de: 'Begründen, warum eine Kombination aus ursprünglicher Durchführbarkeit und Auswirkung dem gewählten Level zugeordnet wird.',
           },
         },
       ],

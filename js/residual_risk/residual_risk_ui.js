@@ -189,7 +189,7 @@
       gridWrap.classList.toggle('rr-hidden', !isMit);
     }
 
-    // Security concept measure only editable for Mitigated
+    // Detailed control measure only editable for Mitigated
     const taSec = row.querySelector('.rr-security');
     if (taSec) {
       taSec.disabled = !isMit;
@@ -200,6 +200,9 @@
     if (ph) {
       ph.classList.toggle('rr-hidden', isMit);
     }
+
+    const requirementLink = row.querySelector('.rr-requirement-link');
+    if (requirementLink) requirementLink.disabled = !isMit;
 
     // Show residual risk value under reassessment
     const rv = row.querySelector('.rr-residual-leaf-value');
@@ -249,15 +252,80 @@
     return entry.text || '';
   }
 
-  function _setLocalizedTreeNote(notesDict, uid, value) {
-    if (!notesDict || !uid) return;
-    const entry = _treeNoteEntry(notesDict, uid) || { text: '' };
-    if (typeof setLocalizedField === 'function') setLocalizedField(entry, 'text', value);
-    else entry.text = value == null ? '' : String(value);
-    const hasDe = !!String(entry.text || '').trim();
-    const hasEn = !!String(entry.text_en || '').trim();
-    if (hasDe || hasEn) notesDict[uid] = entry;
-    else delete notesDict[uid];
+  function rrSharedNoteRequired(analysis, uid) {
+    const result = computeResidualTreeMetrics(analysis, uid);
+    const label = rrGetRiskMeta(result?.riskValue).label;
+    return label === 'Kritisch' || label === 'Hoch';
+  }
+
+  function rrRenderOverviewNote(entry, analysis, inputClass = 'rr-tree-note') {
+    const note = _getLocalizedTreeNote(analysis.residualRisk.treeNotes, entry.uid, { raw: true });
+    const required = rrSharedNoteRequired(analysis, entry.uid);
+    return `<div style="margin-top:10px;">
+      <div style="font-size:0.85em; color:var(--text-muted); font-weight:600; margin-bottom:4px;">
+        ${_t('rr.notesLabel')} <span class="rr-shared-required">${_t(required ? 'rr.noteRequired' : 'rr.noteOptional')}</span>
+      </div>
+      <textarea class="${inputClass} rr-textarea ${required && !note.trim() ? 'rr-text-invalid' : ''}"
+        data-rr-tree-uid="${rrEscapeHtml(entry.uid)}" data-rr-shared-note="${rrEscapeHtml(entry.uid)}"
+        data-rr-note-required="${required ? '1' : '0'}" aria-label="${_t('rr.notesLabel')}"
+        placeholder="${_t('rr.treeNotePh')}" style="min-height:56px;">${rrEscapeHtml(note)}</textarea>
+    </div>`;
+  }
+
+  function rrRefreshSharedNote(analysis, uid) {
+    const entry = analysis.residualRisk.entries.find((item) => item.uid === uid);
+    if (!entry) return;
+    const note = _treeNoteEntry(analysis.residualRisk.treeNotes, uid) || {};
+    const value = _getLocalizedTreeNote(analysis.residualRisk.treeNotes, uid, { raw: true });
+    const required = rrSharedNoteRequired(analysis, uid);
+    const noteOk = !required || value.trim().length > 0;
+    document.querySelectorAll('textarea[data-rr-shared-note]').forEach((input) => {
+      if (input.dataset.rrSharedNote !== uid) return;
+      if (input.value !== value) input.value = value;
+      if (typeof syncLocalizedInputHint === 'function')
+        syncLocalizedInputHint(input, note, 'text', _t('rr.treeNotePh'));
+      input.dataset.rrNoteRequired = required ? '1' : '0';
+      input.classList.toggle('rr-text-invalid', !noteOk);
+    });
+    const modal = document.getElementById('residualRiskModal');
+    if (modal?.dataset.rrEditingUid === uid) {
+      const leaves = new Map();
+      rrIterateLeaves(entry, (meta) => leaves.set(meta.leafKey, meta.leaf));
+      modal.querySelectorAll('.rr-leaf-row').forEach((row) => {
+        const leaf = leaves.get(row.dataset.leafkey);
+        if (leaf) rrUpdateRowUI(row, leaf);
+      });
+    }
+    document.querySelectorAll('[data-rr-risk]').forEach((card) => {
+      if (card.dataset.rrRisk !== uid) return;
+      card.querySelector('.rr-shared-required').textContent = _t(
+        required ? 'rr.noteRequired' : 'rr.noteOptional'
+      );
+      const check = card.querySelector('.rr-tree-check');
+      if (check) {
+        const complete = rrTreeAllLeavesComplete(entry) && noteOk;
+        check.classList.toggle('incomplete', !complete);
+        check.title = _t(complete ? 'rr.complete' : 'rr.incomplete');
+      }
+    });
+  }
+
+  function rrWireNotes(container, analysis) {
+    container.querySelectorAll('textarea[data-rr-shared-note]').forEach((input) => {
+      const uid = input.dataset.rrSharedNote;
+      if (typeof syncLocalizedInputHint === 'function')
+        syncLocalizedInputHint(
+          input,
+          _treeNoteEntry(analysis.residualRisk.treeNotes, uid) || {},
+          'text',
+          _t('rr.treeNotePh')
+        );
+      input.addEventListener('input', () => {
+        setResidualRiskNote(analysis, uid, input.value);
+        rrRefreshSharedNote(analysis, uid);
+        saveAnalyses();
+      });
+    });
   }
 
   function rrRootLabel(entry) {
@@ -334,9 +402,17 @@
     }</div>`;
   }
 
+  function rrHasMitigatedImpact(entry) {
+    let mitigated = false;
+    rrIterateLeaves(entry, ({ leaf }) => {
+      if (leaf?.rr?.treatment === 'Mitigiert') mitigated = true;
+    });
+    return mitigated;
+  }
+
   function rrGoalPicker(entry, analysis) {
     const goals = analysis.securityGoals || [];
-    return `<fieldset class="rr-goal-picker"><legend>${_t('rr.securityGoals')}</legend>
+    return `<fieldset class="rr-goal-picker" ${rrHasMitigatedImpact(entry) ? '' : 'hidden'}><legend>${_t('rr.securityGoals')}</legend>
       <p class="muted-hint">${_t('rr.securityGoalsHint')}</p>
       ${
         goals.length
@@ -402,6 +478,7 @@
               treatment: '',
               note: '',
               securityConcept: '',
+              requirementLink: '',
               k: '',
               s: '',
               t: '',
@@ -414,16 +491,17 @@
 
     if (rows.length === 0) {
       body.innerHTML =
-        rrGoalPicker(liveEntry, analysis) +
-        `<div class="warning-box" style="margin:0;"><h4 style="margin:0 0 6px 0;">${_t('rr.noLeaves')}</h4><p style="margin:0; color:#555;">${_t('rr.noLeavesHint')}</p></div>`;
+        rrRenderOverviewNote(liveEntry, analysis, 'rr-note') +
+        `<div class="warning-box" style="margin:0;"><h4 style="margin:0 0 6px 0;">${_t('rr.noLeaves')}</h4><p style="margin:0; color:#555;">${_t('rr.noLeavesHint')}</p></div>` +
+        rrGoalPicker(liveEntry, analysis);
       rrWireGoalPicker(body, liveEntry, analysis);
+      rrWireNotes(body, analysis);
       modal.dataset.rrEditingUid = liveEntry?.uid || '';
       modal.style.display = 'block';
       return;
     }
 
     const tableHtml = `
-            <div id="residualSecurityLevelPreview">${renderSecurityLevelResult(analysis, liveEntry, true)}</div>
             <div class="success-box" style="margin-bottom:12px;">
                 <p style="margin:0;">${_t('rr.editHint')}</p>
             </div>
@@ -442,13 +520,17 @@
                     </thead>
                     <tbody>
                         ${rows
-                          .map((meta) => {
+                          .map((meta, index) => {
                             const leaf = meta.leaf;
                             const lbl = rrBuildLeafLabel(meta);
                             const rr = leaf.rr || {};
                             const treatment = rrEscapeHtml(rr.treatment || '');
                             const note = rrEscapeHtml(
-                              getLocalizedField(rr, 'note', undefined, { raw: true })
+                              _getLocalizedTreeNote(
+                                analysis.residualRisk.treeNotes,
+                                liveEntry.uid,
+                                { raw: true }
+                              )
                             );
                             const sec = rrEscapeHtml(
                               getLocalizedField(rr, 'securityConcept', undefined, { raw: true })
@@ -488,11 +570,19 @@
                                         </div>
                                         <div class="rr-mitigate-placeholder ${isMit ? 'rr-hidden' : ''}" style="color:#7f8c8d;">-</div>
                                     </td>
-                                    <td>
-                                        <textarea class="rr-note rr-textarea" placeholder="${_t('rr.notePh')}">${note}</textarea>
-                                    </td>
+                                    ${
+                                      index === 0
+                                        ? `<td rowspan="${rows.length}">
+                                        <textarea class="rr-note rr-textarea" data-rr-shared-note="${rrEscapeHtml(liveEntry.uid)}" aria-label="${_t('rr.colNote')}" placeholder="${_t('rr.treeNotePh')}">${note}</textarea>
+                                    </td>`
+                                        : ''
+                                    }
                                     <td>
                                         <textarea class="rr-security rr-textarea" placeholder="${_t('rr.secPh')}">${sec}</textarea>
+                                        <label class="rr-requirement-link-label">
+                                            ${_t('rr.requirementLink')}
+                                            <input type="text" class="rr-requirement-link" value="${rrEscapeHtml(rr.requirementLink || '')}" placeholder="${_t('rr.requirementLinkPh')}">
+                                        </label>
                                     </td>
                                 </tr>
                             `;
@@ -503,7 +593,8 @@
             </div>
         `;
 
-    body.innerHTML = rrGoalPicker(liveEntry, analysis) + tableHtml;
+    body.innerHTML = tableHtml + rrGoalPicker(liveEntry, analysis);
+    rrWireNotes(body, analysis);
     rrWireGoalPicker(body, liveEntry, analysis);
 
     // Map leafKey -> leafRef
@@ -519,21 +610,28 @@
         const leaf = leafByKey[leafKey];
         if (!leaf) return;
         if (!leaf.rr)
-          leaf.rr = { treatment: '', note: '', securityConcept: '', k: '', s: '', t: '', u: '' };
+          leaf.rr = {
+            treatment: '',
+            note: '',
+            securityConcept: '',
+            requirementLink: '',
+            k: '',
+            s: '',
+            t: '',
+            u: '',
+          };
 
         const sel = tr.querySelector('.rr-treatment');
-        const taNote = tr.querySelector('.rr-note');
         const taSec = tr.querySelector('.rr-security');
+        const requirementLink = tr.querySelector('.rr-requirement-link');
         const kstuSelects = tr.querySelectorAll('select.rr-kstu');
 
         if (typeof syncLocalizedInputHint === 'function') {
-          syncLocalizedInputHint(taNote, leaf.rr, 'note', '');
-          syncLocalizedInputHint(taSec, leaf.rr, 'securityConcept', '');
+          syncLocalizedInputHint(taSec, leaf.rr, 'securityConcept', _t('rr.secPh'));
         }
 
         const persist = () => {
-          const preview = body.querySelector('#residualSecurityLevelPreview');
-          if (preview) preview.innerHTML = renderSecurityLevelResult(analysis, liveEntry, true);
+          rrRefreshSharedNote(analysis, liveEntry.uid);
           // Keep legacy dict in sync (needed for migration of older data formats)
           try {
             if (analysis?.residualRisk?.leaves && liveEntry?.uid) {
@@ -552,15 +650,8 @@
         if (sel) {
           sel.addEventListener('change', () => {
             leaf.rr.treatment = sel.value || '';
+            body.querySelector('.rr-goal-picker').hidden = !rrHasMitigatedImpact(liveEntry);
             // if not mitigated: not required, but hide grid
-            rrUpdateRowUI(tr, leaf);
-            persist();
-          });
-        }
-
-        if (taNote) {
-          taNote.addEventListener('input', () => {
-            setLocalizedField(leaf.rr, 'note', taNote.value);
             rrUpdateRowUI(tr, leaf);
             persist();
           });
@@ -570,6 +661,13 @@
           taSec.addEventListener('input', () => {
             setLocalizedField(leaf.rr, 'securityConcept', taSec.value);
             rrUpdateRowUI(tr, leaf);
+            persist();
+          });
+        }
+
+        if (requirementLink) {
+          requirementLink.addEventListener('input', () => {
+            leaf.rr.requirementLink = requirementLink.value;
             persist();
           });
         }
@@ -651,7 +749,7 @@
                 <div class="root-overview-title">${_paren(rrRootLabel(base) || base?.id || '')}</div>
                 <div class="root-overview-row">${rrEscapeHtml(riskAssetLabel(analysis, base))}</div>
                 <div class="root-overview-row" data-rr-status="${rrEscapeHtml(entry.uid)}">${rrEvaluationBadge(entry)}</div>
-                ${renderSecurityLevelResult(analysis, entry, true)}
+
                 <div class="root-overview-row">P(RR) = ${rrEscapeHtml(pStr(resKstu))}</div>
                 <div class="root-overview-row">I[norm] = ${rrEscapeHtml(fmt(m ? m.i_norm : base?.i_norm))}</div>
                 <div class="root-overview-row">R = <b style="color:${origMeta.color}">${rrEscapeHtml(Number.isFinite(origScore) ? fmt(origScore.toFixed(2)) : '-')}</b></div>
@@ -760,7 +858,7 @@
 
                         <div data-rr-status="${uid}">${rrEvaluationBadge(entry)}</div>
                         <div class="muted-hint">${rrEscapeHtml(riskAssetLabel(analysis, base))}</div>
-                        ${renderSecurityLevelResult(analysis, entry, true)}
+
                         ${rrGoalsSummary(entry, analysis)}
                         <!-- Risiko-Score & Restrisiko hintereinander -->
                         <div style="margin-top:6px; color:#666; font-size:0.9em;">
@@ -780,19 +878,7 @@
                             ${_t('rr.residualKstu')}: <span>K:${rrEscapeHtml(resK)} S:${rrEscapeHtml(resS)} T:${rrEscapeHtml(resT)} U:${rrEscapeHtml(resU)}</span>
                         </div>
 
-                        <div style="margin-top:10px;">
-                            <div style="font-size:0.85em; color:#666; font-weight:600; margin-bottom:4px;">
-                                ${_t('rr.notesLabel')} ${noteRequired ? `<span style="color:#c0392b; font-weight:700;">${_t('rr.noteRequired')}</span>` : `<span style="color:#7f8c8d; font-weight:600;">${_t('rr.noteOptional')}</span>`}
-                            </div>
-                            <textarea
-                                class="rr-tree-note rr-textarea ${noteRequired && !treeNote.trim() ? 'rr-text-invalid' : ''}"
-                                data-rr-tree-uid="${uid}"
-                                data-rr-note-required="${noteRequired ? '1' : '0'}"
-                                data-rr-allleaves="${allLeavesOk ? '1' : '0'}"
-                                placeholder="${_t('rr.treeNotePh')}"
-                                style="min-height:56px;"
-                            >${rrEscapeHtml(treeNote)}</textarea>
-                        </div>
+                        ${rrRenderOverviewNote(entry, analysis)}
                     </div>
 
                     <div style="display:flex; flex-direction:column; gap:10px; align-items:flex-end;">
@@ -876,40 +962,7 @@
       });
     });
 
-    // Persist tree notes + required logic + update check
-    container.querySelectorAll('textarea.rr-tree-note').forEach((ta) => {
-      const noteEntry =
-        _treeNoteEntry(analysis.residualRisk?.treeNotes || {}, ta.dataset.rrTreeUid) || {};
-      if (typeof syncLocalizedInputHint === 'function') {
-        syncLocalizedInputHint(ta, noteEntry, 'text', '');
-      }
-      ta.addEventListener('input', () => {
-        const uid = ta.dataset.rrTreeUid;
-        if (!uid) return;
-        if (!analysis.residualRisk)
-          analysis.residualRisk = { leaves: {}, entries: [], treeNotes: {} };
-        if (!analysis.residualRisk.treeNotes) analysis.residualRisk.treeNotes = {};
-        _setLocalizedTreeNote(analysis.residualRisk.treeNotes, uid, ta.value);
-
-        // Required marker
-        const required = ta.dataset.rrNoteRequired === '1';
-        const allLeavesOk = ta.dataset.rrAllleaves === '1';
-        const noteOk = !required || (ta.value || '').trim().length > 0;
-        ta.classList.toggle('rr-text-invalid', required && !noteOk);
-
-        // Tree check
-        const card = ta.closest('.rr-risk-card');
-        const ico = card ? card.querySelector('.rr-tree-check') : null;
-        if (ico) {
-          const complete = allLeavesOk && noteOk;
-          ico.classList.toggle('incomplete', !complete);
-        }
-
-        try {
-          if (typeof saveAnalyses === 'function') saveAnalyses();
-        } catch (_) {}
-      });
-    });
+    rrWireNotes(container, analysis);
   };
 
   window.editResidualRiskTree = function (riskUid) {

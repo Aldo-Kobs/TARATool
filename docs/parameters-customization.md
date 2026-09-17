@@ -1,6 +1,6 @@
 # Customising Parameters for your company
 
-The **Parameters** tab is the last tab. It is a searchable, read-only reference covering 50 user-editable fields grouped by their tab and entry window, from Assets through Residual Risk plus the associated security-level settings. It does not change analysis data and is not an additional PDF report chapter.
+The **Parameters** tab is the last tab. It is a searchable, read-only reference covering 51 user-editable fields grouped by their tab and entry window, from Assets through Residual Risk plus the associated security-level settings. It does not change analysis data and is not an additional PDF report chapter.
 
 ## 1. Edit explanations and examples
 
@@ -25,7 +25,7 @@ For I / II / III, find `asset-confidentiality`, `asset-integrity`, `asset-availa
 
 The `damage-matrix` section's `intro` explains the common impact approach. Agree measurable boundaries for each harm category (for example, tolerable downtime, financial loss, affected people and data sensitivity) before turning these examples into company policy. An example asset is not automatically assigned its illustrated level; the operating context determines the consequence.
 
-SL-T value meanings are introductory text in `security-targets`, followed by the seven actual FR inputs. `security-matrix` contains the editable band boundaries and matrix cells. Calculated risk, overall protection and SL-C results are intentionally not listed as input fields.
+SL-T value meanings are introductory text in `security-targets`, followed by the seven actual FR inputs. `security-matrix` contains the editable band boundaries and matrix cells. Calculated risk, overall protection and recommended SL-T results are intentionally not listed as input fields.
 
 Keep explanations consistent with the active settings. Editing the guide changes documentation only; it does not add controls, modify validation or change scores. The illustrative protection levels do not impose universal financial, downtime or injury thresholds. Agree such thresholds for your products and operating context.
 
@@ -90,6 +90,6 @@ The renderer reads active values for asset types, protection weights, impact fac
 2. Edit the guide’s explanations and examples in both languages.
 3. If numerical choices must change, edit `assessment_config.json`, regenerate the JavaScript, and reload the app.
 4. Review all affected field choices and the displayed Parameters values. Use a known example analysis to verify the resulting scores and risk classes.
-5. Set the analysis-specific seven SL-T targets and residual SL-C planning matrix through Settings.
+5. Set the analysis-specific seven SL-T targets and recommended SL-T matrix through Settings.
 
 The security-level summaries refer to the [ISA/ISASecure guide, printed page 7](https://programs.isa.org/hubfs/06%20-%20ASCI/0920-ISASecure-Certifications-Guide-FINAL.pdf#page=8) and [IEC 62443-4-2’s foundational requirements](https://webstore.iec.ch/en/publication/34421). The app’s matrix output remains a planning estimate; it does not demonstrate capability against the standard’s requirements.

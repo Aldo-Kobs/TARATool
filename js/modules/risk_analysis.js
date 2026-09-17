@@ -160,6 +160,7 @@ function renderRootOverview(analysis) {
                 ${entry.rootRiskValue === '' ? `<div class="root-overview-row">${_t('risk.unassessed')}</div>` : ''}
                 <div class="root-overview-row">P = ${escapeHtml(pStr(kstu))}</div>
                 <div class="root-overview-row">I[norm] = ${escapeHtml(fmt(iNorm))}</div>
+                ${renderSecurityLevelResult(analysis, entry)}
                 <div class="root-overview-row root-overview-risk">R = <b style="color:${meta.color}">${escapeHtml(Number.isFinite(rScore) ? fmt(rScore.toFixed(2)) : '-')}</b>
                     <span class="root-overview-badge" style="background:${meta.color}; color:#fff;">${escapeHtml(_rl(meta.label))}</span>
                 </div>
@@ -198,6 +199,7 @@ function renderExistingRiskEntries(analysis) {
                     <strong>${eId}</strong>: ${eName} <br>
                     <span class="entry-list-meta">${escapeHtml(riskAssetLabel(analysis, entry))}</span><br>
                     ${renderRiskDamageImpacts(analysis, entry)}
+                    ${renderSecurityLevelResult(analysis, entry)}
                     <span class="entry-list-meta">
                         ${_t('risk.score')} <b style="color:${meta.color}">${escapeHtml(meta.display)}</b>
                         <span class="root-overview-badge" style="margin-left:5px; background:${meta.color}; color:#fff;">${escapeHtml(_rl(meta.label))}</span>
