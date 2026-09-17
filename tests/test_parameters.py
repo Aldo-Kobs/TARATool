@@ -56,6 +56,10 @@ def test_values_match_active_configuration_and_refresh_after_company_changes(app
     expect(entry(app,'risk-K')).to_contain_text('0.9: Company-specific knowledge')
     expect(entry(app,'residual-K')).to_contain_text('0.9: Company-specific knowledge')
     expect(entry(app,'damage-rating')).to_contain_text('2 — Company medium')
+<<<<<<< HEAD
+=======
+    expect(entry(app,'scenario-description').locator('.parameter-rating-guide li > strong').filter(has_text='2 — Company medium')).to_have_count(5)
+>>>>>>> b4d0f84 (Expansion of explanations and examples for the parameters.)
     expect(entry(app,'risk-scenarios')).to_contain_text('Company-specific outage criteria')
 
 
@@ -123,9 +127,31 @@ def test_proposed_level_guidance_is_specific_editable_and_translated(app):
         expect(row.locator('.parameter-interpretations > li > strong')).to_have_text(['I','II','III'])
         expect(row.locator('.parameter-interpretations > li p')).to_have_count(3)
         assert all(len(text)>40 for text in row.locator('.parameter-interpretations > li').all_text_contents())
+<<<<<<< HEAD
     expect(entry(app,'asset-authentication')).to_contain_text('Who is this?')
     expect(entry(app,'asset-authorization')).to_contain_text('What may this identity do?')
     expect(entry(app,'asset-confidentiality')).to_contain_text('firmware-signing key')
+=======
+    expect(entry(app,'asset-type')).to_contain_text('software application')
+    expect(entry(app,'asset-type')).to_contain_text('network gateway')
+    expect(entry(app,'asset-integrity')).to_contain_text('shared update library')
+    assert 'Automation Manager' not in app.locator('#parametersContainer').inner_text()
+    expect(entry(app,'asset-authentication')).to_contain_text('Who is this?')
+    expect(entry(app,'asset-authorization')).to_contain_text('What may this identity do?')
+    expect(entry(app,'asset-confidentiality')).to_contain_text('firmware-signing key')
+    scenario_guides=entry(app,'scenario-description').locator('.parameter-rating-guide')
+    expect(scenario_guides).to_have_count(5)
+    for guide in scenario_guides.all():
+        expect(guide.locator('summary')).to_have_text('Ratings and examples')
+        expect(guide.locator('li > strong')).to_have_count(4)
+        guide.locator('summary').click()
+        expect(guide.locator('li').last).to_be_visible()
+    expect(scenario_guides.nth(0)).to_contain_text('severe crushing injury')
+    expect(scenario_guides.nth(1)).to_contain_text('financial bands')
+    expect(scenario_guides.nth(2)).to_contain_text('maximum tolerable outage')
+    expect(scenario_guides.nth(3)).to_contain_text('firmware-signing key')
+    expect(scenario_guides.nth(4)).to_contain_text('not automatic')
+>>>>>>> b4d0f84 (Expansion of explanations and examples for the parameters.)
     impact=entry(app,'damage-rating')
     expect(impact.locator('.parameter-interpretations > li')).to_have_count(4)
     expect(impact).to_contain_text('not how likely an attack is')
@@ -143,5 +169,11 @@ def test_proposed_level_guidance_is_specific_editable_and_translated(app):
     app.evaluate("TaraPrefs.setLang('de')")
     expect(entry(app,'asset-authentication')).to_contain_text('Wer ist das?')
     expect(entry(app,'asset-authorization')).to_contain_text('Was darf diese Identität tun?')
+<<<<<<< HEAD
     expect(entry(app,'asset-integrity')).to_contain_text('Produktionsrezeptur')
+=======
+    expect(entry(app,'asset-integrity')).to_contain_text('Konfigurationsdaten')
+    expect(entry(app,'scenario-description').locator('.parameter-rating-guide summary')).to_have_text(['Bewertungsstufen und Beispiele'] * 5)
+    expect(entry(app,'scenario-description')).to_contain_text('Quetschverletzung')
+>>>>>>> b4d0f84 (Expansion of explanations and examples for the parameters.)
     expect(entry(app,'damage-rating')).to_contain_text('maximal tolerierbare Ausfallzeit')
