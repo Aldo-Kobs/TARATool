@@ -1,0 +1,4 @@
+# Tooling used to build docs/user-guide.pdf; not application dependencies.
+Markdown==3.10.3
+playwright==1.63.0
+PyMuPDF==1.28.2

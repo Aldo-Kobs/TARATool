@@ -3,9 +3,21 @@
 **Step-by-step instructions for creating, reviewing and exporting an analysis**  
 Edition: 17 September 2026 · Language: English
 
+Reviewed against fork revision `fac28fc` and the accompanying GPL notice updates.
+
 This guide describes the current tool, including asset-linked risks, lifecycle phases, security goals, residual assessment, security-level settings and the CRA Documentation Checklist. It uses the English interface labels. The **EN/DE** switch changes the display language.
 
 Follow the steps in order for a new analysis. Return to earlier steps whenever the product, assumptions, damage ratings or attack paths change. Examples illustrate how to enter information; adapt the decisions to your company and operating context.
+
+## Copyright, license and modified version
+
+This guide describes Aldo-Kobs's modified version of TARA Tool, based on [SCHUNK SE & Co. KG's original project](https://github.com/SCHUNK-SE-Co-KG/TARATool), upstream commit `4bbc354`. The fork was modified on **10–17 September 2026**; this notice was added on **17 September 2026**.
+
+Original work: Copyright (C) 2026 SCHUNK SE & Co. KG. Fork modifications and this guide: Copyright (C) 2026 Aldo-Kobs.
+
+The program and this guide are free software/documentation: you may redistribute and modify them under the GNU General Public License, version 3 or (at your option) any later version (**GPL-3.0-or-later**). They are provided **WITHOUT ANY WARRANTY**, including the implied warranties of **MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE**. See the accompanying [LICENSE](../LICENSE) for the full terms, also available at <https://www.gnu.org/licenses/gpl-3.0.html>.
+
+Fork source: <https://github.com/Aldo-Kobs/TARATool>. [Attribution](../NOTICE.md), [dated modifications](MODIFICATIONS.md) and [distribution instructions](DISTRIBUTION.md) accompany the repository. Retain these notices and supply the license when redistributing this guide. The PDF reading copy also embeds the full LICENSE file as an attachment.
 
 ## Contents
 
@@ -29,7 +41,7 @@ Follow the steps in order for a new analysis. Return to earlier steps whenever t
 
 1. Open the supplied `index.html` in a modern browser, or open your organisation’s hosted copy of the tool.
 2. Choose **EN** or **DE** in the top bar. Use the sun/moon switch for light or dark mode.
-3. Click **New**, enter an analysis name and click **Create**. To reuse an existing analysis, expand **Copy** and select the source before creating the new analysis. Review copied content before relying on it.
+3. Click **New**, enter an analysis name and click **Create**. To reuse an existing analysis, expand **Copy** and select the source before creating the new analysis. A copy starts a new version history; it does not carry over the source analysis’s history. Review copied content, including residual review statuses, before relying on it.
 4. Check the analysis selector in the top bar. All subsequent work applies to the selected analysis.
 5. If continuing from a backup, click **Import**, select the exported analysis JSON file and complete the import. An imported analysis with an existing ID is added as a separate imported copy.
 
@@ -81,7 +93,7 @@ Select a target separately for each of the seven requirements shown in the tool:
 
 Each target accepts **Not set** or **0–4**. Not set means no decision has been recorded; 0 is an explicit selected target. Use **Parameters → Settings → SL-T targets** for the level summaries. Agree the targets with the relevant product and security stakeholders and record the rationale in the analysis documentation.
 
-SL-T represents the intended protection. The seven targets stay separate and do not decrease automatically when a mitigation reduces a risk score.
+SL-T represents the intended protection. The seven targets stay separate and do not decrease automatically when a mitigation reduces a risk score. You may save a partially assigned set of targets; the progress count shows how many have been set. A recommended SL-T does not establish achieved security capability or certify the product.
 
 ### Configure the recommended SL-T matrix
 
@@ -90,7 +102,21 @@ SL-T represents the intended protection. The seven targets stay separate and do 
 3. Select **SL 0–4** for each of the 16 matrix cells, using your agreed company mapping.
 4. Click **Save settings**.
 
-An incomplete matrix can be saved, but it cannot produce a recommendation. **Recommended SL-T** is calculated from the original risk’s feasibility and normalized impact. It appears in Risk Analysis and updates live in the risk editor. Security Goals shows each linked risk’s recommendation alongside the required targets from Settings. Recommendations do not overwrite those targets.
+New analyses use the following editable defaults. These are the tool’s starting values; review them before adopting them as company policy.
+
+| Axis                                 | Low   | Medium       | High         | Very high |
+| ------------------------------------ | ----- | ------------ | ------------ | --------- |
+| Attack feasibility (`K + S + T + U`) | ≤ 0.8 | > 0.8 to 1.4 | > 1.4 to 1.8 | > 1.8     |
+| Normalised impact                    | ≤ 0.3 | > 0.3 to 0.6 | > 0.6 to 0.8 | > 0.8     |
+
+| Feasibility / Impact | Low    | Medium | High   | Very high |
+| -------------------- | ------ | ------ | ------ | --------- |
+| Low                  | SL-T 0 | SL-T 0 | SL-T 1 | SL-T 2    |
+| Medium               | SL-T 0 | SL-T 1 | SL-T 2 | SL-T 3    |
+| High                 | SL-T 1 | SL-T 2 | SL-T 3 | SL-T 4    |
+| Very high            | SL-T 2 | SL-T 3 | SL-T 4 | SL-T 4    |
+
+An incomplete matrix can be saved, but it cannot produce a recommendation. All impact leaves must have a numeric impact and all four factors before a risk receives a recommendation; a populated root score alone is insufficient. **Recommended SL-T** is calculated from the original risk’s feasibility and normalized impact. It appears in Risk Analysis and updates live in the risk editor. Security Goals shows each linked risk’s recommendation alongside the required targets from Settings. Recommendations do not overwrite those targets.
 
 Settings belong to the selected analysis. General K/S/T/U choices and other scoring defaults come from the separate assessment configuration. Use **Overview → Load assessment config** only when applying an agreed company configuration. That load affects the running session and can change recalculated results; it is not an analysis import.
 
@@ -110,7 +136,13 @@ Settings belong to the selected analysis. General K/S/T/U choices and other scor
 
 ### Choose I, II or III by the consequences of a failure
 
-The **Parameters** tab contains editable proposed definitions. As a starting point, **I** means limited consequences, **II** significant consequences, and **III** severe consequences. These are protection-need categories, distinct from the SL-T values in Settings.
+Use these proposed definitions as a starting point for agreeing company criteria:
+
+- **I — limited consequences:** local effects manageable through routine work or an effective workaround.
+- **II — significant consequences:** substantial but contained harm requiring dedicated recovery, rework or intervention.
+- **III — severe consequences:** serious or lasting harm, exposure of critical secrets, or loss of essential operation or control.
+
+These are protection-need categories, distinct from the SL-T values in Settings and from product classifications. The same reasoning applies to hardware, applications, firmware, shared libraries, data and system functions. Assess intended use, dependencies, affected users, alternatives and recovery; a small shared component can have severe downstream consequences. The Parameters guidance is editable; its current loading limitation is described in section 11.
 
 | Property        | Question to ask                                          | Illustrative progression from I to III                                                                                                     |
 | --------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -124,7 +156,7 @@ Authentication asks **“Who is this?”** Authorization asks **“What may this
 
 Select the highest credible consequence for each property in the assessed context. An example does not automatically determine the level. Record the reasoning in the asset description. I still means protection is needed. **N/A** is available for Authentication and Authorization when a criterion does not apply; explain why. Leaving a selection blank means it has not been evaluated.
 
-The tool derives an overall protection need from the highest selected property. Complete the individual assessment rather than relying on an automatically displayed result.
+The tool derives an overall protection need from the highest selected property. Complete the individual assessment rather than relying on an automatically displayed result. With the shipped defaults, I, II and III carry weights of 0.6, 0.8 and 1.0. An unset overall protection need currently falls back to the I weight during impact calculation, so a numeric risk score does not prove that the asset evaluation is complete.
 
 ## 5. Rate damage scenarios and explain every cell
 
@@ -139,6 +171,8 @@ The default scenarios are:
 | DS3 | Operation damage        | Loss of operation in the component.                          |
 | DS4 | Loss of privacy/data    | Loss or disclosure of sensitive data.                        |
 | DS5 | Legal consequences      | Consequences of violations relevant to the assessed product. |
+
+The scenarios apply to software and hardware in their operating context. A compromised library, service or trusted sensor value can cause harm through the products that depend on it. Assess the outcome and credible exposure; the number of devices alone does not determine severity.
 
 To add a custom scenario, click **New**, enter its name, a short description of at most 10 characters, and an optional explanation; then save. Describe a harmful outcome, rather than an attack technique.
 
@@ -156,6 +190,22 @@ For **every asset/scenario pair**:
 | Medium / 2 | Significant but contained disruption requiring dedicated recovery or rework.           | A component stops one production cell until specialist recovery.                              |
 | High / 3   | Severe, widespread or difficult-to-reverse harm.                                       | An essential process stops without a workable fallback beyond the agreed tolerable outage.    |
 | N/A        | The stated damage is not applicable in the assessed context.                           | A scenario concerns records that the component neither stores nor handles.                    |
+
+### Apply the scale to each damage category
+
+The following summarises the expanded scenario guidance. Use it with the product’s actual dependencies and agreed severity thresholds; the examples are not automatic ratings.
+
+| Scenario                      | Low / 1                                                                                | Medium / 2                                                                                                                    | High / 3                                                                                                                           |
+| ----------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| DS1 — Danger to life and limb | Minor, temporary harm without lasting impairment.                                      | Reversible injury with a meaningful recovery period.                                                                          | Serious injury, permanent impairment or a life-threatening outcome; one person can be sufficient.                                  |
+| DS2 — Financial damage        | Small local cost within routine-service limits.                                        | Substantial but contained repair, recovery, replacement or compensation costs.                                                | Major total loss beyond the company’s high-impact threshold, including downstream costs.                                           |
+| DS3 — Operation damage        | Minor interruption with required functions available through an effective alternative. | Important operation interrupted within a bounded scope, with deliberate recovery and an alternative that contains the outage. | Required operation lost beyond the tolerable outage with no effective fallback.                                                    |
+| DS4 — Loss of privacy/data    | Limited disclosure of low-sensitivity information without access secrets.              | Sensitive customer, technical or personal information exposed with substantial but contained consequences.                    | Critical secrets or highly sensitive information exposed with severe or lasting consequences; a single signing key may suffice.    |
+| DS5 — Legal consequences      | A substantiated minor issue correctable through routine action.                        | A material but contained failure requiring formal corrective action or creating significant liability.                        | Severe consequences supported by the applicable obligation and assessment; do not assume penalties or recall follow automatically. |
+
+Examples include a defective shared library preventing dependent applications from starting (DS3), a service exposing identifiable customer records (DS4), or manipulated sensor information contributing to unsafe physical behaviour (DS1). One incident can support several scenario ratings; explain each consequence separately. For DS5, identify the specific applicable obligation and the basis for the consequence.
+
+Choose **N/A** only after excluding a credible path to that scenario, including indirect effects. An isolated public sample may have no sensitive-data exposure, but software is not automatically exempt from safety or operational consequences. Uncertainty about an outcome or obligation is a reason to investigate, not a reason to choose N/A.
 
 Use company-specific thresholds for duration, affected people, financial loss and data sensitivity. Rate the **consequence**, not the likelihood of an attack. N/A is not “low” or “unknown”; an untouched cell also displays N/A, so make the decision explicit in the comment.
 
@@ -193,9 +243,28 @@ Larger factors increase the feasibility score; they are not percentages. For ove
 
 The tool combines the assigned asset’s protection need with the linked damage ratings. It does not average ratings from all assets. For multiple linked scenarios it uses the highest resulting impact. Parent paths and the root inherit worst-case impact and K/S/T/U values, so a root can combine maxima from different leaves.
 
+With the shipped defaults, Low, Medium and High damage ratings have severity factors of 0.3, 0.6 and 1.0. Each linked scenario’s normalised impact is its severity factor multiplied by the assigned asset’s overall protection weight. N/A provides no numeric impact; if all linked scenarios are N/A, the leaf is unassessed rather than a scored zero.
+
 The score is `R = normalised impact × (K + S + T + U)`. Scores and classes are outputs; enter the supporting assessment in the leaf fields. An unknown result or an empty leaf needs review. A scored root does not prove that every path is complete.
 
+The current default risk classes are:
+
+| Class    | Score range   |
+| -------- | ------------- |
+| Low      | 0 ≤ R < 0.8   |
+| Medium   | 0.8 ≤ R < 1.6 |
+| High     | 1.6 ≤ R < 2.0 |
+| Critical | R ≥ 2.0       |
+
+These are risk-score classes, separate from the feasibility/impact bands used by the recommended SL-T matrix. A custom assessment configuration can change the thresholds.
+
 If one attack affects several assets, create separate asset-linked risks as needed and cross-reference them in notes. When an asset or damage rating changes, review its associated risks and subsequent residual decisions.
+
+### Review older analyses and asset changes
+
+When importing an older analysis, review every risk’s asset assignment. An older unassigned risk can be matched automatically when there is only one asset; when several assets are possible, select the correct one explicitly. Deleting an asset removes its matrix ratings and comments. Its manually created risks can remain without a valid asset assignment and must be reviewed before reuse; renumbering the remaining assets does not transfer those risks to another asset.
+
+Risks marked as generated by the former matrix automation are retained in the analysis archive and removed from the active risk list. There is no archive-restore control in the interface. Keep the original JSON backup and recreate or review the required risks through the current manual workflow.
 
 ## 7. Assign lifecycle phases
 
@@ -268,12 +337,16 @@ The counters track reviewed checklist items, rather than establishing product co
 
 ## 11. Use the Parameters reference
 
+**Known issue in reviewed revision `fac28fc`:** the parameter guidance file contains unresolved merge-conflict markers, which prevent it from loading. The Parameters tab can therefore be blank. Sections 3–6 of this guide provide the key settings, protection-level and damage-rating guidance while that issue is resolved. The workflow below describes the reference when its guidance file loads successfully.
+
 1. Open the final **Parameters** tab.
 2. Follow a section link for the relevant tab/window, or search for a field, value or example.
 3. Read what the field requires, the meaning of its possible values and the examples.
 4. Return to the relevant entry window to fill in the assessment.
 
-The guide covers 51 user-entered fields, grouped by their actual tab and dialog. It includes the proposed I/II/III protection levels and damage impact interpretations, which can be discussed and adapted to company needs. Current configurable choices are drawn from the active assessment configuration.
+The reference defines 51 user-entered fields, grouped from Assets through Residual Risk and the associated Settings dialogs. Each entry provides an explanation, possible values, examples and a required/optional/recommended/conditional label. These labels explain the assessment workflow; they do not themselves enforce validation. Search filters the field rows, their section titles and their displayed content.
+
+The latest guidance text broadens the examples to hardware and software products, firmware, reusable components, data and functions. It adds scenario-specific DS1–DS5 explanations and rating examples alongside the proposed I/II/III definitions. Some of this content is still affected by the unresolved guidance-file conflict; do not assume every nested example is displayed by the current renderer. The functioning reference draws supported configurable choices, such as K/S/T/U and matrix bands, from the running application. Changing example text does not change the scoring configuration.
 
 Parameters is a reference, not an additional entry form. It is not an analysis PDF chapter.
 
@@ -310,7 +383,9 @@ The report includes the analysis content and assessment results. It excludes the
 
 ### Other exports and About
 
-**Overview → Export tree data** provides tree data as a ZIP for further use. **About → Export SBOM** downloads the tool’s own software bill of materials; it is not an inventory of your assessed product. Close About with ×, Escape or a click on the backdrop outside the window.
+**Overview → Export tree data** provides tree data as a ZIP for further use.
+
+**About** identifies the SCHUNK upstream project and the Aldo-Kobs fork, shows the dated modification and warranty notices, and links to the GPLv3-or-later license, copyright/modification notices and fork source. **About → Export SBOM** downloads the tool’s own CycloneDX software bill of materials with the fork’s application metadata and GPL-3.0-or-later declaration. It is not an inventory of your assessed product. Close About with ×, Escape or a click on the backdrop outside the window.
 
 ## 13. Worked example
 
@@ -328,23 +403,25 @@ Use the following as a practice exercise with the shipped scoring defaults. It d
 
 With the shipped factors, protection II contributes 0.8 and High severity contributes 1.0, so the normalised impact is **0.8**. The original score is `0.8 × (0.7 + 0.1 + 0.5 + 0.3) = 1.28`, classified **Medium**. The example residual score is `0.8 × (0.1 + 0.1 + 0.2 + 0.3) = 0.56`, classified **Low**.
 
-These numbers change if the configuration or linked scenarios change. The example deliberately does not prescribe an SL-T target or recommended SL-T matrix; those need the organisation’s agreed decisions.
+These numbers change if the configuration or linked scenarios change. With the shipped recommended SL-T matrix, the original feasibility 1.6 and impact 0.8 fall in the High/High cell, giving **recommended SL-T 3**. This recommendation remains based on the original risk after mitigation. The seven required SL-T targets remain **Not set** until you select them separately; the example does not prescribe those targets.
 
 ## 14. Troubleshooting and final review
 
-| Symptom                                                | What to check                                                                                                                                     |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| PDF export reports missing comments                    | Open Damage scenarios and complete every cell’s comment, including N/A.                                                                           |
-| A risk has no calculated impact                        | Confirm its asset, linked damage scenarios and at least one applicable numeric matrix rating.                                                     |
-| A risk score is unknown or incomplete                  | Complete all four factors on each relevant leaf and check that its impact is assessed.                                                            |
-| An asset has no attached risk                          | Use its Create risk action in Risk analysis; risks are not automatically generated from the matrix.                                               |
-| Residual score did not decrease                        | Check that the treatment is Mitigated and that supported reassessed factors were entered. Goals and status checkboxes do not lower scores.        |
-| Recommended SL-T is not configured                     | Complete all 16 matrix cells and valid increasing boundaries in Settings; also check the underlying risk assessment.                              |
-| Evaluated is checked but fields are missing            | Review status is manual. Complete the required treatment fields and any High/Critical whole-risk note.                                            |
-| An image is rejected                                   | Use PNG, JPEG or WebP within the 5 MB per-image limit.                                                                                            |
-| PDF or tree rendering is unavailable                   | Check whether the required external libraries/services loaded and whether the network allows them. Preserve a JSON backup while resolving access. |
-| Work is missing in another browser                     | Import the exported analysis JSON. Local browser storage is not shared project storage.                                                           |
-| A language switch leaves text in the original language | Enter the appropriate text for that language where supported; user descriptions are not automatically translated.                                 |
+| Symptom                                                   | What to check                                                                                                                                                                      |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Parameters tab is blank in revision `fac28fc`             | The committed guidance file cannot load because of unresolved merge-conflict markers. Use this guide’s assessment explanations and have the maintained application copy corrected. |
+| A risk has a score despite an unfinished asset evaluation | Complete all five protection properties. An unset overall protection need currently falls back to the I weight.                                                                    |
+| PDF export reports missing comments                       | Open Damage scenarios and complete every cell’s comment, including N/A.                                                                                                            |
+| A risk has no calculated impact                           | Confirm its asset, linked damage scenarios and at least one applicable numeric matrix rating.                                                                                      |
+| A risk score is unknown or incomplete                     | Complete all four factors on each relevant leaf and check that its impact is assessed.                                                                                             |
+| An asset has no attached risk                             | Use its Create risk action in Risk analysis; risks are not automatically generated from the matrix.                                                                                |
+| Residual score did not decrease                           | Check that the treatment is Mitigated and that supported reassessed factors were entered. Goals and status checkboxes do not lower scores.                                         |
+| Recommended SL-T is not configured                        | Complete all 16 matrix cells and valid increasing boundaries in Settings; also check the underlying risk assessment.                                                               |
+| Evaluated is checked but fields are missing               | Review status is manual. Complete the required treatment fields and any High/Critical whole-risk note.                                                                             |
+| An image is rejected                                      | Use PNG, JPEG or WebP within the 5 MB per-image limit.                                                                                                                             |
+| PDF or tree rendering is unavailable                      | Check whether the required external libraries/services loaded and whether the network allows them. Preserve a JSON backup while resolving access.                                  |
+| Work is missing in another browser                        | Import the exported analysis JSON. Local browser storage is not shared project storage.                                                                                            |
+| A language switch leaves text in the original language    | Enter the appropriate text for that language where supported; user descriptions are not automatically translated.                                                                  |
 
 Before handing the assessment to a reviewer, confirm:
 
@@ -361,10 +438,18 @@ Before handing the assessment to a reviewer, confirm:
 
 ## 15. Maintain the guidance
 
-The editable source of this document is **`docs/user-guide.md`**. The companion **`docs/user-guide.pdf`** is the formatted reading copy. Regenerate the PDF after changing the Markdown so both versions stay consistent.
+The editable source of this document is **`docs/user-guide.md`**. The companion **`docs/user-guide.pdf`** is the formatted reading copy. Regenerate the PDF after changing the Markdown so both versions stay consistent. From the repository root, use a Python environment with the documentation dependencies installed:
+
+```sh
+python3 -m pip install -r scripts/requirements-docs.txt
+python3 -m playwright install chromium
+python3 scripts/build_user_guide.py
+```
+
+If a compatible Chrome/Chromium is already installed, pass its executable instead of installing the Playwright browser, for example `python3 scripts/build_user_guide.py --browser-executable /opt/google/chrome/chrome`. The generator renders this Markdown, adds page numbers and PDF bookmarks, embeds LICENSE, and writes `docs/user-guide.pdf`. It does not generate an analysis report.
 
 For company-specific in-app guidance, edit **`config/parameter_guide.js`**. The `sections[].fields[]` entries contain descriptions and examples. The `interpretations[]` entries define I/II/III and damage rating guidance in English and German.
 
 For actual scoring choices and defaults, edit **`config/assessment_config.json`**, then run `python3 scripts/sync_assessment_config.py` from the project root and reload the app. Changing explanatory text alone does not change scoring.
 
-See **`docs/parameters-customization.md`** for exact field keys and source locations. The user workflow in this edition was checked against the current forms, guide definitions, analysis persistence, risk editors and report export code. Recheck the instructions when those behaviours change.
+See **`docs/parameters-customization.md`** for exact field keys and source locations. The user workflow in this edition was checked against the forms, scoring defaults, settings, analysis persistence, risk editors, About notices and report export code at `fac28fc` plus the accompanying licensing changes. The known Parameters loading problem is recorded in sections 11 and 14; the customization document also contains unresolved conflict text. Recheck these limitations and the instructions when the application changes.

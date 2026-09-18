@@ -20,3 +20,7 @@ oder direkt:
 ```bash
 python scripts/sync_assessment_config.py
 ```
+
+## User Guide als PDF erzeugen
+
+`scripts/build_user_guide.py` erzeugt `docs/user-guide.pdf` aus `docs/user-guide.md`, einschließlich Seitenzahlen, Lesezeichen und eingebetteter LICENSE-Datei. Die Python-Abhängigkeiten stehen in `scripts/requirements-docs.txt`; zusätzlich wird Chromium benötigt. Installation und Aufruf sind in [User Guide, Abschnitt 15](../docs/user-guide.md#15-maintain-the-guidance) beschrieben.

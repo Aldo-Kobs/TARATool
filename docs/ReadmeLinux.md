@@ -1,11 +1,13 @@
 # TARA Tool unter Linux
 
+Diese Anleitung bezieht sich auf den von Aldo-Kobs am 10.–17. September 2026 geänderten Fork. Lizenz: GPL-3.0-or-later; siehe [Urheber- und Lizenzhinweise](../NOTICE.md) und [Weitergabe](DISTRIBUTION.md).
+
 Das Tool ist eine reine Browser-App. **Distribution egal** (Ubuntu, Fedora, Debian, …).
 
 ## Start
 
 ```bash
-git clone https://github.com/SCHUNK-SE-Co-KG/TARATool.git
+git clone https://github.com/Aldo-Kobs/TARATool.git
 cd TARATool
 ```
 

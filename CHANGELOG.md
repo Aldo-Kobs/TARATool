@@ -1,5 +1,18 @@
 # Changelog
 
+## Aldo-Kobs fork — 2026-09-10 to 2026-09-17
+
+Modified version of SCHUNK SE & Co. KG's TARA Tool, based on upstream commit `4bbc354`. Copyright (C) 2026 SCHUNK SE & Co. KG; fork modifications Copyright (C) 2026 Aldo-Kobs. License: GPL-3.0-or-later. See [NOTICE.md](NOTICE.md) and the [dated commit and file inventory](docs/MODIFICATIONS.md).
+
+- Expanded Overview, asset evaluation, damage-rating explanations and PDF reporting.
+- Added asset-linked risks, lifecycle tracking, revised residual-risk handling and security-level settings.
+- Added CRA documentation review, bilingual parameter guidance, user documentation and regression coverage.
+- 2026-09-17: added fork attribution, modification and redistribution notices; aligned package and SBOM licensing with the upstream GPLv3-or-later grant; added legal notices to About and the user guide.
+
+- 2026-09-17: reviewed the user guide against current workflows, defaults and expanded assessment guidance; documented the existing Parameters loading issue and added a repeatable Markdown-to-PDF build with the license embedded.
+
+The entries below retain the upstream changelog as inherited by this fork.
+
 ## [Unreleased]
 
 ### Security

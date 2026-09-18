@@ -4,7 +4,8 @@
  * @author      Nico Peper
  * @organization SCHUNK SE & Co. KG
  * @copyright   2026 SCHUNK SE & Co. KG
- * @license     GPL-3.0
+ * @modified    2026-09-17 Aldo-Kobs; see NOTICE.md and docs/MODIFICATIONS.md
+ * @license     GPL-3.0-or-later
  */
 
 const TARA_TOOL_VERSION = '1.0.0';
@@ -33,7 +34,7 @@ function generateCycloneDxSbom() {
       timestamp: new Date().toISOString(),
       tools: [
         {
-          vendor: 'SCHUNK SE & Co. KG',
+          vendor: 'Aldo-Kobs',
           name: 'TARA Tool',
           version: TARA_TOOL_VERSION,
         },
@@ -45,16 +46,18 @@ function generateCycloneDxSbom() {
         description: en
           ? 'Browser-based tool for threat and risk analyses (TARA) in the context of the EU Cyber Resilience Act (CRA)'
           : 'Browser-basiertes Werkzeug für Bedrohungs- und Risikoanalysen (TARA) im Kontext des EU Cyber Resilience Act (CRA)',
-        licenses: [{ license: { id: 'GPL-3.0-only' } }],
+        licenses: [{ license: { id: 'GPL-3.0-or-later' } }],
         supplier: {
-          name: 'SCHUNK SE & Co. KG',
-          url: ['https://www.schunk.com'],
+          name: 'Aldo-Kobs',
+          url: ['https://github.com/Aldo-Kobs/TARATool'],
         },
-        author: 'Nico Peper',
-        purl: 'pkg:github/SCHUNK-SE-Co-KG/TARATool@' + TARA_TOOL_VERSION,
+        author: 'Nico Peper (upstream); Aldo-Kobs (fork modifications)',
+        copyright:
+          'Copyright (C) 2026 SCHUNK SE & Co. KG; fork modifications Copyright (C) 2026 Aldo-Kobs',
+        purl: 'pkg:github/Aldo-Kobs/TARATool@' + TARA_TOOL_VERSION,
         externalReferences: [
-          { type: 'website', url: 'https://github.com/SCHUNK-SE-Co-KG/TARATool' },
-          { type: 'vcs', url: 'https://github.com/SCHUNK-SE-Co-KG/TARATool.git' },
+          { type: 'website', url: 'https://github.com/Aldo-Kobs/TARATool' },
+          { type: 'vcs', url: 'https://github.com/Aldo-Kobs/TARATool.git' },
           { type: 'license', url: 'https://www.gnu.org/licenses/gpl-3.0.html' },
           {
             type: 'other',
@@ -73,8 +76,8 @@ function generateCycloneDxSbom() {
         ],
       },
       manufacture: {
-        name: 'SCHUNK SE & Co. KG',
-        url: ['https://www.schunk.com'],
+        name: 'Aldo-Kobs',
+        url: ['https://github.com/Aldo-Kobs/TARATool'],
       },
     },
     components: [
@@ -244,12 +247,24 @@ function openAboutModal() {
         </div>
 
         <div class="about-meta-grid">
-            <div><strong>${_t('about.author', 'Autor')}:</strong> Nico Peper</div>
-            <div><strong>${_t('about.org', 'Organisation')}:</strong> SCHUNK SE &amp; Co. KG</div>
-            <div><strong>${_t('about.license', 'Lizenz')}:</strong> GPL-3.0</div>
+            <div><strong>${_t('about.originalAuthor', 'Ursprünglicher Autor')}:</strong> Nico Peper</div>
+            <div><strong>${_t('about.upstream', 'Ursprüngliches Projekt')}:</strong> <a href="https://github.com/SCHUNK-SE-Co-KG/TARATool" target="_blank" rel="noopener">SCHUNK SE &amp; Co. KG</a></div>
+            <div><strong>${_t('about.forkMaintainer', 'Fork-Maintainer')}:</strong> Aldo-Kobs</div>
+            <div><strong>${_t('about.license', 'Lizenz')}:</strong> <a href="LICENSE" target="_blank" rel="noopener">GPL-3.0-or-later</a></div>
             <div><strong>${_t('about.repo', 'Repository')}:</strong>
-                <a href="https://github.com/SCHUNK-SE-Co-KG/TARATool" target="_blank" rel="noopener">GitHub</a>
+                <a href="https://github.com/Aldo-Kobs/TARATool" target="_blank" rel="noopener">GitHub</a>
             </div>
+        </div>
+
+        <div class="about-legal-block">
+            <p>Copyright (C) 2026 SCHUNK SE &amp; Co. KG.<br>
+                ${_t('about.forkCopyright', 'Änderungen am Fork: Copyright (C) 2026 Aldo-Kobs.')}</p>
+            <p>${_t('about.modified', 'Geänderte Fassung von Aldo-Kobs, 10.–17. September 2026.')}</p>
+            <p>${_t('about.rights', 'Du darfst dieses Programm unter der GNU General Public License, Version 3 oder (nach deiner Wahl) jeder späteren Version, weitergeben und verändern.')}</p>
+            <p>${_t('about.warranty', 'OHNE JEGLICHE GEWÄHRLEISTUNG, einschließlich der impliziten Gewährleistung der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK. Einzelheiten stehen in der Lizenz.')}</p>
+            <p><a href="LICENSE" target="_blank" rel="noopener">${_t('about.fullLicense', 'Vollständige Lizenz')}</a> ·
+                <a href="NOTICE.md" target="_blank" rel="noopener">${_t('about.notices', 'Urheber- und Änderungshinweise')}</a> ·
+                <a href="https://github.com/Aldo-Kobs/TARATool" target="_blank" rel="noopener">${_t('about.source', 'Quellcode dieses Forks')}</a></p>
         </div>
 
         <div class="about-method-block">

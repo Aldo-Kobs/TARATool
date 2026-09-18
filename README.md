@@ -1,5 +1,9 @@
 # TARA Tool
 
+> **Geänderte Fassung von Aldo-Kobs, 10.–17. September 2026.** Grundlage ist [TARA Tool von SCHUNK SE & Co. KG](https://github.com/SCHUNK-SE-Co-KG/TARATool), Commit `4bbc354`. Dieser Fork wird unter **GPL-3.0-or-later** bereitgestellt. [Urheber- und Lizenzhinweise](NOTICE.md) · [Datierte Änderungen](docs/MODIFICATIONS.md) · [Weitergabe und Quellcode](docs/DISTRIBUTION.md).
+
+Die fork-spezifischen Abläufe (assetbezogene Risiken, Lebenszyklusphasen, SL-T-Einstellungen, CRA-Checkliste und Parameterhilfe) sind im aktuellen [User Guide](docs/user-guide.md) beschrieben.
+
 **Browser-basiertes Werkzeug für Bedrohungs- und Risikoanalysen (TARA) im Kontext des EU Cyber Resilience Act (CRA)**
 
 ![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)
@@ -77,7 +81,7 @@ Die aktuelle englische Schritt-für-Schritt-Anleitung ist als [Markdown](docs/us
 ### Starten
 
 ```
-git clone https://github.com/SCHUNK-SE-Co-KG/TARATool.git
+git clone https://github.com/Aldo-Kobs/TARATool.git
 cd TARATool
 ```
 
@@ -458,11 +462,13 @@ Beiträge sind willkommen! So kannst du mitmachen:
 
 ## Lizenz
 
-Dieses Projekt ist lizenziert unter der **GNU General Public License v3.0** – siehe [LICENSE](LICENSE) für Details.
+Dieses Projekt einschließlich der Änderungen dieses Forks steht unter der **GNU General Public License, Version 3 oder (nach deiner Wahl) jeder späteren Version** (`GPL-3.0-or-later`). Siehe [LICENSE](LICENSE), [NOTICE.md](NOTICE.md) und die [Hinweise zur Weitergabe](docs/DISTRIBUTION.md).
 
 ```
 TARA Tool – Browser-basierte Bedrohungs- und Risikoanalyse
 Copyright (C) 2026 SCHUNK SE & Co. KG
+Fork modifications: Copyright (C) 2026 Aldo-Kobs
+Modified 10–17 September 2026; see NOTICE.md and docs/MODIFICATIONS.md.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

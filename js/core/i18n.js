@@ -593,6 +593,18 @@
       'about.tagline':
         'Browser-basiertes Werkzeug für Bedrohungs- und Risikoanalysen (TARA)<br>im Kontext des <strong>EU Cyber Resilience Act (CRA)</strong>',
       'about.author': 'Autor',
+      'about.originalAuthor': 'Ursprünglicher Autor',
+      'about.upstream': 'Ursprüngliches Projekt',
+      'about.forkMaintainer': 'Fork-Maintainer',
+      'about.forkCopyright': 'Änderungen am Fork: Copyright (C) 2026 Aldo-Kobs.',
+      'about.modified': 'Geänderte Fassung von Aldo-Kobs, 10.–17. September 2026.',
+      'about.rights':
+        'Du darfst dieses Programm unter der GNU General Public License, Version 3 oder (nach deiner Wahl) jeder späteren Version, weitergeben und verändern.',
+      'about.warranty':
+        'OHNE JEGLICHE GEWÄHRLEISTUNG, einschließlich der impliziten Gewährleistung der MARKTREIFE oder der VERWENDBARKEIT FÜR EINEN BESTIMMTEN ZWECK. Einzelheiten stehen in der Lizenz.',
+      'about.fullLicense': 'Vollständige Lizenz',
+      'about.notices': 'Urheber- und Änderungshinweise',
+      'about.source': 'Quellcode dieses Forks',
       'about.org': 'Organisation',
       'about.license': 'Lizenz',
       'about.repo': 'Repository',
@@ -1184,6 +1196,18 @@
       'about.tagline':
         'Browser-based tool for threat and risk analyses (TARA)<br>in the context of the <strong>EU Cyber Resilience Act (CRA)</strong>',
       'about.author': 'Author',
+      'about.originalAuthor': 'Original author',
+      'about.upstream': 'Upstream project',
+      'about.forkMaintainer': 'Fork maintainer',
+      'about.forkCopyright': 'Fork modifications: Copyright (C) 2026 Aldo-Kobs.',
+      'about.modified': 'Modified version by Aldo-Kobs, 10–17 September 2026.',
+      'about.rights':
+        'You may redistribute and modify this program under the GNU General Public License, version 3 or (at your option) any later version.',
+      'about.warranty':
+        'WITHOUT ANY WARRANTY, including the implied warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the license for details.',
+      'about.fullLicense': 'Full license',
+      'about.notices': 'Copyright and modification notices',
+      'about.source': 'Source code for this fork',
       'about.org': 'Organisation',
       'about.license': 'License',
       'about.repo': 'Repository',

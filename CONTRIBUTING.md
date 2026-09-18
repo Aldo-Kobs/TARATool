@@ -1,5 +1,11 @@
 # Contributing â€“ TARATool
 
+## Lizenz und Änderungsnachweise für diesen Fork
+
+Stand: 17. September 2026. Beiträge zu diesem Fork werden unter **GPL-3.0-or-later** bereitgestellt, wie in [LICENSE](LICENSE) beschrieben. Bestehende Urheber-, Autoren- und Drittlizenzhinweise bleiben erhalten; ergänze eigene Hinweise nur für deine Beiträge. Siehe [NOTICE.md](NOTICE.md) für die Trennung zwischen dem SCHUNK-Original und den Änderungen von Aldo-Kobs.
+
+Dokumentiere Änderungen mit einem relevanten Datum und einer Beschreibung in [docs/MODIFICATIONS.md](docs/MODIFICATIONS.md) und im [CHANGELOG](CHANGELOG.md). Bewahre bei der Weitergabe die Lizenz-, Änderungs- und Gewährleistungshinweise einschließlich der Hinweise im About-Dialog. Aktualisiere bei Lizenz- oder Herkunftsänderungen auch Paketmetadaten und SBOM. Beachte für Veröffentlichungen die [Hinweise zur Weitergabe und zum zugehörigen Quellcode](docs/DISTRIBUTION.md).
+
 ## Branch-Strategie
 
 ```
