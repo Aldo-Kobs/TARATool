@@ -1444,8 +1444,8 @@ window.PARAMETER_GUIDE = {
             de: 'Je Blatt einen konfigurierten Wert wählen. Leer bedeutet nicht bewertet. Dieselben Optionen gelten für die Restrisikobewertung.',
           },
           example: {
-            en: 'One local device versus connected operational or business networks.',
-            de: 'Ein lokales Gerät gegenüber vernetzten Betriebs- oder Geschäftsnetzen.',
+            en: 'Single device (0.1): the attack is limited to one device. Product series (0.3): the attack can be repeated across devices in one product series. Complete portfolio (0.5): the attack can be repeated across the entire product portfolio.',
+            de: 'Einzelgerät (0,1): Der Angriff ist auf ein Gerät begrenzt. Produktserie (0,3): Der Angriff lässt sich auf Geräte einer Produktserie übertragen. Gesamtes Portfolio (0,5): Der Angriff lässt sich auf das gesamte Produktportfolio übertragen.',
           },
           valueSource: 'probability.S',
         },

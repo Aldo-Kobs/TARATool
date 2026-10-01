@@ -4,6 +4,20 @@
 
 This record accompanies the modified TARA Tool under GPL-3.0-or-later. Original work: Copyright (C) 2026 SCHUNK SE & Co. KG. Fork modifications: Copyright (C) 2026 Aldo-Kobs. See [NOTICE.md](../NOTICE.md) for attribution, license and warranty notices and [LICENSE](../LICENSE) for the license terms.
 
+## 30 September 2026 — Shared risks across assets
+
+Added a detailed risk-calculation reference in Markdown and PDF covering all inputs, propagation, shared assignments, residual treatments, security-level recommendations, worked examples and verified implementation limitations. Extended the documentation PDF builder with a source-file option and linked the reference from existing guidance.
+
+Grouped each risk label with pen and trash icon buttons inside one bordered block. Added localized tooltips and accessible action labels, with theme-aware styling.
+
+Added direct removal of individual risk assignments in asset coverage, including the final assignment. Detached risks remain available for reassignment, and scores and residual data refresh after removal. Added English/German controls and regression coverage for persistence and preservation of other assignments.
+
+Added existing-risk selection in Risk Analysis and multiple asset assignments in the attack-tree editor. Shared risks retain one identity and use the highest weighted impact across assigned assets. Updated migration, asset deletion handling, source-rating displays, PDF coverage, bilingual text, user documentation and browser regression tests.
+
+## 22 September 2026 — Automatic folder storage
+
+Added the local Python launcher, automatic saves to `analyses/analyses.json`, rotating recovery backups, stale-write protection, and a token-protected transfer from existing file-mode browser storage. Updated save/load hooks, autosave for overview fields, storage status, startup documentation, and filesystem/browser regression tests. Local analysis data is excluded from Git.
+
 ## Comparison basis
 
 - Upstream: <https://github.com/SCHUNK-SE-Co-KG/TARATool>.

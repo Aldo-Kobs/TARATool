@@ -105,7 +105,7 @@ function _kstuWorstCase(items) {
   return res;
 }
 
-function computeLeafImpactNorm(dsList, analysis, assetId) {
+function computeLeafImpactNorm(dsList, analysis, assetIds) {
   if (!analysis || !analysis.impactMatrix) return '';
   if (!dsList || dsList.length === 0) return '';
   if (!analysis.assets || analysis.assets.length === 0) return '';
@@ -113,14 +113,15 @@ function computeLeafImpactNorm(dsList, analysis, assetId) {
   let maxWeightedImpact = 0.0;
   let foundAny = false;
 
-  const asset =
-    assetId !== undefined
-      ? analysis.assets.find((item) => item.id === assetId)
+  const ids = Array.isArray(assetIds) ? assetIds : [assetIds];
+  const assets =
+    assetIds !== undefined
+      ? analysis.assets.filter((asset) => ids.includes(asset.id))
       : analysis.assets.length === 1
-        ? analysis.assets[0]
-        : null;
-  if (!asset) return '';
-  [asset].forEach((asset) => {
+        ? analysis.assets
+        : [];
+  if (!assets.length) return '';
+  assets.forEach((asset) => {
     const row = analysis.impactMatrix[asset.id];
     if (!row) return;
 
@@ -242,7 +243,7 @@ function applyImpactInheritance(treeData, analysis) {
         leaf.i_norm = computeLeafImpactNorm(
           dsList,
           analysis,
-          getRiskAsset(analysis, treeData)?.id || ''
+          getRiskAssets(analysis, treeData).map((asset) => asset.id)
         );
       });
 
@@ -266,7 +267,7 @@ function applyImpactInheritance(treeData, analysis) {
           leaf.i_norm = computeLeafImpactNorm(
             dsList,
             analysis,
-            getRiskAsset(analysis, treeData)?.id || ''
+            getRiskAssets(analysis, treeData).map((asset) => asset.id)
           );
         });
 
@@ -308,7 +309,7 @@ function applyImpactInheritance(treeData, analysis) {
       leaf.i_norm = computeLeafImpactNorm(
         dsList,
         analysis,
-        getRiskAsset(analysis, treeData)?.id || ''
+        getRiskAssets(analysis, treeData).map((asset) => asset.id)
       );
     });
 
@@ -378,7 +379,7 @@ function applyImpactInheritanceV2(treeData, analysis) {
       leaf.i_norm = computeLeafImpactNorm(
         dsList,
         analysis,
-        getRiskAsset(analysis, treeData)?.id || ''
+        getRiskAssets(analysis, treeData).map((asset) => asset.id)
       );
       const v = _parseImpactValue(leaf.i_norm);
       if (v === null) return;

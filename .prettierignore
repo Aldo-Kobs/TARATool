@@ -34,3 +34,6 @@ tests/.pytest_cache/
 trivy_output.txt
 *_trivy.json
 .gitignore
+
+# Private analysis storage
+analyses/

@@ -80,6 +80,8 @@
                 </div>
             </header>
 
+            <div id="folderStorageStatus" role="status" aria-live="polite" style="padding: 8px 0;"></div>
+
             <div class="tab-navigation">
                 <button class="tab-button active" data-tab="tabOverview" data-i18n="tab.overview">Übersicht</button>
                 <button class="tab-button" data-tab="tabAssets" data-i18n="tab.assets">Assets</button>
@@ -406,9 +408,9 @@
                 <input type="hidden" id="use_second_intermediate" name="use_second_intermediate" value="false">
 
                 <div class="form-group">
-                    <label for="at_asset" data-i18n="risk.asset">Asset</label>
-                    <select id="at_asset" name="at_asset" required></select>
-                    <p class="muted-hint" data-i18n="risk.assetHint">Alle Angriffspfade dieses Risikos beziehen sich auf dieses Asset.</p>
+                    <label for="at_asset" data-i18n="risk.assets">Assets</label>
+                    <select id="at_asset" name="at_asset" multiple size="4" required aria-describedby="at_asset_hint"></select>
+                    <p id="at_asset_hint" class="muted-hint" data-i18n="risk.assetHint">Ein oder mehrere Assets auswählen (Strg/Cmd + Klick). Für das gemeinsame Risiko zählt die höchste Auswirkung der ausgewählten Assets.</p>
                 </div>
                 <div id="atDamageScenarioImpactPreview" class="at-impact-preview"></div>
                 <div id="atSecurityLevelPreview" aria-live="polite"></div>
@@ -628,6 +630,7 @@
     <script src="config/parameter_guide.js"></script>
     <script src="js/core/config_loader.js"></script>
     <script src="js/core/globals.js"></script>
+    <script src="js/core/folder_storage.js"></script>
     <script src="js/core/utils.js"></script>
     <script src="js/core/analysis_core.js"></script>
 

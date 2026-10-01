@@ -155,6 +155,7 @@ function initOverviewDetailsListeners() {
   details.addEventListener('input', () => {
     resizeOverviewTextareas();
     saveCurrentAnalysisState();
+    saveAnalyses();
   });
   details.addEventListener('click', (event) => {
     const button = event.target.closest('button');
@@ -169,6 +170,7 @@ function initOverviewDetailsListeners() {
       labelOverviewListItems(field);
       (next?.querySelector('textarea') || field.querySelector('[data-list-add]')).focus();
       saveCurrentAnalysisState();
+      saveAnalyses();
     }
     resizeOverviewTextareas();
   });

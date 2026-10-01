@@ -80,6 +80,7 @@ def test_missing_asset_or_linked_scenarios_never_borrow_other_ratings(app):
         const r=a.riskEntries.find(r=>r.uid===uid);
         r.treeV2.children[0].impacts[0].ds=['DS3'];
         r.assetUid='deleted-asset';
+        r.assetUids=['deleted-asset'];
         r.assetId='A02';
         renderRiskAnalysis();
     }''', entry['uid'])
@@ -140,7 +141,7 @@ def test_creation_preview_before_selection_and_live_asset_scenario_changes(app):
     expect(app.locator('input[name="at_root"]')).to_have_value('Draft risk')
     app.locator('.ds-checks input[data-ds="DS3"]').uncheck()
     expect(preview.locator('li.is-linked')).to_have_count(0)
-    app.locator('#at_asset').select_option('')
+    app.locator('#at_asset').select_option([])
     expect(preview.locator('li')).to_have_count(0)
     expect(app.locator('[data-editor-choice-impact="DS3"]')).to_have_text('—')
     app.click('#closeAttackTreeModal')

@@ -48,6 +48,7 @@ function computeRiskScore(iNorm, kstu) {
 // =============================================================
 
 function saveAnalyses() {
+  if (window.folderStorage?.enabled) return window.folderStorage.save(analysisData);
   try {
     localStorage.setItem('taraAnalyses', JSON.stringify(analysisData));
     return true;

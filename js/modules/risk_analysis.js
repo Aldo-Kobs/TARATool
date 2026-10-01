@@ -74,6 +74,35 @@ function renderRiskAnalysis() {
   riskAnalysisContainerEl.querySelectorAll('[data-risk-edit]').forEach((button) => {
     button.onclick = () => window.editAttackTree(button.dataset.riskEdit);
   });
+  riskAnalysisContainerEl.querySelectorAll('[data-risk-unassign]').forEach((button) => {
+    button.onclick = () => {
+      const entry = analysis.riskEntries.find((risk) => risk.id === button.dataset.riskUnassign);
+      const assetId = button.closest('[data-asset-id]').dataset.assetId;
+      if (!entry) return;
+      setRiskAssets(
+        entry,
+        getRiskAssets(analysis, entry).filter((asset) => asset.id !== assetId)
+      );
+      syncAssetRisks(analysis);
+      saveAnalyses();
+      renderRiskAnalysis();
+    };
+  });
+  riskAnalysisContainerEl.querySelectorAll('[data-asset-assign]').forEach((button) => {
+    const select = button.closest('td').querySelector('[data-existing-risk]');
+    select.onchange = () => {
+      button.disabled = !select.value;
+    };
+    button.onclick = () => {
+      const entry = analysis.riskEntries.find((risk) => risk.id === select.value);
+      const asset = analysis.assets.find((item) => item.id === button.dataset.assetAssign);
+      if (!entry || !asset) return;
+      setRiskAssets(entry, [...getRiskAssets(analysis, entry), asset]);
+      syncAssetRisks(analysis);
+      saveAnalyses();
+      renderRiskAnalysis();
+    };
+  });
 
   const btn = document.getElementById('btnOpenAttackTreeModal');
   if (btn)
@@ -85,19 +114,39 @@ function renderRiskAnalysis() {
 function renderAssetRiskCoverage(analysis) {
   const rows = analysis.assets
     .map((asset) => {
-      const linked = analysis.riskEntries.filter(
-        (entry) => getRiskAsset(analysis, entry) === asset
+      const linked = analysis.riskEntries.filter((entry) =>
+        getRiskAssets(analysis, entry).includes(asset)
       );
+      const available = analysis.riskEntries.filter((entry) => !linked.includes(entry));
       const name =
         getLocalizedField(asset, 'name', undefined, { fallback: true }) || asset.name_en || '-';
       return `<tr data-asset-id="${escapeHtml(asset.id)}">
       <th scope="row">${escapeHtml(asset.id)}: ${escapeHtml(name)}</th>
       <td>${
         linked.length
-          ? `<ul class="asset-risk-links">${linked.map((entry) => `<li><button class="action-button small" data-risk-edit="${escapeHtml(entry.id)}">${escapeHtml(entry.id)}: ${escapeHtml(_rootLabel(entry))}</button></li>`).join('')}</ul>`
+          ? `<ul class="asset-risk-links">${linked
+              .map(
+                (entry) => `<li class="asset-risk-item">
+              <span class="asset-risk-name">${escapeHtml(entry.id)}: ${escapeHtml(_rootLabel(entry))}</span>
+              <div class="asset-risk-item-actions">
+                <button type="button" class="action-button small" data-risk-edit="${escapeHtml(entry.id)}" title="${escapeHtml(t('btn.edit'))}" aria-label="${escapeHtml(`${t('btn.edit')}: ${entry.id}`)}"><i class="fas fa-pen" aria-hidden="true"></i></button>
+                <button type="button" class="action-button small" data-risk-unassign="${escapeHtml(entry.id)}" title="${escapeHtml(t('risk.removeAssignment'))}" aria-label="${escapeHtml(`${t('risk.removeAssignment')}: ${entry.id} — ${asset.id}`)}"><i class="fas fa-trash" aria-hidden="true"></i></button>
+              </div>
+            </li>`
+              )
+              .join('')}</ul>`
           : `<span class="asset-risk-missing">${t('risk.noLinkedRisks')}</span>`
       }</td>
-      <td><button class="action-button small" data-asset-create="${escapeHtml(asset.id)}"><i class="fas fa-plus" aria-hidden="true"></i> ${t('risk.createForAsset')}</button></td>
+      <td><button class="action-button small" data-asset-create="${escapeHtml(asset.id)}"><i class="fas fa-plus" aria-hidden="true"></i> ${t('risk.createForAsset')}</button>
+        <div class="asset-risk-assign">
+          <label for="existing-risk-${escapeHtml(asset.id)}">${t('risk.existingRisk')}</label>
+          <select id="existing-risk-${escapeHtml(asset.id)}" data-existing-risk ${available.length ? '' : 'disabled'}>
+            <option value="">${t(available.length ? 'risk.selectExisting' : 'risk.noAvailableRisks')}</option>
+            ${available.map((entry) => `<option value="${escapeHtml(entry.id)}">${escapeHtml(entry.id)}: ${escapeHtml(_rootLabel(entry))}</option>`).join('')}
+          </select>
+          <button class="action-button small" data-asset-assign="${escapeHtml(asset.id)}" disabled>${t('risk.assignExisting')}</button>
+        </div>
+      </td>
     </tr>`;
     })
     .join('');

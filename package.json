@@ -1,7 +1,7 @@
 {
   "name": "taratool",
   "version": "1.0.0",
-  "description": "**Browser-basiertes Werkzeug für Bedrohungs- und Risikoanalysen (TARA) im Kontext des EU Cyber Resilience Act (CRA)**",
+  "description": "**Browser-basiertes Werkzeug f\u00fcr Bedrohungs- und Risikoanalysen (TARA) im Kontext des EU Cyber Resilience Act (CRA)**",
   "main": "index.js",
   "directories": {
     "doc": "docs",
@@ -11,7 +11,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
-    "lint": "eslint js/"
+    "lint": "eslint js/",
+    "start": "python3 scripts/server.py",
+    "migrate": "python3 scripts/server.py --migrate",
+    "test:storage": "python3 -m unittest discover -s tests -p test_folder_storage.py"
   },
   "repository": {
     "type": "git",

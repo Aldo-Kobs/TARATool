@@ -1,9 +1,22 @@
 /** Asset assignment, assessment, and migration of previously generated risks. */
-function getRiskAsset(analysis, entry) {
+function getRiskAssets(analysis, entry) {
   const assets = analysis?.assets || [];
-  if (entry?.assetUid) return assets.find((asset) => asset.uid === entry.assetUid) || null;
-  if (entry?.assetId) return assets.find((asset) => asset.id === entry.assetId) || null;
-  return !Object.hasOwn(entry || {}, 'assetId') && assets.length === 1 ? assets[0] : null;
+  if (Array.isArray(entry?.assetUids))
+    return assets.filter((asset) => entry.assetUids.includes(asset.uid));
+  if (entry?.assetUid) return assets.filter((asset) => asset.uid === entry.assetUid);
+  if (entry?.assetId) return assets.filter((asset) => asset.id === entry.assetId);
+  return !Object.hasOwn(entry || {}, 'assetId') && assets.length === 1 ? assets : [];
+}
+
+function getRiskAsset(analysis, entry) {
+  return getRiskAssets(analysis, entry)[0] || null;
+}
+
+function setRiskAssets(entry, assets) {
+  entry.assetUids = [...new Set(assets.map((asset) => asset.uid))];
+  // Keep the legacy single-asset fields for older consumers.
+  entry.assetUid = assets[0]?.uid || '';
+  entry.assetId = assets[0]?.id || '';
 }
 
 function getAssessedRiskValue(iNorm, kstu) {
@@ -23,9 +36,14 @@ function refreshRiskAssessment(entry, analysis) {
 }
 
 function riskAssetLabel(analysis, entry, lang) {
-  const asset = getRiskAsset(analysis, entry);
-  return asset
-    ? `${asset.id}: ${getLocalizedField(asset, 'name', lang, { fallback: true }) || asset.name_en || '-'}`
+  const assets = getRiskAssets(analysis, entry);
+  return assets.length
+    ? assets
+        .map(
+          (asset) =>
+            `${asset.id}: ${getLocalizedField(asset, 'name', lang, { fallback: true }) || asset.name_en || '-'}`
+        )
+        .join('; ')
     : t('risk.assetRequired', lang);
 }
 
@@ -43,10 +61,21 @@ function getAssetDamageImpacts(analysis, asset, lang) {
   });
 }
 
-/** Read the original matrix ratings for this asset and the tree's linked scenarios. */
+/** Keep each assigned asset's source rating visible, including differing ratings. */
+function getRiskAssetDamageImpacts(analysis, entry, lang) {
+  const assets = getRiskAssets(analysis, entry);
+  return assets.flatMap((asset) =>
+    getAssetDamageImpacts(analysis, asset, lang).map((item) => ({
+      ...item,
+      assetId: asset.id,
+      name: assets.length > 1 ? `${asset.id}: ${item.name}` : item.name,
+    }))
+  );
+}
+
+/** Read the original matrix ratings for assigned assets and linked scenarios. */
 function getRiskDamageImpacts(analysis, entry, lang) {
-  const asset = getRiskAsset(analysis, entry);
-  if (!asset) return { status: 'assetRequired', items: [] };
+  if (!getRiskAssets(analysis, entry).length) return { status: 'assetRequired', items: [] };
   const ids = new Set();
   const collect = (leaf) => {
     (Array.isArray(leaf?.ds) ? leaf.ds : []).forEach((id) => ids.add(id));
@@ -60,7 +89,7 @@ function getRiskDamageImpacts(analysis, entry, lang) {
   } else {
     rrIterateLeaves(entry, ({ leaf }) => collect(leaf));
   }
-  const items = getAssetDamageImpacts(analysis, asset, lang).filter((item) => ids.has(item.id));
+  const items = getRiskAssetDamageImpacts(analysis, entry, lang).filter((item) => ids.has(item.id));
   return { status: items.length ? 'ok' : 'noLinkedDamageScenarios', items };
 }
 
@@ -95,9 +124,7 @@ function syncAssetRisks(analysis) {
   // Stable identities prevent reassignment when deleting an asset renumbers the others.
   // Older trees with several possible assets require an explicit choice in the editor.
   analysis.riskEntries.forEach((entry) => {
-    const asset = getRiskAsset(analysis, entry);
-    entry.assetId = asset?.id || '';
-    if (asset) entry.assetUid = asset.uid;
+    setRiskAssets(entry, getRiskAssets(analysis, entry));
     refreshRiskAssessment(entry, analysis);
   });
   if (typeof syncResidualRiskFromRiskAnalysis === 'function')

@@ -86,18 +86,18 @@ window.__ASSESSMENT_CONFIG_PRELOAD__ = {
       options: [
         {
           value: '0.5',
-          text: '0,5 - IT-Netzwerk beim Kunden',
-          text_en: '0.5 - Customer IT network',
+          text: '0,5 - Gesamtes Portfolio',
+          text_en: '0.5 - Complete portfolio',
         },
         {
           value: '0.3',
-          text: '0,3 - OT-Netzwerk beim Kunden',
-          text_en: '0.3 - Customer OT network',
+          text: '0,3 - Produktserie',
+          text_en: '0.3 - Product series',
         },
         {
           value: '0.1',
-          text: '0,1 - Einzelprodukt/ lokale Maschine',
-          text_en: '0.1 - Single product / local machine',
+          text: '0,1 - Einzelgerät',
+          text_en: '0.1 - Single device',
         },
       ],
     },

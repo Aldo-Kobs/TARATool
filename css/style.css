@@ -2263,13 +2263,47 @@ html[data-theme='dark'] [style*='background: #f2f2f2'] {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  display: grid;
+  gap: 8px;
 }
-.asset-risk-links button {
-  text-align: left;
+.asset-risk-assign {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+  width: 240px;
+  white-space: normal;
+}
+.asset-risk-assign select {
+  width: 100%;
+  min-width: 0;
+}
+.asset-risk-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  background: var(--bg-muted);
+}
+.asset-risk-name {
+  flex: 1;
+  min-width: 0;
   overflow-wrap: anywhere;
+}
+.asset-risk-item-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+}
+.asset-risk-item-actions .action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  padding: 0;
 }
 .asset-risk-missing {
   font-weight: 600;

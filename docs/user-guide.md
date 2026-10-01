@@ -1,9 +1,9 @@
 # TARA Tool — User Guide
 
 **Step-by-step instructions for creating, reviewing and exporting an analysis**  
-Edition: 17 September 2026 · Language: English
+Edition: 22 September 2026 · Language: English
 
-Reviewed against fork revision `fac28fc` and the accompanying GPL notice updates.
+Updated with automatic folder storage on 22 September 2026. Earlier feature review: fork revision `fac28fc`.
 
 This guide describes the current tool, including asset-linked risks, lifecycle phases, security goals, residual assessment, security-level settings and the CRA Documentation Checklist. It uses the English interface labels. The **EN/DE** switch changes the display language.
 
@@ -39,13 +39,19 @@ Fork source: <https://github.com/Aldo-Kobs/TARATool>. [Attribution](../NOTICE.md
 
 ## 1. Start and protect your work
 
-1. Open the supplied `index.html` in a modern browser, or open your organisation’s hosted copy of the tool.
+1. Run `python3 scripts/server.py` from the TARA Tool folder (Python 3.10 or newer; on Windows use `python`). Open **http://127.0.0.1:8080** in a modern browser and keep the terminal running.
 2. Choose **EN** or **DE** in the top bar. Use the sun/moon switch for light or dark mode.
 3. Click **New**, enter an analysis name and click **Create**. To reuse an existing analysis, expand **Copy** and select the source before creating the new analysis. A copy starts a new version history; it does not carry over the source analysis’s history. Review copied content, including residual review statuses, before relying on it.
 4. Check the analysis selector in the top bar. All subsequent work applies to the selected analysis.
 5. If continuing from a backup, click **Import**, select the exported analysis JSON file and complete the import. An imported analysis with an existing ID is added as a separate imported copy.
 
-The tool stores analyses in the browser’s local storage. **Save** stores the current work locally; it does not download a backup. Use **Export** regularly and keep the JSON file in your project’s document storage. Browser-data deletion, a different browser profile or a different site address can make the locally stored analysis unavailable.
+The local launcher automatically saves all analyses to **`analyses/analyses.json`**, including images and version history. The status below the analysis header shows **Saved to analyses/** once writing completes. A different browser on this computer loads the same analyses, even after browser data is cleared. The latest 20 previous states are retained in **`analyses/backups/`**. Include this folder in your normal computer backup.
+
+To transfer analyses previously stored by opening `index.html` directly, stop the server with Ctrl+C and run `python3 scripts/server.py --migrate` once. Open the printed link in the **same browser and profile** you previously used. It transfers the existing analyses and opens the local app, without export/import. Conflicting IDs are retained as separate browser copies. If that browser's data was already deleted, this transfer cannot recover it.
+
+If another window saves first, your stale changes are rejected instead of overwriting newer data. Reload to recover pending edits as separate browser copies. If saving fails, keep the page open and restore the server connection; pending saves retry automatically. **Save** confirms success only after the file is written. To restore a backup manually, stop the server, preserve the current file, and copy the desired backup to `analyses/analyses.json`.
+
+Opening `index.html` directly or using a static web host still uses browser storage only, with a visible warning. Use the local launcher for folder saving. Export/import remains available for sharing with other computers. The Markdown guide describes the new storage flow; the existing PDF guide predates this change.
 
 Finish and save an open form before switching analyses or exporting. Several tab controls save changes immediately, but an unfinished dialog is not a substitute for a saved entry.
 
@@ -213,11 +219,13 @@ Use company-specific thresholds for duration, affected people, financial loss an
 
 ## 6. Create risks and attack paths
 
-Risks are created manually. A matrix rating does not automatically create a risk. Each risk is assigned to **one asset**, and every attack path within it refers to that asset.
+For the complete formulas, field definitions, aggregation rules and worked examples, see the [Risk Calculation Reference](risk-calculation-guide.md) ([PDF](risk-calculation-guide.pdf)).
+
+Risks are created manually. A matrix rating does not automatically create a risk. Each risk can be assigned to **one or more assets**, and every attack path within it refers to those assets.
 
 1. Open **Risk analysis** and review the asset coverage list. Identify assets with no attached risk or with insufficiently explored attack paths.
-2. Use **Create risk** for the relevant asset, or open the new-risk form and select its **Asset**.
-3. Read the **Damage Scenario impact** preview in the form. It shows the ratings already assigned to that asset. The read-only **Recommended SL-T** field updates from the configured matrix as the assessment becomes complete.
+2. Use **Create risk** for the relevant asset, or choose a previously created risk from **Existing risk** and click **Assign existing risk**. To create a risk for several assets, select its **Assets** in the editor (Ctrl/Cmd + click).
+3. Read the **Damage Scenario impact** preview in the form. It shows the ratings already assigned to each selected asset. The read-only **Recommended SL-T** field updates from the configured matrix as the assessment becomes complete.
 4. Enter the **Attack goal / root**, describing the attacker’s intended outcome.
 5. Add an **Attack path**, describing how that outcome could be reached. Add intermediate paths if they help explain the sequence.
 6. Add an **Impact** leaf for the concrete harmful result.
@@ -233,7 +241,7 @@ The following values are the shipped defaults. If your organisation loads a diff
 | Factor                     | What to assess                                                        | Default choices                                                                                     |
 | -------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | K — Complexity / knowledge | Knowledge and discovery effort needed for the attack.                 | 0.7 known vulnerabilities; 0.6 simple internet research; 0.3 expert research; 0.1 expert knowledge. |
-| S — Scaling                | Scope in which the attack can spread or be repeated.                  | 0.5 customer IT network; 0.3 customer OT network; 0.1 single product/local machine.                 |
+| S — Scaling                | Scope in which the attack can spread or be repeated.                  | 0.5 complete portfolio; 0.3 product series; 0.1 single device.                 |
 | T — Time / effort          | Effort to prepare and execute the attack under the stated conditions. | 0.5 under 1 week; 0.4 under 4 weeks; 0.2 under 3 months; 0.1 over 3 months.                         |
 | U — Utility                | Visible benefit or incentive for the attacker.                        | 0.5 high; 0.3 medium; 0.1 low.                                                                      |
 
@@ -241,7 +249,7 @@ Larger factors increase the feasibility score; they are not percentages. For ove
 
 ### Read the results correctly
 
-The tool combines the assigned asset’s protection need with the linked damage ratings. It does not average ratings from all assets. For multiple linked scenarios it uses the highest resulting impact. Parent paths and the root inherit worst-case impact and K/S/T/U values, so a root can combine maxima from different leaves.
+The tool combines each assigned asset’s protection need with its linked damage ratings and uses the highest resulting impact across those assets and scenarios. Parent paths and the root inherit worst-case impact and K/S/T/U values, so a root can combine maxima from different leaves.
 
 With the shipped defaults, Low, Medium and High damage ratings have severity factors of 0.3, 0.6 and 1.0. Each linked scenario’s normalised impact is its severity factor multiplied by the assigned asset’s overall protection weight. N/A provides no numeric impact; if all linked scenarios are N/A, the leaf is unassessed rather than a scored zero.
 
@@ -258,11 +266,11 @@ The current default risk classes are:
 
 These are risk-score classes, separate from the feasibility/impact bands used by the recommended SL-T matrix. A custom assessment configuration can change the thresholds.
 
-If one attack affects several assets, create separate asset-linked risks as needed and cross-reference them in notes. When an asset or damage rating changes, review its associated risks and subsequent residual decisions.
+If one attack affects several assets, assign the same risk to each asset. The risk keeps one identity, attack tree, set of notes and residual assessment; edits appear under every assigned asset. Risks already linked to an asset are excluded from its existing-risk selector. To remove an individual assignment, click the trash icon (**Remove assignment**) inside the risk block in that asset’s row. The pen icon in the same block opens the risk editor. The risk and its other assignments are preserved. Removing its final assignment leaves the risk in **Saved attack trees**, available for reassignment through **Existing risk**; its impact and score remain unassessed until an asset is assigned again. You can also change selected Assets in the risk editor, keeping at least one selected there. When an asset or damage rating changes, review its associated risks and subsequent residual decisions.
 
 ### Review older analyses and asset changes
 
-When importing an older analysis, review every risk’s asset assignment. An older unassigned risk can be matched automatically when there is only one asset; when several assets are possible, select the correct one explicitly. Deleting an asset removes its matrix ratings and comments. Its manually created risks can remain without a valid asset assignment and must be reviewed before reuse; renumbering the remaining assets does not transfer those risks to another asset.
+When importing an older analysis, review every risk’s asset assignment. An older unassigned risk can be matched automatically when there is only one asset; when several assets are possible, select the correct one explicitly. Deleting an asset removes its matrix ratings and comments. Shared risks retain their remaining asset assignments. Risks whose last assigned asset was deleted can remain without a valid asset assignment and must be reviewed before reuse; renumbering the remaining assets does not transfer those risks to another asset.
 
 Risks marked as generated by the former matrix automation are retained in the analysis archive and removed from the active risk list. There is no archive-restore control in the interface. Keep the original JSON backup and recreate or review the required risks through the current manual workflow.
 
@@ -367,7 +375,7 @@ Versions store snapshots of the analysis. **Restore** replaces the working state
 1. Select the correct analysis and click **Save**.
 2. Click **Export** in the top bar.
 3. Store the downloaded JSON with the project’s review records.
-4. To resume elsewhere, use **Import** in the other browser and select this JSON.
+4. Another browser on this computer can open **http://127.0.0.1:8080** to resume directly. On another computer, use **Import** and select this JSON.
 
 The export contains the selected analysis, including its settings, checklist and history. Keep the company assessment configuration alongside it when that configuration has been customised; the running app’s global scoring configuration is separate from the analysis data.
 
@@ -420,7 +428,7 @@ These numbers change if the configuration or linked scenarios change. With the s
 | Evaluated is checked but fields are missing               | Review status is manual. Complete the required treatment fields and any High/Critical whole-risk note.                                                                             |
 | An image is rejected                                      | Use PNG, JPEG or WebP within the 5 MB per-image limit.                                                                                                                             |
 | PDF or tree rendering is unavailable                      | Check whether the required external libraries/services loaded and whether the network allows them. Preserve a JSON backup while resolving access.                                  |
-| Work is missing in another browser                        | Import the exported analysis JSON. Local browser storage is not shared project storage.                                                                                            |
+| Work is missing in another browser                        | Start the local launcher and open http://127.0.0.1:8080. For older file-mode analyses, use the one-time `--migrate` transfer.                                                      |
 | A language switch leaves text in the original language    | Enter the appropriate text for that language where supported; user descriptions are not automatically translated.                                                                  |
 
 Before handing the assessment to a reviewer, confirm:

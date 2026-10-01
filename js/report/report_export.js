@@ -343,7 +343,7 @@
       pdf.addTableGrid(
         [t('risk.asset', lang), t('risk.linkedRisks', lang)],
         assets.map((asset) => {
-          const linked = risks.filter((entry) => getRiskAsset(analysis, entry) === asset);
+          const linked = risks.filter((entry) => getRiskAssets(analysis, entry).includes(asset));
           return [
             h.sanitizePdfText(riskAssetLabel(analysis, { assetUid: asset.uid }, lang)),
             h.sanitizePdfText(

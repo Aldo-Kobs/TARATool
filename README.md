@@ -73,10 +73,12 @@ Der **Cyber Resilience Act (CRA)** – Verordnung (EU) 2024/2847 – ist seit De
 
 Die aktuelle englische Schritt-für-Schritt-Anleitung ist als [Markdown](docs/user-guide.md) und [PDF](docs/user-guide.pdf) verfügbar.
 
+Eine ausführliche Erklärung aller Risikoberechnungen, Eingabefelder, gemeinsamen Asset-Zuordnungen und Restrisiken mit Rechenbeispielen ist als [Risk Calculation Reference (Markdown)](docs/risk-calculation-guide.md) und [PDF](docs/risk-calculation-guide.pdf) verfügbar.
+
 ### Voraussetzungen
 
 - Ein moderner Webbrowser (Chrome, Firefox, Edge, Safari)
-- **Kein Server, kein Build-Schritt, keine Installation erforderlich**
+- Python 3.10 oder neuer für automatische Ordnerspeicherung; keine zusätzlichen Python-Pakete erforderlich
 
 ### Starten
 
@@ -85,7 +87,17 @@ git clone https://github.com/Aldo-Kobs/TARATool.git
 cd TARATool
 ```
 
-Öffne `index.html` direkt im Browser – fertig.
+Starte im Projektordner den lokalen Speicher-Server:
+
+```sh
+python3 scripts/server.py
+```
+
+Öffne **http://127.0.0.1:8080** im Browser und lasse das Terminal geöffnet. Unter Windows kann `python` statt `python3` verwendet werden. Analysen werden automatisch in `analyses/analyses.json` gespeichert. Alternativ: `npm start`, sofern Node/npm vorhanden ist.
+
+Für bestehende Analysen aus der direkt geöffneten `index.html` den Server einmal mit `python3 scripts/server.py --migrate` starten. Den ausgegebenen Link im bisherigen Browserprofil öffnen; die Daten werden ohne Export/Import übertragen. Ein bereits laufender Server muss vorher mit Strg+C beendet werden.
+
+Direktes Öffnen von `index.html` bleibt möglich, speichert aber ausschließlich im Browser; ein sichtbarer Hinweis kennzeichnet diesen Modus.
 
 > **Hinweis:** Für die Graphviz-Vorschau der Angriffsbäume wird eine Internetverbindung benötigt (CDN-Bibliotheken).
 
@@ -305,13 +317,16 @@ Die Reports werden unter `security/reports/` abgelegt. Der GitHub Actions Workfl
 
 ## Datenhaltung
 
-Alle Analysedaten werden im **`localStorage`** des Browsers gespeichert (Schlüssel: `taraAnalyses`).
+Beim Start über `python3 scripts/server.py` werden alle Analysen inklusive Bilder und Versionshistorie automatisch in **`analyses/analyses.json`** gespeichert. Jeder Browser, der **http://127.0.0.1:8080** auf diesem Rechner öffnet, lädt denselben Datenbestand. Das Löschen von Browserdaten entfernt die gespeicherten Dateien nicht.
 
-- **Export:** Analysen können als `.json`-Datei exportiert werden
-- **Import:** `.json`-Dateien können importiert werden (mit automatischer Daten-Migration älterer Formate)
-- **Versionierung:** Snapshots werden innerhalb der Analyse gespeichert und können per Rollback wiederhergestellt werden
+- **Speicherstatus:** „Saved to analyses/“ bestätigt den abgeschlossenen Schreibvorgang. Bei Fehlern bleibt ein sichtbarer Hinweis; ein fehlgeschlagener Schreibvorgang wird nicht als gespeichert bestätigt.
+- **Sicherung:** Die letzten 20 vorherigen Dateistände liegen in `analyses/backups/`. Schreibvorgänge ersetzen die Hauptdatei atomar. Für Wiederherstellung den Server stoppen, die aktuelle Datei sichern und eine gewünschte Backup-Datei nach `analyses/analyses.json` kopieren.
+- **Mehrere Fenster:** Veraltete Änderungen überschreiben keine neueren Daten. Nach Konflikten neu laden; nicht gespeicherte Änderungen werden, soweit im Browser zwischengespeichert, als separate „recovered browser copy“ übernommen.
+- **Bestehende Browserdaten:** `python3 scripts/server.py --migrate` überträgt Daten aus dem bisherigen `index.html`-Browserprofil. Bestehende Ordneranalysen bleiben erhalten; abweichende Analysen mit gleicher ID werden als separate Kopie hinzugefügt. Die ursprünglichen Browserdaten werden nicht gelöscht.
+- **Datenschutz:** Der Server ist nur auf diesem Rechner erreichbar. `analyses/` ist von Git ausgeschlossen und wird nicht als statischer Download bereitgestellt.
+- **Export/Import:** Bleibt für den Austausch mit anderen Rechnern optional verfügbar. Bei direktem Öffnen von `index.html` oder rein statischem Hosting wird weiterhin `localStorage` verwendet.
 
-> **Wichtig:** `localStorage` ist browserspezifisch. Für Datensicherung und Teamarbeit den JSON-Export verwenden.
+Die Ordnerspeicherung schützt vor Browserdatenverlust. Für Schutz vor Laufwerksausfall den Ordner zusätzlich in die reguläre Datensicherung aufnehmen. Die maximale Größe eines Speichervorgangs beträgt 50 MB.
 
 ---
 

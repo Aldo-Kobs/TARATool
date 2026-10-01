@@ -35,7 +35,7 @@ Settings also contains the editable attack-feasibility and impact boundaries and
 
 Saved custom matrices remain unchanged. Choose SL 0–4 for every cell to enable recommended SL-T calculations. You can save incomplete matrix configuration alongside your SL-T targets; an incomplete matrix shows “Configure matrix in Settings” instead of a result.
 
-Risk Analysis uses A = K + S + T + U from the original attack tree and the normalized impact for the assigned asset. Boundary values belong to the lower band. The **Recommended SL-T** field updates while creating or editing a risk, including unsaved changes to the asset, damage scenarios and feasibility values. An incomplete assessment displays “Assessment incomplete”; a configured zero remains SL-T 0.
+Risk Analysis uses A = K + S + T + U from the original attack tree and the normalized impact across the assigned assets. For full scoring and aggregation details, see the [Risk Calculation Reference](risk-calculation-guide.md). Boundary values belong to the lower band. The **Recommended SL-T** field updates while creating or editing a risk, including unsaved changes to the asset, damage scenarios and feasibility values. An incomplete assessment displays “Assessment incomplete”; a configured zero remains SL-T 0.
 
 Security Goals displays each linked risk’s recommendation separately, alongside the required per-requirement targets from Settings. Selecting or removing risk references updates the recommendations immediately. Use both to plan the security measures. Recommendations do not overwrite the seven configured targets, and residual mitigation does not reduce the original recommendation.
 

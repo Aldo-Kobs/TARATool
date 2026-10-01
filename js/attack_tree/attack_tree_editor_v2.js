@@ -717,10 +717,9 @@
       typeof getDisplayDamageScenarios === 'function'
         ? getDisplayDamageScenarios(editor.analysis)
         : [];
-    const sourceImpacts = getAssetDamageImpacts(
-      editor.analysis,
-      getRiskAsset(editor.analysis, { assetId: editor.assetId || '' })
-    );
+    const sourceImpacts = getRiskAssetDamageImpacts(editor.analysis, {
+      assetUids: editor.assetUids,
+    });
     ds.innerHTML = `
       <span class="ds-checks-label">${_t('impact.rating')}:</span>
       ${dsList
@@ -745,13 +744,18 @@
                 ''
               : dsItem.description || '';
           const label = short ? `${dsItem.id} (${short})` : dsItem.id;
-          const source = sourceImpacts.find((item) => item.id === dsItem.id);
+          const sources = sourceImpacts.filter((item) => item.id === dsItem.id);
+          const sourceLevel = sources
+            .map((item) =>
+              editor.assetUids.length > 1 ? `${item.assetId}: ${item.level}` : item.level
+            )
+            .join('; ');
           const tipTitle = _escapeHtml(`${dsItem.id}: ${name}`);
           const tipCat = short ? `(${_escapeHtml(short)})` : '';
           const tipDesc = _escapeHtml(desc);
           return `<label class="ds-tag" tabindex="0">
           <span class="at-hover-tooltip"><strong>${tipTitle}</strong>${tipCat ? `<br>${tipCat}` : ''}<br>${tipDesc}</span>
-          ${_escapeHtml(label)}<span class="risk-impact-level" data-editor-choice-impact="${_escapeHtml(dsItem.id)}" title="${_escapeHtml(source ? _t('risk.damageScenarioImpact') : _t('risk.assetRequired'))}">${_escapeHtml(source?.level || '—')}</span><input type="checkbox" data-ds="${_escapeHtml(dsItem.id)}" ${checked}>
+          ${_escapeHtml(label)}<span class="risk-impact-level" data-editor-choice-impact="${_escapeHtml(dsItem.id)}" title="${_escapeHtml(sources.length ? _t('risk.damageScenarioImpact') : _t('risk.assetRequired'))}">${_escapeHtml(sourceLevel || '—')}</span><input type="checkbox" data-ds="${_escapeHtml(dsItem.id)}" ${checked}>
         </label>`;
         })
         .join('')}
@@ -830,7 +834,7 @@
     const impactPreview = document.getElementById('atDamageScenarioImpactPreview');
     if (impactPreview) {
       const asset = getRiskAsset(analysis, entry);
-      const ratings = getAssetDamageImpacts(analysis, asset);
+      const ratings = getRiskAssetDamageImpacts(analysis, entry);
       const linked = new Set(getRiskDamageImpacts(analysis, entry).items.map((item) => item.id));
       impactPreview.innerHTML = `<strong>${_t('risk.damageScenarioImpact')}</strong>
         <p class="muted-hint">${_t(asset ? 'risk.impactSetupHint' : 'risk.assetRequired')}</p>
@@ -892,20 +896,29 @@
 
         this.editingId = existingEntry?.id || '';
         this.entryUid = existingEntry?.uid || _uid('risk');
-        this.assetId =
-          (!existingEntry && assetId) || getRiskAsset(analysis, existingEntry || {})?.id || '';
+        const assets =
+          !existingEntry && assetId
+            ? (analysis?.assets || []).filter((asset) => asset.id === assetId)
+            : getRiskAssets(analysis, existingEntry || {});
+        this.assetUids = assets.map((asset) => asset.uid);
         const assetSelect = document.getElementById('at_asset');
         if (assetSelect) {
-          assetSelect.replaceChildren(new Option(_t('risk.assetRequired'), ''));
+          assetSelect.replaceChildren();
           (analysis?.assets || []).forEach((asset) => {
             assetSelect.add(
               new Option(`${asset.id}: ${_loc(asset, 'name') || asset.name_en || '-'}`, asset.id)
             );
           });
-          assetSelect.value = this.assetId;
+          Array.from(assetSelect.options).forEach((option) => {
+            option.selected = assets.some((asset) => asset.id === option.value);
+          });
           assetSelect.disabled = false;
           assetSelect.onchange = () => {
-            this.assetId = assetSelect.value;
+            this.assetUids = (analysis?.assets || [])
+              .filter((asset) =>
+                Array.from(assetSelect.selectedOptions).some((option) => option.value === asset.id)
+              )
+              .map((asset) => asset.uid);
             this.rerender();
           };
         }
@@ -1056,8 +1069,8 @@
 
       getEntryData({ computeOnly = false } = {}) {
         const analysis = this.analysis;
-        const asset = analysis?.assets?.find((item) => item.id === this.assetId);
-        if (!computeOnly && !asset) {
+        const assets = getRiskAssets(analysis, { assetUids: this.assetUids });
+        if (!computeOnly && !assets.length) {
           document.getElementById('at_asset')?.reportValidity();
           return null;
         }
@@ -1073,8 +1086,9 @@
 
         const entry = {
           id: entryId,
-          assetId: asset?.id || '',
-          assetUid: asset?.uid || '',
+          assetId: assets[0]?.id || '',
+          assetUid: assets[0]?.uid || '',
+          assetUids: assets.map((asset) => asset.uid),
           uid: this.entryUid || _uid('risk'),
           rootName: treeV2.title || '',
           rootName_en: treeV2.title_en || '',

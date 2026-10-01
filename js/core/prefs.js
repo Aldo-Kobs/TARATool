@@ -11,13 +11,30 @@
   const THEME_KEY = 'taraTheme';
   const LANG_KEY = 'taraLang';
 
+  const memoryPrefs = {};
+  function readPref(key) {
+    try {
+      return localStorage.getItem(key) || memoryPrefs[key];
+    } catch {
+      return memoryPrefs[key];
+    }
+  }
+  function writePref(key, value) {
+    memoryPrefs[key] = value;
+    try {
+      localStorage.setItem(key, value);
+    } catch {
+      /* Folder mode also works when browser storage is blocked. */
+    }
+  }
+
   function getTheme() {
-    return localStorage.getItem(THEME_KEY) === 'dark' ? 'dark' : 'light';
+    return readPref(THEME_KEY) === 'dark' ? 'dark' : 'light';
   }
 
   function setTheme(theme) {
     const next = theme === 'dark' ? 'dark' : 'light';
-    localStorage.setItem(THEME_KEY, next);
+    writePref(THEME_KEY, next);
     document.documentElement.setAttribute('data-theme', next);
     const sw = document.getElementById('toggleTheme');
     // Slider: left (unchecked) = dark/moon, right (checked) = light/sun
@@ -30,7 +47,7 @@
   }
 
   function getLang() {
-    return localStorage.getItem(LANG_KEY) === 'en' ? 'en' : 'de';
+    return readPref(LANG_KEY) === 'en' ? 'en' : 'de';
   }
 
   function setLang(lang) {
@@ -43,7 +60,7 @@
         /* ignore */
       }
     }
-    localStorage.setItem(LANG_KEY, next);
+    writePref(LANG_KEY, next);
     document.documentElement.setAttribute('lang', next);
     document.documentElement.setAttribute('data-lang', next);
     const sw = document.getElementById('toggleLang');

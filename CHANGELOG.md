@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-09-30
+
+- Add a detailed Risk Calculation Reference in Markdown and PDF, with field definitions, shared-asset and residual formulas, verified examples, precision caveats and source references; extend the PDF builder to accept a Markdown source.
+
+- Group each assigned risk name with pen and trash icons in one block for editing and removing its assignment.
+
+- Add a Remove assignment button beside each asset-linked risk, preserving the risk even when its final assignment is removed.
+- Allow assigning an existing risk to multiple assets in Risk Analysis, with editable assignments, shared worst-case scoring, persistent links and updated reports.
+
 ## Aldo-Kobs fork — 2026-09-10 to 2026-09-17
 
 Modified version of SCHUNK SE & Co. KG's TARA Tool, based on upstream commit `4bbc354`. Copyright (C) 2026 SCHUNK SE & Co. KG; fork modifications Copyright (C) 2026 Aldo-Kobs. License: GPL-3.0-or-later. See [NOTICE.md](NOTICE.md) and the [dated commit and file inventory](docs/MODIFICATIONS.md).

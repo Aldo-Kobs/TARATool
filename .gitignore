@@ -16,3 +16,7 @@ tests/.venv/
 # Playwright test artifacts (screenshots, traces, videos)
 tests/test-results/
 test-results/
+
+# Local analyses and recovery copies must stay off Git.
+analyses/*
+!analyses/.gitkeep

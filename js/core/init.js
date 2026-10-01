@@ -8,7 +8,7 @@
  * @license     GPL-3.0
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // Theme + language (sliders)
   if (typeof TaraPrefs !== 'undefined' && TaraPrefs.applyPrefsOnLoad) {
     TaraPrefs.applyPrefsOnLoad();
@@ -132,7 +132,23 @@ document.addEventListener('DOMContentLoaded', () => {
   todayISO = getTodayISO();
 
   // 1. Initialization
-  if (typeof loadAnalyses === 'function') loadAnalyses();
+  try {
+    const stored = await window.folderStorage.initialize();
+    if (stored === null) loadAnalyses();
+    else {
+      analysisData = stored;
+      analysisData.forEach((analysis) => migrateAnalysis(analysis));
+    }
+  } catch (error) {
+    window.folderStorage.status(
+      'Cannot load analyses: ' + error.message + ' Reload after fixing storage.',
+      true
+    );
+    document.querySelectorAll('button, input, textarea, select').forEach((el) => {
+      el.disabled = true;
+    });
+    return;
+  }
   if (typeof renderAnalysisSelector === 'function') renderAnalysisSelector();
 
   if (analysisData.length > 0) {
@@ -159,14 +175,19 @@ document.addEventListener('DOMContentLoaded', () => {
     '#inputAnalysisName, #inputAuthorName, #inputDescription, #inputIntendedUse'
   );
   metaInputs.forEach((input) => {
-    input.addEventListener('change', () => {
+    input.addEventListener('input', () => {
       if (typeof saveCurrentAnalysisState === 'function') saveCurrentAnalysisState();
+
+      saveAnalyses();
 
       // If name/author changed, update header & list
       if (input.id === 'inputAnalysisName' || input.id === 'inputAuthorName') {
         const analysis = getActiveAnalysis();
         if (analysis) {
-          fillAnalysisForm(analysis);
+          const heading = document.getElementById('analysisNameDisplay');
+          if (heading) heading.textContent = analysis.name;
+          const author = document.querySelector('#analysisMetadata span:nth-child(2)');
+          if (author) author.textContent = `${t('meta.author')}: ${analysis.metadata.author}`;
           renderAnalysisSelector();
         }
       }
@@ -244,9 +265,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const elBtnSave = document.getElementById('btnSave');
   if (elBtnSave) {
-    elBtnSave.onclick = () => {
+    elBtnSave.onclick = async () => {
       if (typeof saveCurrentAnalysisState === 'function') saveCurrentAnalysisState();
-      if (typeof saveAnalyses === 'function') saveAnalyses();
+      if (!saveAnalyses()) return;
+      if (window.folderStorage.enabled && !(await window.folderStorage.flush())) return;
       if (typeof showToast === 'function')
         showToast(typeof t === 'function' ? t('toast.saved') : 'Analyse gespeichert.', 'success');
     };
@@ -398,7 +420,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 7. Cross-tab synchronization via storage event
   // When another tab/window changes localStorage, reload data to prevent inconsistencies.
   window.addEventListener('storage', (e) => {
-    if (e.key !== 'taraAnalyses' || !e.newValue) return;
+    if (window.folderStorage.enabled || e.key !== 'taraAnalyses' || !e.newValue) return;
 
     try {
       analysisData = JSON.parse(e.newValue);
