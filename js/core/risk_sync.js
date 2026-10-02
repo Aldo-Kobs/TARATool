@@ -32,7 +32,7 @@ function getAssessedRiskValue(iNorm, kstu) {
 function refreshRiskAssessment(entry, analysis) {
   applyImpactInheritance(entry, analysis);
   applyWorstCaseInheritance(entry);
-  entry.rootRiskValue = getAssessedRiskValue(entry.i_norm, entry.kstu);
+  entry.rootRiskValue = entry.riskValue;
 }
 
 function riskAssetLabel(analysis, entry, lang) {

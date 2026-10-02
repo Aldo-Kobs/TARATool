@@ -244,6 +244,8 @@
         'Das Bild konnte nicht gelesen werden. Bitte versuchen Sie es erneut.',
       'risk.title': 'Risikoanalyse & Angriffsbäume',
       'risk.rootOverview': 'Root-Node-Übersicht (alle Angriffsbäume):',
+      'risk.statisticalOrHint':
+        'Angriffspfade werden einzeln bewertet und über ein normiertes statistisches ODER kombiniert (unabhängige Pfade). P und I zeigen weiterhin die höchsten Einzelwerte.',
       'risk.savedTrees': 'Gespeicherte Angriffsbäume:',
       'risk.none': 'Noch keine Angriffs-Bäume angelegt.',
       'risk.asset': 'Asset',
@@ -865,6 +867,8 @@
       'overview.imageReadError': 'The image could not be read. Please try again.',
       'risk.title': 'Risk analysis & attack trees',
       'risk.rootOverview': 'Root node overview (all attack trees):',
+      'risk.statisticalOrHint':
+        'Attack paths are scored individually and combined using normalized statistical OR (independent paths). P and I still show the highest individual values.',
       'risk.savedTrees': 'Saved attack trees:',
       'risk.none': 'No attack trees created yet.',
       'risk.asset': 'Asset',

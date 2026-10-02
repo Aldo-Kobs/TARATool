@@ -1,6 +1,6 @@
 /**
  * @file        attack_tree_calc.js
- * @description Attack tree calculation – KSTU worst-case inheritance and impact propagation.
+ * @description Attack tree calculation – Path-wise statistical OR, KSTU summaries and impact propagation.
  *              Pure computation, no DOM access.
  * @author      Nico Peper
  * @organization SCHUNK SE & Co. KG
@@ -224,6 +224,7 @@ function applyWorstCaseInheritance(treeData) {
   });
 
   treeData.kstu = _kstuWorstCase(treeData.branches.map((b) => b.kstu));
+  applyStatisticalRiskAggregation(treeData);
   return treeData;
 }
 
@@ -422,5 +423,81 @@ function applyWorstCaseInheritanceV2(treeData) {
 
   walk(root);
   treeData.kstu = root.kstu || _kstuWorstCase([]);
+  applyStatisticalRiskAggregation(treeData);
+  return treeData;
+}
+
+/**
+ * Score each path with its own impact and KSTU before combining alternatives.
+ * Direct impacts describe consequences of one path and retain their existing
+ * worst-case assessment. Child paths are independent alternatives (statistical OR).
+ * Inherited KSTU/impact remain descriptive summaries, not inputs to the OR score.
+ */
+function applyStatisticalRiskAggregation(treeData) {
+  const maxFactor = (values) => Math.max(0, ...values.map(Number).filter(Number.isFinite));
+  const maxFeasibility = ['K', 'S', 'T', 'U'].reduce(
+    (sum, key) => sum + maxFactor(PROBABILITY_CRITERIA[key].options.map((option) => option.value)),
+    0
+  );
+  const maxImpact = Number(
+    (
+      maxFactor(Object.values(PROTECTION_LEVEL_WEIGHTS)) *
+      maxFactor(Object.values(SEVERITY_LEVEL_FACTORS))
+    ).toFixed(2)
+  );
+  const ceiling = maxImpact * maxFeasibility;
+
+  const combine = (scores) => {
+    if (
+      !scores.length ||
+      !Number.isFinite(ceiling) ||
+      ceiling <= 0 ||
+      scores.some(
+        (score) => score === null || !Number.isFinite(score) || score < 0 || score > ceiling + 1e-12
+      )
+    )
+      return null;
+    // Keep full precision between levels; rounding belongs only to display/storage.
+    return scores.reduce((total, score) => total + (1 - total / ceiling) * score, 0);
+  };
+  const store = (node, score) => {
+    node.riskValue = score === null ? '' : score.toFixed(2);
+    return score;
+  };
+  const directScore = (leaves) => {
+    if (!leaves.length || leaves.some((leaf) => getAssessedRiskValue(leaf.i_norm, leaf) === ''))
+      return null;
+    const impact = Math.max(...leaves.map((leaf) => Number(leaf.i_norm)));
+    return computeRiskScore(impact, _kstuWorstCase(leaves));
+  };
+  const scoreNode = (node, leaves, childScores) => {
+    const scores = [...childScores];
+    if (leaves.length) scores.push(directScore(leaves));
+    return store(node, combine(scores));
+  };
+
+  if (treeData.treeV2) {
+    const walk = (node) => scoreNode(node, node.impacts || [], (node.children || []).map(walk));
+    store(treeData, walk(treeData.treeV2));
+  } else {
+    const depth = _getTreeDepthForData(treeData);
+    const scores = (treeData.branches || []).map((branch) => {
+      if (depth === 2) {
+        return scoreNode(
+          branch,
+          [],
+          (branch.l2_nodes || []).map((node) => scoreNode(node, node.leaves || [], []))
+        );
+      }
+      const leaves = branch.leaves || branch.l3_node?.leaves || [];
+      const score = scoreNode(branch, leaves, []);
+      if (depth === 3) {
+        if (branch.l3_node) store(branch.l3_node, score);
+        if (branch.l2_node) store(branch.l2_node, score);
+      }
+      return score;
+    });
+    store(treeData, combine(scores));
+  }
   return treeData;
 }

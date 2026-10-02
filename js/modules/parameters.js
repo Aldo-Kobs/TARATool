@@ -77,14 +77,17 @@
           <tbody>${section.fields
             .map((field) => {
               const values = currentValues(field.valueSource);
-              const interpretations = (field.interpretations || [])
-                .filter((item) => !item.value || VALID_IMPACT_VALUES.includes(item.value))
-                .map((item) => {
-                  const label = item.value
-                    ? `${item.value} — ${IMPACT_LABELS[item.value] || item.value}`
-                    : local(item.label);
-                  return `<li><strong>${esc(label)}</strong>: ${esc(local(item.meaning))}<p>${esc(ui('example'))}: ${esc(local(item.example))}</p></li>`;
-                });
+              const renderInterpretations = (items) =>
+                (items || [])
+                  .filter((item) => !item.value || VALID_IMPACT_VALUES.includes(item.value))
+                  .map((item) => {
+                    const label = item.value
+                      ? `${item.value} — ${IMPACT_LABELS[item.value] || item.value}`
+                      : local(item.label);
+                    const ratings = renderInterpretations(item.ratings);
+                    return `<li><strong>${esc(label)}</strong>: ${esc(local(item.meaning))}<p>${esc(ui('example'))}: ${esc(local(item.example))}</p>${ratings.length ? `<details class="parameter-rating-guide"><summary>${esc(ui('ratings'))}</summary><ul>${ratings.join('')}</ul></details>` : ''}</li>`;
+                  });
+              const interpretations = renderInterpretations(field.interpretations);
               return `<tr data-parameter-id="${esc(field.id)}">
               <th scope="row">${esc(local(field.label))}<span class="parameter-kind">${esc(ui(field.kind))}</span></th>
               <td>${esc(local(field.help))}</td>

@@ -1,7 +1,7 @@
 # TARA Tool — Risk Calculation Reference
 
 **A detailed explanation for assessors, reviewers and users presenting the results**  
-Edition: 30 September 2026 · Language: English
+Edition: 2 October 2026 · Language: English
 
 This reference describes the calculations implemented in the current TARA Tool workspace, including shared risks, individual asset assignment removal, and the grouped pen/trash controls. It was reviewed against base revision `94746fc` **plus the local modifications present on this date**. It describes the implemented model; it does not establish that a particular assessment has sufficient evidence.
 
@@ -47,18 +47,18 @@ For every assigned asset and every scenario linked to the leaf:
 Leaf I_norm = highest applicable weighted impact
 ```
 
-At each parent node, the tool independently takes the highest impact and the highest value of each of K, S, T and U from its contents. It then applies the same risk formula to those inherited values. The saved risk score is the root result.
+Each attack path is assessed using its own impact and K/S/T/U. Alternative paths are combined using normalized statistical OR: `R = M × [1 − ∏(1 − Rpath/M)]`, where M is the maximum configured score (2.20 by default). This assumes independent paths. Inherited impact and K/S/T/U remain maximum-value summaries; multiplying those summaries does not reproduce the combined score.
 
-| Stage                         | User supplies                                   | Tool derives                                                         |
-| ----------------------------- | ----------------------------------------------- | -------------------------------------------------------------------- |
-| Assets                        | Five protection-need ratings                    | Highest protection level and its numerical weight                    |
-| Damage scenarios              | A rating for each relevant asset/scenario pair  | Severity factor for that pair                                        |
-| Risk assignment               | One or more assigned assets                     | Which asset matrix rows participate                                  |
-| Impact leaf                   | Linked scenarios and K/S/T/U values             | Normalized impact and leaf risk score                                |
-| Attack paths and root         | Tree structure                                  | Independent maxima of impact and each feasibility factor; root score |
-| Classification                | Configured thresholds                           | Low, Medium, High or Critical                                        |
-| Residual assessment           | Treatment and, where mitigated, revised K/S/T/U | Residual score with original impact retained                         |
-| Security-level recommendation | Configured bands and 4 × 4 matrix               | Recommended SL-T from original root feasibility and impact           |
+| Stage                         | User supplies                                   | Tool derives                                                    |
+| ----------------------------- | ----------------------------------------------- | --------------------------------------------------------------- |
+| Assets                        | Five protection-need ratings                    | Highest protection level and its numerical weight               |
+| Damage scenarios              | A rating for each relevant asset/scenario pair  | Severity factor for that pair                                   |
+| Risk assignment               | One or more assigned assets                     | Which asset matrix rows participate                             |
+| Impact leaf                   | Linked scenarios and K/S/T/U values             | Normalized impact and leaf risk score                           |
+| Attack paths and root         | Tree structure                                  | Independent path scores combined with normalized statistical OR |
+| Classification                | Configured thresholds                           | Low, Medium, High or Critical                                   |
+| Residual assessment           | Treatment and, where mitigated, revised K/S/T/U | Residual score with original impact retained                    |
+| Security-level recommendation | Configured bands and 4 × 4 matrix               | Recommended SL-T from original root feasibility and impact      |
 
 **Interpretation:** the score is a dimensionless prioritization value. The implementation does not convert it into an annual probability, percentage chance, expected monetary loss or financial exposure. Although some internal names use “probability” and the overview shows a `P` vector, the arithmetic uses the sum of four assessment factors. For example, `R = 1.60` does not mean a 160% probability.
 
@@ -205,11 +205,11 @@ The scale decreases as the required expertise increases. Entering a vulnerabilit
 
 ### 5.2 S — Scaling
 
-| Value | Shipped choice                 | Meaning for assessment                                        |
-| ----: | ------------------------------ | ------------------------------------------------------------- |
-|   0.5 | Complete portfolio | The attack can be repeated across the entire product portfolio. |
-|   0.3 | Product series | The attack can be repeated across devices in one product series. |
-|   0.1 | Single device | The attack is limited to one device. |
+| Value | Shipped choice     | Meaning for assessment                                           |
+| ----: | ------------------ | ---------------------------------------------------------------- |
+|   0.5 | Complete portfolio | The attack can be repeated across the entire product portfolio.  |
+|   0.3 | Product series     | The attack can be repeated across devices in one product series. |
+|   0.1 | Single device      | The attack is limited to one device.                             |
 
 S is a categorical judgment. The tool does not count devices, assets, installations or network nodes. Assigning a risk to an additional asset does not automatically change S. Review S when the scenario's scope changes.
 
@@ -245,7 +245,7 @@ Minimum A = 0.1 + 0.1 + 0.1 + 0.1 = 0.4
 Maximum A = 0.7 + 0.5 + 0.5 + 0.5 = 2.2
 ```
 
-Before rounding, increasing any one factor by 0.1 changes a leaf's score by `0.1 × I_norm`. At the root, the change matters only if it changes the maximum inherited value of that factor. Reducing a non-controlling factor may leave the root score unchanged.
+Before rounding, increasing any one factor by 0.1 changes a leaf's score by `0.1 × I_norm`. Within a path, changing a factor matters when it changes that path’s controlling maximum. A change to a path score feeds into the root OR result, unless another path already reaches the configured ceiling.
 
 ## 6. Calculating an impact leaf
 
@@ -271,7 +271,7 @@ If there is no applicable candidate, the impact is unassessed. If impact or any 
 | Medium            |   0.60 |                 0.36 |                  0.48 |                   0.60 |
 | High              |   1.00 |                 0.60 |                  0.80 |                   1.00 |
 
-The minimum positive default leaf impact is 0.18, and the maximum is 1.00. Combining these with the factor ranges gives complete default scores from raw 0.072 to 2.20, displayed as 0.07 to 2.20. There is no additional division by a maximum, conversion to percent, or sum of consequences.
+The minimum positive default leaf impact is 0.18, and the maximum is 1.00. Combining these with the factor ranges gives complete default scores from raw 0.072 to 2.20, displayed as 0.07 to 2.20. Leaf scores keep this scale. Alternative path scores are normalized by the configured maximum for statistical OR, then converted back to the same score scale. These normalized scores are a modeling convention, not measured event probabilities.
 
 ### 6.2 Selecting multiple scenarios
 
@@ -281,43 +281,31 @@ The impact preview shows the original matrix ratings. A displayed `3 (High)` is 
 
 ## 7. How the attack tree aggregates results
 
-### 7.1 Independent maxima at every parent
+### 7.1 Calculate each path separately
 
-A node can have impact leaves directly attached to it and child path nodes. For each parent p:
+Direct impact leaves attached to the same path retain their existing worst-case assessment: maximum impact multiplied by the sum of the maximum K, S, T and U among those direct leaves. All direct leaves must have complete inputs. Values from a different path do not participate in that calculation.
+
+### 7.2 Combine alternative paths with statistical OR
 
 ```text
-I(p) = max of available impact values from direct leaves and child nodes
-K(p) = max of available K values from direct leaves and child nodes
-S(p) = max of available S values from direct leaves and child nodes
-T(p) = max of available T values from direct leaves and child nodes
-U(p) = max of available U values from direct leaves and child nodes
-
-R(p) = round2(I(p) × [K(p) + S(p) + T(p) + U(p)])
+M = maximum configured impact × sum of the maximum configured K/S/T/U
+Default M = 1.00 × (0.7 + 0.5 + 0.5 + 0.5) = 2.20
+R(parent) = M × [1 − product over child paths of (1 − R(path)/M)]
 ```
 
-Each maximum is selected independently. K can come from one leaf, S from another, and impact from a third. The calculation is repeated upwards to the root.
+The formula assumes independent alternative paths. It applies recursively to parallel intermediate paths. A node with direct impacts and child paths contributes its direct-impact assessment as one alternative alongside its children. A single child passes its score through unchanged. Full precision is retained between tree levels; displayed results are rounded to two decimals.
 
-With unchanged leaves and the current unrestricted maximum rules, inserting another intermediate node or moving a leaf between branches does not change the global root maxima. It can change the branch summaries and the explanation of the attack.
+For path scores 0.60 and 1.60, the combined result is 1.763636…, displayed as **1.76**. Impact and K/S/T/U summaries still show maxima for context and for the separate security-level recommendation. They do not define the combined R.
 
-### 7.2 Why a root can exceed every leaf
+### 7.3 Interpretation and structure
 
-The root calculation is **not the maximum leaf score**. It combines the maximum of each input before multiplying. Section 15 provides a tree whose leaves score 0.60 and 1.60 but whose root scores 2.20.
+Normalization preserves the existing risk scale and classification thresholds. It does not establish observed probabilities or annual attack frequencies. Correlated paths and shared prerequisites need assessment review because independence may overstate their combined contribution. No AND gate or sequential probability multiplication is implemented.
 
-This is a conservative combination of factor values. The interface does not enforce that all maxima describe one jointly realizable attack path. Reviewers should examine which leaves set the maxima and whether the resulting summary is useful for the decision being made.
+Adding an independent alternative can increase the combined score. Duplicating a path also increases it, so duplicate descriptions of the same event should not be entered as independent alternatives. Duplicating a direct impact leaf within one path does not change that path’s maxima. Reordering paths or adding a linear intermediate wrapper does not change the result.
 
-### 7.3 What the tree structure does not calculate
+### 7.4 Missing assessments
 
-There is no implemented AND/OR probability algebra, path-frequency estimation, multiplication of success probabilities, sum of independent attack frequencies, or accumulated time for sequential steps. A path title containing “AND”, “OR” or “then” does not change the formula. Multiple paths do not add their risk scores together.
-
-Duplicating an identical leaf does not increase the maximum-based root score. Adding a leaf with a larger value in any controlling dimension can increase it. Collapsing, expanding or reordering nodes affects presentation, not the score.
-
-### 7.4 Incomplete leaves and apparently complete roots
-
-Missing values are ignored when each parent maximum is selected. If some descendant supplies every required dimension, the root can acquire a complete impact and K/S/T/U even when no individual leaf is complete.
-
-For example, one leaf can supply K and another S/T/U. The root can then show a number while both leaves remain incomplete. A numerical root is therefore not a completion certificate. The recommended SL-T calculation applies a stricter rule: every existing impact leaf must have complete numeric inputs.
-
-A path with no impact leaves contributes no values. Empty structural paths are not independently rejected by the SL completeness check when other complete leaves exist elsewhere in the tree. Review tree completeness separately.
+An empty path, an unassessed impact leaf, or a score outside the configured normalization range makes the combined score unassessed. Inputs from another path cannot fill its missing values. A complete numerical result still does not prove that all asset criteria, scenario coverage, evidence or treatment details are complete.
 
 ## 8. One risk assigned to several assets
 
@@ -370,7 +358,7 @@ A score exactly at a risk threshold belongs to the higher class: 0.80 is Medium,
 2. The maximum leaf impact is formatted to two decimals and stored as a string, such as `"0.48"`.
 3. Parent impacts retain two-decimal values through maximum aggregation.
 4. K/S/T/U values are parsed numerically; their sums are not deliberately rounded before the risk multiplication.
-5. An assessed risk result is formatted to two decimals with JavaScript `toFixed(2)`.
+5. Path OR aggregation retains full precision between levels. An assessed risk result is formatted to two decimals with JavaScript `toFixed(2)`.
 6. Saved-root and residual-root badges use that formatted value for classification.
 7. Security-level banding separately rounds its root feasibility and impact to ten decimals before comparing boundaries.
 
@@ -380,9 +368,7 @@ JavaScript uses binary floating-point arithmetic. Exact decimal halfway cases an
 
 ### 9.3 Current display limitations near thresholds
 
-The small node-summary color in the attack-tree editor uses the raw score, while its printed score uses two decimals. The saved risk badge classifies the rounded score. This can produce a visible disagreement near a boundary.
-
-A verified example is impact 1.00 and K/S/T/U = 0.6/0.3/0.4/0.3. The raw JavaScript score is `1.5999999999999999`, the displayed score is **1.60**, the small node color is Medium, and the saved score's badge is High. This is a presentation/classification inconsistency in the reviewed implementation. For an assessment record, retain the numerical inputs, the saved score and its badge, and identify any disagreement during review.
+Node summaries and saved badges classify their rounded two-decimal result. This keeps a displayed 1.60 in the High class in both places.
 
 Some overview background colors and chart colors also use fixed default thresholds or class names. With custom configuration, use the numerical result and configured badge thresholds rather than background shading as the basis for interpretation. These limitations are documented here; this guide does not modify the calculation code.
 
@@ -395,7 +381,7 @@ Some overview background colors and chart colors also use fixed default threshol
 | All relevant matrix cells N/A or missing      | No positive severity contribution; impact is empty.         | Check applicability and completeness.                                 |
 | One relevant cell rated, another missing      | Highest available weighted impact can still be calculated.  | Numeric impact does not prove all asset/scenario pairs were assessed. |
 | One leaf factor missing                       | Leaf score is empty.                                        | Complete that leaf.                                                   |
-| Different leaves supply all root dimensions   | Root score can still be numeric.                            | Inspect each leaf; SL recommendation remains incomplete.              |
+| Different leaves supply all root dimensions   | Root score remains unassessed.                              | Inspect each leaf; SL recommendation remains incomplete.              |
 | Asset protection need unset                   | Weight falls back to level I.                               | Complete the protection evaluation even if R is numeric.              |
 | Residual treatment or reassessment incomplete | Root may still show a residual score using original values. | Use the completeness indicator and review the treatment fields.       |
 | Evaluated checked                             | No numerical change.                                        | This is a manual review declaration.                                  |
@@ -414,9 +400,9 @@ If treatment is Mitigated and a nonblank reassessed value exists:
 Otherwise:
     effective factor = original factor
 
-Residual root K/S/T/U = independent maxima of the effective leaf factors
-Residual root impact = original root I_norm
-R_res = round2(original root I_norm × sum of residual root factors)
+Residual path score = original path impact × sum of effective path factors
+R_res = round2(M × [1 − product over paths of (1 − residual path score / M)])
+Residual root K/S/T/U and impact remain maximum-value summaries
 ```
 
 This recalculates the root after treatment. It does not subtract a mitigation percentage or subtract the sum of leaf reductions from the original score.
@@ -469,7 +455,7 @@ The current completeness checks focus on treatment fields and notes. They do not
 
 ### 10.5 Why mitigation may leave the root unchanged
 
-A measure can lower a leaf's K while another leaf still sets the same root maximum. Similarly, reducing the formerly highest-risk leaf may leave a different leaf controlling impact or another factor. To explain the residual root, identify the controlling leaf for each factor again after mitigation.
+A measure can lower a leaf’s K while another direct leaf still sets the same maximum within that path. To explain the residual root, calculate each treated path separately and combine those path scores with OR. Reducing a path score normally reduces the combined result unless another path already reaches the ceiling.
 
 The impact remains the original impact even if the measure is intended to reduce consequences. The current residual editor has no separate residual impact input. Any change to asset protection ratings or the original damage matrix changes the baseline assessment and can change both original and residual results; it is not a residual-only consequence reduction.
 
@@ -623,10 +609,10 @@ The Parameters guidance file describes fields and examples. Changing explanatory
 | Matrix justification                                 | No number changes; completeness/evidence changes.                                                                       |
 | Assign or remove asset                               | Recomputes candidate impacts for the shared tree.                                                                       |
 | Select or deselect a leaf scenario                   | Recomputes that leaf's candidate set.                                                                                   |
-| Change leaf K/S/T/U                                  | Changes leaf feasibility and possibly inherited maxima.                                                                 |
-| Add/remove leaf                                      | Changes the inputs available for maxima and assessment completeness.                                                    |
+| Change leaf K/S/T/U                                  | Changes leaf feasibility, its path score and the combined OR result.                                                    |
+| Add/remove leaf                                      | Changes path inputs and assessment completeness.                                                                        |
 | Change notes/lifecycle/goal references               | No arithmetic change.                                                                                                   |
-| Change residual treatment or revised factors         | Can change residual maxima and R_res; leaves original R unchanged.                                                      |
+| Change residual treatment or revised factors         | Can change residual path scores and their OR result; leaves original R unchanged.                                       |
 | Change global severity factors or protection weights | Can change original and residual impact-derived scores.                                                                 |
 | Change K/S/T/U option labels                         | Changes wording only.                                                                                                   |
 | Change K/S/T/U option values                         | Changes available choices; existing stored numeric selections are not automatically reinterpreted from their old label. |
@@ -697,47 +683,28 @@ The leaf selects DS3 and has K/S/T/U = 0.7/0.5/0.4/0.5, so A = 2.1.
 
 The first raw score is 0.18 × 2.1 = 0.378, displayed as 0.38. Assigning A02 changes the maximum impact, not the number of risk entries and not the feasibility vector. Removing the final assignment preserves the authored tree for later reassignment.
 
-### 15.3 Example C — Root score exceeds both leaves
+### 15.3 Example C — Two independently assessed paths
 
-One level III asset has DS1 rated Medium and DS3 rated High. Two leaves select the corresponding scenarios:
+One level III asset has DS1 rated Medium and DS3 rated High. Each path has one leaf:
 
-| Entry       | I_norm |   K |   S |   T |   U |   A |    R |
+| Path        | I_norm |   K |   S |   T |   U |   A |    R |
 | ----------- | -----: | --: | --: | --: | --: | --: | ---: |
-| Leaf 1: DS1 |   0.60 | 0.7 | 0.1 | 0.1 | 0.1 | 1.0 | 0.60 |
-| Leaf 2: DS3 |   1.00 | 0.1 | 0.5 | 0.5 | 0.5 | 1.6 | 1.60 |
-| Root        |   1.00 | 0.7 | 0.5 | 0.5 | 0.5 | 2.2 | 2.20 |
+| Path 1: DS1 |   0.60 | 0.7 | 0.1 | 0.1 | 0.1 | 1.0 | 0.60 |
+| Path 2: DS3 |   1.00 | 0.1 | 0.5 | 0.5 | 0.5 | 1.6 | 1.60 |
 
-The root gets K from Leaf 1 and I/S/T/U from Leaf 2. Its class is Critical and its recommended SL-T is 4. Taking only `max(0.60, 1.60)` would give the wrong root result for this application.
+`R = 2.2 × [1 − (1 − 0.60/2.2) × (1 − 1.60/2.2)] = 1.76`, High.
+
+The root summaries remain I = 1.00 and K/S/T/U = 0.7/0.5/0.5/0.5. The separate recommended SL-T still uses those summaries and returns 4.
 
 ### 15.4 Example D — Treating the same tree
 
-Start with Example C and leave Leaf 1's treatment unchanged. Set Leaf 2 to Mitigated and select 0.1 for every revised factor, with a suitable control-measure description.
+Leave Path 1 unchanged. Mitigate Path 2 with 0.1 for each revised factor. Path 1 remains 0.60 and Path 2 becomes 0.40. Their combined residual score is **0.89, Medium**. Original R remains **1.76, High**, and the original recommended SL-T remains 4.
 
-```text
-Leaf 1 effective vector = 0.7 / 0.1 / 0.1 / 0.1
-Leaf 2 effective vector = 0.1 / 0.1 / 0.1 / 0.1
-Residual root vector   = 0.7 / 0.1 / 0.1 / 0.1
-Original root impact   = 1.00
-Residual root score    = 1.00 × 1.0 = 1.00 (Medium)
-```
+If both paths are mitigated with 0.1 for every factor, their scores become 0.24 and 0.40. The combined residual score is **0.60, Low**. Blank revised factors still fall back individually to their original values; treatment completeness is checked separately.
 
-The original risk remains 2.20, Critical, with recommended SL-T 4. It is not recalculated from residual feasibility for the recommendation.
+### 15.5 Example E — Missing factors cannot be supplied by another path
 
-If Leaf 1 is also Mitigated with all four revised factors 0.1, the residual root becomes 1.00 × 0.4 = **0.40, Low**. The default dropdowns do not provide a zero factor, so complete reassessment with default choices and positive impact does not produce zero risk.
-
-If Leaf 1 has those complete reassessed values but Leaf 2 has only reassessed K = 0.1 and blank revised S/T/U, Leaf 2 falls back to its original 0.5/0.5/0.5 for those factors. The residual root is **1.60, High**, while the mitigation remains incomplete. Its leaf residual preview may still show a dash.
-
-### 15.5 Example E — A numeric root with incomplete leaves
-
-Use impact 1.00 on both leaves:
-
-| Entry          |       K |       S |       T |       U | Leaf score |
-| -------------- | ------: | ------: | ------: | ------: | ---------- |
-| Leaf 1         |     0.7 | Missing | Missing | Missing | Unassessed |
-| Leaf 2         | Missing |     0.5 |     0.5 |     0.5 | Unassessed |
-| Inherited root |     0.7 |     0.5 |     0.5 |     0.5 | 2.20       |
-
-The root's maxima supply every dimension, so its score is numeric. Recommended SL-T reads **Assessment incomplete** because the individual leaves do not satisfy completeness. This is why root score and completeness must be reviewed separately.
+With impact 1.00 on both paths, suppose Path 1 supplies only K = 0.7, while Path 2 supplies only S/T/U = 0.5/0.5/0.5. Both path scores and the combined root score are **Unassessed**. The displayed root maxima do not make either path complete. Recommended SL-T also reports incomplete assessment.
 
 ### 15.6 Example F — No applicable contribution
 
@@ -800,7 +767,7 @@ The new asset may supply a higher weighted impact to one or more leaves. The roo
 They refer to one shared risk. Its impact uses the maximum across its assignments, and its feasibility and treatment are shared.
 
 **Why did selecting a security goal not lower residual risk?**  
-The link records intent and traceability. A lower score requires an applicable treatment and revised factors that lower the controlling maxima.
+The link records intent and traceability. A lower score requires an applicable treatment and revised factors that lower the path scores.
 
 **Why is the residual score still the original score before review?**  
 Original factors are retained for blank, Accepted and Delegated treatment, and for missing factor replacements under Mitigated. The score alone does not indicate reviewed mitigation.
@@ -845,17 +812,17 @@ Changing exported JSON manually can bypass UI selection constraints. The impact 
 
 The low-level `computeRiskScore` helper converts missing or unparseable operands to zero. User-facing score paths normally call `getAssessedRiskValue` first, which requires finite parsed impact and all four factors; otherwise it returns an empty score. Therefore, directly calling the low-level helper with incomplete data is not a faithful reproduction of the normal displayed assessment.
 
-The score guard and inheritance use `parseFloat`, whereas SL completeness uses stricter conversion with `Number` and requires nonnegative values. Malformed imported strings can be interpreted differently. Use the provided controls and valid numeric configuration. The raw formula has no 2.20 cap: that maximum follows from shipped choices, not an enforced upper bound on arbitrary imported numbers.
+The score guard and inheritance use `parseFloat`, whereas SL completeness uses stricter conversion with `Number` and requires nonnegative values. Malformed imported strings can be interpreted differently. Use the provided controls and valid numeric configuration. The raw leaf formula has no cap. Path aggregation requires scores within the configured maximum; an out-of-range score is unassessed instead of being clamped into a probability.
 
 The default three protection levels and four feasibility factors are built into the model. Global configuration validation checks required sections and descending risk thresholds but is not a comprehensive semantic validator of every coefficient, label or option. Zero/negative/custom weights and renamed class identifiers require implementation review. In particular, zero weights trigger the existing fallback expression, and default class identifiers are also used by overview counts and residual note requirements.
 
 ### 17.3 Known limitations relevant to this edition
 
-- Independent factor maxima can combine different attack paths into one root vector.
+- Statistical OR assumes independent paths; correlation and shared prerequisites are not represented.
+- Direct impacts within one path retain independent factor maxima.
 - A numerical root does not guarantee complete leaves, protection criteria, matrix coverage or evidence.
 - Shared assignments use one scenario/factor/treatment model across all linked assets.
 - Residual assessment retains original impact and has no residual-only impact input.
-- Node color versus saved badge can disagree at rounded thresholds.
 - Some colors/counts and note rules retain assumptions about default classes when configuration is customized.
 - The reviewed checkout contains unresolved merge markers in `config/parameter_guide.js`. The Parameters reference can fail to load. This document derives its formulas from the executable calculation modules and configuration, rather than assuming that reference tab is available or current.
 
@@ -868,7 +835,7 @@ The default three protection levels and four feasibility factors are built into 
 | Five criteria and overall protection level                      | [assets.js](../js/modules/assets.js), `ASSET_CRITERIA`, `readAssetEvaluation`                                                                                                                                                                    |
 | Canonical product and saved risk classification                 | [utils.js](../js/core/utils.js), `computeRiskScore`, `getRiskMeta`, `getRiskBgClass`                                                                                                                                                             |
 | Assignment resolution and score completeness                    | [risk_sync.js](../js/core/risk_sync.js), `getRiskAssets`, `setRiskAssets`, `getAssessedRiskValue`, `refreshRiskAssessment`, `syncAssetRisks`                                                                                                     |
-| Weighted leaf impact and recursive maxima                       | [attack_tree_calc.js](../js/attack_tree/attack_tree_calc.js), `computeLeafImpactNorm`, `_kstuWorstCase`, `applyImpactInheritanceV2`, `applyWorstCaseInheritanceV2`                                                                               |
+| Weighted leaf impact, summaries and statistical OR              | [attack_tree_calc.js](../js/attack_tree/attack_tree_calc.js), `computeLeafImpactNorm`, `_kstuWorstCase`, `applyImpactInheritanceV2`, `applyWorstCaseInheritanceV2`, `applyStatisticalRiskAggregation`                                            |
 | Node display and editor data                                    | [attack_tree_ui.js](../js/attack_tree/attack_tree_ui.js), `_renderNodeSummaryHTML`; [attack_tree_editor_v2.js](../js/attack_tree/attack_tree_editor_v2.js), `getEntryData`                                                                       |
 | Source matrix and refresh                                       | [impact_matrix.js](../js/modules/impact_matrix.js), `updateImpactScore`, `_recalcAllRiskEntries`                                                                                                                                                 |
 | Assignment controls                                             | [risk_analysis.js](../js/modules/risk_analysis.js), `renderRiskAnalysis`, `renderAssetRiskCoverage`                                                                                                                                              |

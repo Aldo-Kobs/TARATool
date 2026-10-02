@@ -52,6 +52,7 @@ export default [
         setRiskAssets: 'readonly',
         getRiskAssetDamageImpacts: 'readonly',
         getAssessedRiskValue: 'readonly',
+        applyStatisticalRiskAggregation: 'readonly',
         refreshRiskAssessment: 'readonly',
         riskAssetLabel: 'readonly',
         getRiskDamageImpacts: 'readonly',

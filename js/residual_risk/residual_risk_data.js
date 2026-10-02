@@ -422,8 +422,8 @@
       }
     }
 
-    // Delegates to global computeRiskScore() (utils.js) — single source of truth
-    const riskValue = getAssessedRiskValue(iNorm, kstu);
+    // Uses the same path-wise OR as the original assessment.
+    const riskValue = clone.riskValue;
 
     return {
       riskValue,

@@ -17,15 +17,6 @@ The file assigns `window.PARAMETER_GUIDE`. Its structure is:
 - `interpretations[]`, where present: one entry per proposed level, with bilingual `meaning` and `example`. Protection levels use bilingual `label` (I/II/III); damage ratings use `value` (`N/A`, `1`, `2`, `3`) to read the current rating label from the assessment configuration.
 - `phaseExamples`: examples for each lifecycle phase.
 - `ui`: headings, search labels and the editing instructions at the bottom of the tab.
-<<<<<<< HEAD
-- `sources`: references for the security-level summaries.
-
-For the Low / Medium / High guidance, find the field with `id: 'damage-rating'` under the `damage-matrix` section. Edit `interpretations[]`: values `1`, `2`, `3` are the respective ratings; `N/A` explains non-applicability. Change `meaning.en`, `meaning.de`, `example.en` and `example.de` for each level. The surrounding `values` text explains how to choose a rating.
-
-For I / II / III, find `asset-confidentiality`, `asset-integrity`, `asset-availability`, `asset-authorization` or `asset-authentication` in the `assets` section. Each has three `interpretations[]` entries. The proposal uses limited, significant and severe consequences, with a separate meaning and example for each property. Authentication concerns identity; authorization concerns permissions. Edit the `assets` section's `intro` for the common decision rule. These are proposed company criteria, not IEC security-level definitions.
-
-The `damage-matrix` section's `intro` explains the common impact approach. Agree measurable boundaries for each harm category (for example, tolerable downtime, financial loss, affected people and data sensitivity) before turning these examples into company policy. An example asset is not automatically assigned its illustrated level; the operating context determines the consequence.
-=======
 - `sources`: background references for the assessment, security-level summaries and CRA context.
 
 For the Low / Medium / High guidance, find the field with `id: 'damage-rating'` under the `damage-matrix` section. Edit `interpretations[]`: values `1`, `2`, `3` are the respective ratings; `N/A` explains non-applicability. Change `meaning.en`, `meaning.de`, `example.en` and `example.de` for each level. The surrounding `values` text explains how to choose a rating.
@@ -35,7 +26,6 @@ For I / II / III, find `asset-confidentiality`, `asset-integrity`, `asset-availa
 The `damage` section introduces outcomes that users map to the five configured damage categories. Its `scenario-description` field contains five bilingual `interpretations[]` entries explaining DS1–DS5, with one grouped example each. Each entry also contains `ratings[]` for N/A and values `1`, `2`, `3`, with bilingual meanings and examples. These appear in the existing expandable “Ratings and examples” groups and use the active impact labels. The guidance covers both physical and software consequences, including indirect effects through shared components. Do not assume that software has no safety impact, or that more connected devices automatically mean a higher rating. Evaluate the documented use and dependencies.
 
 Edit these entries to adapt the standard-scenario explanations and rating criteria. Financial, outage and legal thresholds remain company decisions; examples do not impose universal limits. The `damage-matrix` introduction distinguishes protection need from scenario severity; the cell-comment example records fallback, dependencies and recovery assumptions. These changes affect guidance only and do not change scores, validation, asset types or the scenario catalogue. The [European Commission’s CRA summary](https://digital-strategy.ec.europa.eu/en/policies/cra-summary), also linked from the Parameters tab, provides background on products with digital elements and their components. Product scope and legal classification require a separate assessment of the applicable provisions.
->>>>>>> b4d0f84 (Expansion of explanations and examples for the parameters.)
 
 SL-T value meanings are introductory text in `security-targets`, followed by the seven actual FR inputs. `security-matrix` contains the editable band boundaries and matrix cells. Calculated risk, overall protection and recommended SL-T results are intentionally not listed as input fields.
 

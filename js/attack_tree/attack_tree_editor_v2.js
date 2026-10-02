@@ -852,7 +852,8 @@
     if (rootSum && typeof _renderNodeSummaryHTML === 'function') {
       rootSum.innerHTML = _renderNodeSummaryHTML(
         entry.kstu || { k: '', s: '', t: '', u: '' },
-        entry.i_norm || ''
+        entry.i_norm || '',
+        entry.riskValue
       );
     }
 
@@ -861,7 +862,8 @@
       if (nodeSum && typeof _renderNodeSummaryHTML === 'function') {
         nodeSum.innerHTML = _renderNodeSummaryHTML(
           n.kstu || { k: '', s: '', t: '', u: '' },
-          n.i_norm || ''
+          n.i_norm || '',
+          n.riskValue
         );
       }
       (n.impacts || []).forEach((lf) => {
@@ -1111,7 +1113,7 @@
           if (analysis && typeof applyImpactInheritance === 'function')
             applyImpactInheritance(entry, analysis);
           if (typeof applyWorstCaseInheritance === 'function') applyWorstCaseInheritance(entry);
-          entry.rootRiskValue = getAssessedRiskValue(entry.i_norm, entry.kstu);
+          entry.rootRiskValue = entry.riskValue;
         } catch (e) {
           console.warn('[AT V2] getEntryData calc:', e.message || e);
         }

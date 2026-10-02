@@ -4,6 +4,10 @@
 
 This record accompanies the modified TARA Tool under GPL-3.0-or-later. Original work: Copyright (C) 2026 SCHUNK SE & Co. KG. Fork modifications: Copyright (C) 2026 Aldo-Kobs. See [NOTICE.md](../NOTICE.md) for attribution, license and warranty notices and [LICENSE](../LICENSE) for the license terms.
 
+## 2 October 2026 — Statistical OR across attack paths
+
+Changed original and residual aggregation to calculate each path independently and combine alternatives using normalized statistical OR on the configured score scale. Updated tree previews, saved results, exports and calculation guidance; added regression coverage for nested paths, configuration changes, missing assessments and residual treatments.
+
 ## 30 September 2026 — Shared risks across assets
 
 Added a detailed risk-calculation reference in Markdown and PDF covering all inputs, propagation, shared assignments, residual treatments, security-level recommendations, worked examples and verified implementation limitations. Extended the documentation PDF builder with a source-file option and linked the reference from existing guidance.

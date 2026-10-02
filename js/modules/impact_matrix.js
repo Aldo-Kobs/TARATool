@@ -66,7 +66,7 @@ function _recalcAllRiskEntries(analysis) {
     try {
       if (typeof applyImpactInheritance === 'function') applyImpactInheritance(entry, analysis);
       if (typeof applyWorstCaseInheritance === 'function') applyWorstCaseInheritance(entry);
-      const newRisk = getAssessedRiskValue(entry.i_norm, entry.kstu);
+      const newRisk = entry.riskValue;
       if (entry.rootRiskValue !== newRisk) {
         entry.rootRiskValue = newRisk;
         changed = true;

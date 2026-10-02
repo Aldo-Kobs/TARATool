@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-02
+
+- Calculate attack paths separately and combine alternative paths with normalized statistical OR, including intermediate paths, residual risk, editor summaries and DOT/PDF tree labels. Preserve the configured score scale, reject incomplete path assessments, and add regression tests and updated calculation guidance.
+
 ## 2026-09-30
 
 - Add a detailed Risk Calculation Reference in Markdown and PDF, with field definitions, shared-asset and residual formulas, verified examples, precision caveats and source references; extend the PDF builder to accept a Markdown source.

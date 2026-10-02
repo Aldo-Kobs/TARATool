@@ -233,9 +233,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // --- NODE SUMMARY HTML (moved from attack_tree_calc.js) ---
 // =============================================================
 
-function _renderNodeSummaryHTML(kstu, iNorm) {
-  const riskScore = _computeRiskScore(kstu, iNorm);
-  const riskR = getAssessedRiskValue(iNorm, kstu) || '-';
+function _renderNodeSummaryHTML(kstu, iNorm, riskValue) {
+  const riskR = (riskValue === undefined ? getAssessedRiskValue(iNorm, kstu) : riskValue) || '-';
+  const riskScore = parseFloat(riskR);
 
   const _disp = (v) => (v === null || v === undefined || v === '' ? '-' : v);
   const dispI = _disp(iNorm);
@@ -358,24 +358,37 @@ function updateAttackTreeKSTUSummariesFromForm() {
   applyWorstCaseInheritance(formValues);
 
   const elRoot = document.getElementById('at_root_kstu_summary');
-  if (elRoot) elRoot.innerHTML = _renderNodeSummaryHTML(formValues.kstu, formValues.i_norm);
+  if (elRoot)
+    elRoot.innerHTML = _renderNodeSummaryHTML(
+      formValues.kstu,
+      formValues.i_norm,
+      formValues.riskValue
+    );
 
   [0, 1].forEach((bIdx) => {
     const branchNum = bIdx + 1;
     const branchData = formValues.branches[bIdx];
 
     const elB = document.getElementById(`at_branch_${branchNum}_kstu_summary`);
-    if (elB) elB.innerHTML = _renderNodeSummaryHTML(branchData.kstu, branchData.i_norm);
+    if (elB)
+      elB.innerHTML = _renderNodeSummaryHTML(
+        branchData.kstu,
+        branchData.i_norm,
+        branchData.riskValue
+      );
 
     if (treeDepth === 2) {
       const nodeA = branchData.l2_nodes && branchData.l2_nodes[0] ? branchData.l2_nodes[0] : null;
       const elL2 = document.getElementById(`at_branch_${branchNum}_l2_kstu_summary`);
-      if (elL2) elL2.innerHTML = _renderNodeSummaryHTML(nodeA?.kstu, nodeA?.i_norm);
+      if (elL2)
+        elL2.innerHTML = _renderNodeSummaryHTML(nodeA?.kstu, nodeA?.i_norm, nodeA?.riskValue);
 
       const nodeB = branchData.l2_nodes && branchData.l2_nodes[1] ? branchData.l2_nodes[1] : null;
       const elL2B = document.getElementById(`at_branch_${branchNum}_l2b_kstu_summary`);
       if (elL2B)
-        elL2B.innerHTML = secondOn ? _renderNodeSummaryHTML(nodeB?.kstu, nodeB?.i_norm) : '';
+        elL2B.innerHTML = secondOn
+          ? _renderNodeSummaryHTML(nodeB?.kstu, nodeB?.i_norm, nodeB?.riskValue)
+          : '';
 
       const elL3 = document.getElementById(`at_branch_${branchNum}_l3_kstu_summary`);
       if (elL3) elL3.innerHTML = '';
@@ -386,14 +399,16 @@ function updateAttackTreeKSTUSummariesFromForm() {
       if (elL2)
         elL2.innerHTML = _renderNodeSummaryHTML(
           branchData?.l2_node?.kstu,
-          branchData?.l2_node?.i_norm
+          branchData?.l2_node?.i_norm,
+          branchData?.l2_node?.riskValue
         );
 
       const elL3 = document.getElementById(`at_branch_${branchNum}_l3_kstu_summary`);
       if (elL3)
         elL3.innerHTML = _renderNodeSummaryHTML(
           branchData?.l3_node?.kstu,
-          branchData?.l3_node?.i_norm
+          branchData?.l3_node?.i_norm,
+          branchData?.l3_node?.riskValue
         );
 
       const elL2B = document.getElementById(`at_branch_${branchNum}_l2b_kstu_summary`);

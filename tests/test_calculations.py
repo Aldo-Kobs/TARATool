@@ -14,12 +14,12 @@ Expected values (hand-computed, verified):
 ┌──────┬─────────────┬──────┬──────┬──────────┬──────────┬────────────┐
 │ Tree │ Treatment   │  R   │  RR  │ R Level  │ RR Level │ Scenario   │
 ├──────┼─────────────┼──────┼──────┼──────────┼──────────┼────────────┤
-│ T01  │ Mitigiert   │ 1.50 │ 0.40 │ medium   │ low      │ All mit.   │
-│ T02  │ Akzeptiert  │ 1.80 │ 1.80 │ high     │ high     │ All acc.   │
-│ T03  │ Gemischt    │ 2.20 │ 1.40 │ critical │ medium   │ Mixed      │
+│ T01  │ Mitigiert   │ 1.88 │ 0.73 │ high     │ low      │ All mit.   │
+│ T02  │ Akzeptiert  │ 1.89 │ 1.89 │ high     │ high     │ All acc.   │
+│ T03  │ Gemischt    │ 2.20 │ 1.55 │ critical │ medium   │ Mixed      │
 │ T04  │ -           │ 2.00 │ 2.00 │ critical │ critical │ Untreated  │
 │ T05  │ Delegiert   │ 1.60 │ 1.60 │ high     │ high     │ Delegated  │
-│ T06  │ Gemischt    │ 2.20 │ 1.40 │ critical │ medium   │ Deep nest  │
+│ T06  │ Gemischt    │ 2.12 │ 1.72 │ critical │ high     │ Deep nest  │
 └──────┴─────────────┴──────┴──────┴──────────┴──────────┴────────────┘
 
 Impact matrix:
@@ -44,18 +44,18 @@ from conftest import APP_URL
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "calc_test_fixture.json"
 
 # ---------------------------------------------------------------------------
-# Expected values – hand-computed and cross-verified
+# Expected values: path scores combined with M=2.2; full precision until root rounding
 # ---------------------------------------------------------------------------
 
 TREES = [
     # (id, uid, R, RR, R_level, RR_level, treatment, kstu, rr_kstu)
-    ("T01", "risk_calc_0001", "1.50", "0.40", "medium",   "low",      "Mitigiert",
+    ("T01", "risk_calc_0001", "1.88", "0.73", "high",     "low",      "Mitigiert",
      {"k": "0.5", "s": "0.3", "t": "0.4", "u": "0.3"},
      {"k": "0.1", "s": "0.1", "t": "0.1", "u": "0.1"}),
-    ("T02", "risk_calc_0002", "1.80", "1.80", "high",     "high",     "Akzeptiert",
+    ("T02", "risk_calc_0002", "1.89", "1.89", "high",     "high",     "Akzeptiert",
      {"k": "0.5", "s": "0.3", "t": "0.5", "u": "0.5"},
      {"k": "0.5", "s": "0.3", "t": "0.5", "u": "0.5"}),
-    ("T03", "risk_calc_0003", "2.20", "1.40", "critical", "medium",   "Gemischt",
+    ("T03", "risk_calc_0003", "2.20", "1.55", "critical", "medium",   "Gemischt",
      {"k": "0.7", "s": "0.5", "t": "0.5", "u": "0.5"},
      {"k": "0.5", "s": "0.3", "t": "0.3", "u": "0.3"}),
     ("T04", "risk_calc_0004", "2.00", "2.00", "critical", "critical", "-",
@@ -64,7 +64,7 @@ TREES = [
     ("T05", "risk_calc_0005", "1.60", "1.60", "high",     "high",     "Delegiert",
      {"k": "0.3", "s": "0.3", "t": "0.5", "u": "0.5"},
      {"k": "0.3", "s": "0.3", "t": "0.5", "u": "0.5"}),
-    ("T06", "risk_calc_0006", "2.20", "1.40", "critical", "medium",   "Gemischt",
+    ("T06", "risk_calc_0006", "2.12", "1.72", "critical", "high",   "Gemischt",
      {"k": "0.7", "s": "0.5", "t": "0.5", "u": "0.5"},
      {"k": "0.5", "s": "0.3", "t": "0.5", "u": "0.1"}),
 ]
@@ -106,22 +106,18 @@ def loaded(page: Page):
 # ---------------------------------------------------------------------------
 
 class TestRiskScoreCalculation:
-    """Verify original risk score R for each tree via JS _computeRiskScore."""
+    """Verify the saved statistical OR score for each tree."""
 
     @pytest.mark.parametrize("tree_id", TREE_IDS)
     def test_risk_score(self, loaded: Page, tree_id: str):
-        """R = I(N) * sum(K,S,T,U) must match expected value."""
+        """The OR of independently scored paths must match the expected value."""
         uid = TREE_UIDS[tree_id]
         expected_r = TREE_R[tree_id]
         result = loaded.evaluate(f"""() => {{
             const a = analysisData.find(x => x.id === activeAnalysisId);
             const entry = a.riskEntries.find(e => e.uid === '{uid}');
             if (!entry) return {{ error: 'entry not found' }};
-            const iNorm = parseFloat(entry.i_norm) || 0;
-            const kstu = entry.kstu || {{}};
-            const sumP = (parseFloat(kstu.k)||0) + (parseFloat(kstu.s)||0)
-                       + (parseFloat(kstu.t)||0) + (parseFloat(kstu.u)||0);
-            return {{ R: (iNorm * sumP).toFixed(2), i_norm: entry.i_norm, kstu: kstu }};
+            return {{ R: entry.rootRiskValue, i_norm: entry.i_norm, kstu: entry.kstu }};
         }}""")
         assert "error" not in result, f"Error: {result}"
         assert result["R"] == expected_r, f"{tree_id}: R={result['R']} expected {expected_r}"
@@ -143,11 +139,7 @@ class TestRiskLevelClassification:
             const a = analysisData.find(x => x.id === activeAnalysisId);
             const entry = a.riskEntries.find(e => e.uid === '{uid}');
             if (!entry) return 'not_found';
-            const iNorm = parseFloat(entry.i_norm) || 0;
-            const kstu = entry.kstu || {{}};
-            const sumP = (parseFloat(kstu.k)||0) + (parseFloat(kstu.s)||0)
-                       + (parseFloat(kstu.t)||0) + (parseFloat(kstu.u)||0);
-            return _getRiskLevel(iNorm * sumP);
+            return _getRiskLevel(entry.rootRiskValue);
         }}""")
         assert result == expected, f"{tree_id}: level={result} expected {expected}"
 
@@ -273,11 +265,7 @@ class TestResidualRiskCalculation:
             if (typeof ensureResidualRiskSynced === 'function') ensureResidualRiskSynced(a);
             const m = computeResidualTreeMetrics(a, 'risk_calc_0002');
             const entry = a.riskEntries.find(e => e.uid === 'risk_calc_0002');
-            const iN = parseFloat(entry.i_norm) || 0;
-            const kstu = entry.kstu;
-            const sumP = (parseFloat(kstu.k)||0) + (parseFloat(kstu.s)||0)
-                       + (parseFloat(kstu.t)||0) + (parseFloat(kstu.u)||0);
-            return { R: (iN * sumP).toFixed(2), RR: m.riskValue };
+            return { R: entry.rootRiskValue, RR: m.riskValue };
         }""")
         assert result["R"] == result["RR"], f"T02: R={result['R']} != RR={result['RR']}"
 
@@ -288,11 +276,7 @@ class TestResidualRiskCalculation:
             if (typeof ensureResidualRiskSynced === 'function') ensureResidualRiskSynced(a);
             const m = computeResidualTreeMetrics(a, 'risk_calc_0005');
             const entry = a.riskEntries.find(e => e.uid === 'risk_calc_0005');
-            const iN = parseFloat(entry.i_norm) || 0;
-            const kstu = entry.kstu;
-            const sumP = (parseFloat(kstu.k)||0) + (parseFloat(kstu.s)||0)
-                       + (parseFloat(kstu.t)||0) + (parseFloat(kstu.u)||0);
-            return { R: (iN * sumP).toFixed(2), RR: m.riskValue };
+            return { R: entry.rootRiskValue, RR: m.riskValue };
         }""")
         assert result["R"] == result["RR"], f"T05: R={result['R']} != RR={result['RR']}"
 
@@ -303,11 +287,7 @@ class TestResidualRiskCalculation:
             if (typeof ensureResidualRiskSynced === 'function') ensureResidualRiskSynced(a);
             const m = computeResidualTreeMetrics(a, 'risk_calc_0004');
             const entry = a.riskEntries.find(e => e.uid === 'risk_calc_0004');
-            const iN = parseFloat(entry.i_norm) || 0;
-            const kstu = entry.kstu;
-            const sumP = (parseFloat(kstu.k)||0) + (parseFloat(kstu.s)||0)
-                       + (parseFloat(kstu.t)||0) + (parseFloat(kstu.u)||0);
-            return { R: (iN * sumP).toFixed(2), RR: m.riskValue };
+            return { R: entry.rootRiskValue, RR: m.riskValue };
         }""")
         assert result["R"] == result["RR"], f"T04: R={result['R']} != RR={result['RR']}"
 
@@ -318,11 +298,7 @@ class TestResidualRiskCalculation:
             if (typeof ensureResidualRiskSynced === 'function') ensureResidualRiskSynced(a);
             const m = computeResidualTreeMetrics(a, 'risk_calc_0001');
             const entry = a.riskEntries.find(e => e.uid === 'risk_calc_0001');
-            const iN = parseFloat(entry.i_norm) || 0;
-            const kstu = entry.kstu;
-            const sumP = (parseFloat(kstu.k)||0) + (parseFloat(kstu.s)||0)
-                       + (parseFloat(kstu.t)||0) + (parseFloat(kstu.u)||0);
-            return { R: iN * sumP, RR: parseFloat(m.riskValue) };
+            return { R: parseFloat(entry.rootRiskValue), RR: parseFloat(m.riskValue) };
         }""")
         assert result["RR"] < result["R"], \
             f"T01: RR={result['RR']} should be < R={result['R']}"
@@ -334,11 +310,7 @@ class TestResidualRiskCalculation:
             if (typeof ensureResidualRiskSynced === 'function') ensureResidualRiskSynced(a);
             const m3 = computeResidualTreeMetrics(a, 'risk_calc_0003');
             const e3 = a.riskEntries.find(e => e.uid === 'risk_calc_0003');
-            const iN = parseFloat(e3.i_norm) || 0;
-            const kstu = e3.kstu;
-            const sumP = (parseFloat(kstu.k)||0) + (parseFloat(kstu.s)||0)
-                       + (parseFloat(kstu.t)||0) + (parseFloat(kstu.u)||0);
-            return { R: iN * sumP, RR: parseFloat(m3.riskValue) };
+            return { R: parseFloat(e3.rootRiskValue), RR: parseFloat(m3.riskValue) };
         }""")
         assert result["RR"] < result["R"], \
             f"T03: RR={result['RR']} should be < R={result['R']}"
@@ -639,11 +611,7 @@ class TestRiskScoreInvariants:
             if (typeof ensureResidualRiskSynced === 'function') ensureResidualRiskSynced(a);
             const m = computeResidualTreeMetrics(a, '{uid}');
             const entry = a.riskEntries.find(e => e.uid === '{uid}');
-            const iN = parseFloat(entry.i_norm) || 0;
-            const kstu = entry.kstu;
-            const sumP = (parseFloat(kstu.k)||0) + (parseFloat(kstu.s)||0)
-                       + (parseFloat(kstu.t)||0) + (parseFloat(kstu.u)||0);
-            return {{ R: iN * sumP, RR: parseFloat(m.riskValue) }};
+            return {{ R: parseFloat(entry.rootRiskValue), RR: parseFloat(m.riskValue) }};
         }}""")
         assert result["RR"] <= result["R"] + 0.001, \
             f"{tree_id}: RR={result['RR']} > R={result['R']}"

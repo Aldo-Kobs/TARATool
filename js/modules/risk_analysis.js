@@ -191,7 +191,7 @@ function renderRootOverview(analysis) {
     return rb - ra;
   });
 
-  let html = `<h4>${_t('risk.rootOverview')}</h4>`;
+  let html = `<h4>${_t('risk.rootOverview')}</h4><p class="muted-hint">${_t('risk.statisticalOrHint')}</p>`;
   html += '<div class="root-overview-grid">';
 
   sorted.forEach((entry) => {

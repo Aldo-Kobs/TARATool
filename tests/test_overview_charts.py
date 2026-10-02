@@ -29,10 +29,10 @@ def legend_values(page, chart):
 
 def test_pies_match_known_risk_and_residual_distribution(app):
     load_calculation_fixture(app)
-    # Independently calculated fixture: R = 3 critical, 2 high, 1 medium;
-    # RR = 1 critical, 2 high, 2 medium, 1 low.
-    assert legend_values(app, 'unmitigatedRiskChart') == ['3 (50%)', '2 (33.3%)', '1 (16.7%)', '0 (0%)']
-    assert legend_values(app, 'residualRiskChart') == ['1 (16.7%)', '2 (33.3%)', '2 (33.3%)', '1 (16.7%)']
+    # Statistical OR fixture: R = 3 critical, 3 high;
+    # RR = 1 critical, 3 high, 1 medium, 1 low.
+    assert legend_values(app, 'unmitigatedRiskChart') == ['3 (50%)', '3 (50%)', '0 (0%)', '0 (0%)']
+    assert legend_values(app, 'residualRiskChart') == ['1 (16.7%)', '3 (50%)', '1 (16.7%)', '1 (16.7%)']
     for chart in ['unmitigatedRiskChart', 'residualRiskChart']:
         expect(app.locator(f'#{chart}Summary')).to_have_text('Assessed risks: 6')
         pie = app.locator(f'#{chart} .risk-pie')

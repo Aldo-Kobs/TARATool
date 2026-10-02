@@ -84,15 +84,18 @@ function generateDotString(analysis, specificTreeId = null) {
     return `${k} / ${s} / ${t} / ${u}`;
   };
 
-  // Delegates to global computeRiskScore() (utils.js) — formatted for DOT labels
-  const _calcR = (iNorm, kstu) => {
-    return _fmt(getAssessedRiskValue(iNorm, kstu));
+  // Parent labels use the path OR result; leaves use their own impact and factors.
+  const _calcR = (iNorm, kstu, riskValue) => {
+    return (
+      (riskValue === undefined ? getAssessedRiskValue(iNorm, kstu) : riskValue).replace('.', ',') ||
+      '-'
+    );
   };
 
-  const _lbl = (text, kstu, iNorm, stride) => {
+  const _lbl = (text, kstu, iNorm, stride, riskValue) => {
     const p = _pStr(kstu);
     const i = _fmt(iNorm);
-    const r = _calcR(iNorm, kstu);
+    const r = _calcR(iNorm, kstu, riskValue);
     const cleanText = (text || '')
       .replace(/\\/g, '\\\\')
       .replace(/\n/g, ' ')
@@ -107,8 +110,8 @@ function generateDotString(analysis, specificTreeId = null) {
   };
 
   // DOT-specific pastel fill colors based on risk score
-  const _getColor = (iNorm, kstu) => {
-    const r = parseFloat(getAssessedRiskValue(iNorm, kstu));
+  const _getColor = (iNorm, kstu, riskValue) => {
+    const r = parseFloat(riskValue === undefined ? getAssessedRiskValue(iNorm, kstu) : riskValue);
     if (!Number.isFinite(r)) return '#eeeeee';
     if (r >= 2.0) return '#ffcccc';
     if (r >= 1.6) return '#ffe0b3';
@@ -134,17 +137,17 @@ function generateDotString(analysis, specificTreeId = null) {
       levelMap[depth].push(id);
     };
 
-    const rootFill = _getColor(entry.i_norm, entry.kstu);
+    const rootFill = _getColor(entry.i_norm, entry.kstu, entry.riskValue);
     nodes.push(
-      `    ${rootId} [label="${_lbl(_dotRootName(entry), entry.kstu, entry.i_norm)}", style=filled, fillcolor="${rootFill}"]\n`
+      `    ${rootId} [label="${_lbl(_dotRootName(entry), entry.kstu, entry.i_norm, undefined, entry.riskValue)}", style=filled, fillcolor="${rootFill}"]\n`
     );
     pushRank(0, rootId);
 
     const walk = (node, depth) => {
       const nid = `${riskId}_N${_safeId(node.uid || node.title || 'd' + depth)}`;
-      const fill = _getColor(node.i_norm, node.kstu);
+      const fill = _getColor(node.i_norm, node.kstu, node.riskValue);
       nodes.push(
-        `    ${nid} [label="${_lbl(_dotLoc(node, 'title', node.title), node.kstu, node.i_norm)}", style=filled, fillcolor="${fill}"]\n`
+        `    ${nid} [label="${_lbl(_dotLoc(node, 'title', node.title), node.kstu, node.i_norm, undefined, node.riskValue)}", style=filled, fillcolor="${fill}"]\n`
       );
       pushRank(depth, nid);
 
@@ -209,6 +212,7 @@ function generateDotString(analysis, specificTreeId = null) {
         leaves: Array.isArray(n?.leaves) ? n.leaves : [],
         kstu: n?.kstu,
         i_norm: n?.i_norm,
+        riskValue: n?.riskValue,
         idSuffix: `L2_${idx + 1}`,
       }));
     }
@@ -224,6 +228,7 @@ function generateDotString(analysis, specificTreeId = null) {
           leaves: [],
           kstu: branch?.l2_node?.kstu,
           i_norm: branch?.l2_node?.i_norm,
+          riskValue: branch?.l2_node?.riskValue,
           idSuffix: 'L2_1',
         },
         {
@@ -231,6 +236,7 @@ function generateDotString(analysis, specificTreeId = null) {
           leaves: Array.isArray(branch.leaves) ? branch.leaves : [],
           kstu: branch?.l3_node?.kstu,
           i_norm: branch?.l3_node?.i_norm,
+          riskValue: branch?.l3_node?.riskValue,
           idSuffix: 'L2_2',
         },
       ];
@@ -244,6 +250,7 @@ function generateDotString(analysis, specificTreeId = null) {
           leaves: Array.isArray(branch.leaves) ? branch.leaves : [],
           kstu: branch?.l2_node?.kstu,
           i_norm: branch?.l2_node?.i_norm,
+          riskValue: branch?.l2_node?.riskValue,
           idSuffix: 'L2_1',
         },
       ];
@@ -256,6 +263,7 @@ function generateDotString(analysis, specificTreeId = null) {
         leaves: Array.isArray(branch.leaves) ? branch.leaves : [],
         kstu: branch?.kstu,
         i_norm: branch?.i_norm,
+        riskValue: branch?.riskValue,
         idSuffix: 'L2_1',
       },
     ];
@@ -284,17 +292,17 @@ function generateDotString(analysis, specificTreeId = null) {
     const depth = _effectiveDepth(entry);
 
     const rootId = `${riskId}_Root`;
-    const rootFill = _getColor(entry.i_norm, entry.kstu);
+    const rootFill = _getColor(entry.i_norm, entry.kstu, entry.riskValue);
 
     dot += `    // Tree ${riskId}\n`;
-    dot += `    ${rootId} [label="${_lbl(_dotRootName(entry), entry.kstu, entry.i_norm)}", style=filled, fillcolor="${rootFill}"]\n`;
+    dot += `    ${rootId} [label="${_lbl(_dotRootName(entry), entry.kstu, entry.i_norm, undefined, entry.riskValue)}", style=filled, fillcolor="${rootFill}"]\n`;
 
     (entry.branches || []).forEach((branch, bIdx) => {
       if (!branch || !branch.name) return;
 
       const bId = `${riskId}_B${bIdx + 1}`;
-      const bFill = _getColor(branch.i_norm, branch.kstu);
-      dot += `    ${bId} [label="${_lbl(branch.name, branch.kstu, branch.i_norm)}", style=filled, fillcolor="${bFill}"]\n`;
+      const bFill = _getColor(branch.i_norm, branch.kstu, branch.riskValue);
+      dot += `    ${bId} [label="${_lbl(branch.name, branch.kstu, branch.i_norm, undefined, branch.riskValue)}", style=filled, fillcolor="${bFill}"]\n`;
 
       if (depth === 1) {
         (branch.leaves || []).forEach((leaf, lIdx) => {
@@ -312,8 +320,8 @@ function generateDotString(analysis, specificTreeId = null) {
           const nId = `${riskId}_B${bIdx + 1}_${node.idSuffix}`;
           const hasNode = !!(node && node.name);
           if (hasNode) {
-            const nFill = _getColor(node.i_norm, node.kstu);
-            dot += `    ${nId} [label="${_lbl(node.name, node.kstu, node.i_norm)}", style=filled, fillcolor="${nFill}"]\n`;
+            const nFill = _getColor(node.i_norm, node.kstu, node.riskValue);
+            dot += `    ${nId} [label="${_lbl(node.name, node.kstu, node.i_norm, undefined, node.riskValue)}", style=filled, fillcolor="${nFill}"]\n`;
           }
 
           (node.leaves || []).forEach((leaf, lIdx) => {
@@ -333,12 +341,20 @@ function generateDotString(analysis, specificTreeId = null) {
       const l3Id = `${riskId}_B${bIdx + 1}_L3`;
 
       if (l2Name) {
-        const l2Fill = _getColor(branch?.l2_node?.i_norm, branch?.l2_node?.kstu);
-        dot += `    ${l2Id} [label="${_lbl(l2Name, branch?.l2_node?.kstu, branch?.l2_node?.i_norm)}", style=filled, fillcolor="${l2Fill}"]\n`;
+        const l2Fill = _getColor(
+          branch?.l2_node?.i_norm,
+          branch?.l2_node?.kstu,
+          branch?.l2_node?.riskValue
+        );
+        dot += `    ${l2Id} [label="${_lbl(l2Name, branch?.l2_node?.kstu, branch?.l2_node?.i_norm, undefined, branch?.l2_node?.riskValue)}", style=filled, fillcolor="${l2Fill}"]\n`;
       }
       if (l3Name) {
-        const l3Fill = _getColor(branch?.l3_node?.i_norm, branch?.l3_node?.kstu);
-        dot += `    ${l3Id} [label="${_lbl(l3Name, branch?.l3_node?.kstu, branch?.l3_node?.i_norm)}", style=filled, fillcolor="${l3Fill}"]\n`;
+        const l3Fill = _getColor(
+          branch?.l3_node?.i_norm,
+          branch?.l3_node?.kstu,
+          branch?.l3_node?.riskValue
+        );
+        dot += `    ${l3Id} [label="${_lbl(l3Name, branch?.l3_node?.kstu, branch?.l3_node?.i_norm, undefined, branch?.l3_node?.riskValue)}", style=filled, fillcolor="${l3Fill}"]\n`;
       }
 
       _leavesDepth3(branch).forEach((leaf, lIdx) => {
@@ -508,9 +524,12 @@ function generateResidualRiskDotString(analysis, specificTreeId = null) {
     return `${f(kstu.k)} / ${f(kstu.s)} / ${f(kstu.t)} / ${f(kstu.u)}`;
   };
 
-  // Delegates to global computeRiskScore() — formatted with comma decimal for DOT labels
-  const _score = (iNorm, kstu) => {
-    return getAssessedRiskValue(iNorm, kstu).replace('.', ',') || '-';
+  // Use the aggregated score for paths and the direct calculation for impact leaves.
+  const _score = (iNorm, kstu, riskValue) => {
+    return (
+      (riskValue === undefined ? getAssessedRiskValue(iNorm, kstu) : riskValue).replace('.', ',') ||
+      '-'
+    );
   };
 
   const _colorFromScore = (scoreStr) => {
@@ -714,8 +733,10 @@ function generateResidualRiskDotString(analysis, specificTreeId = null) {
         : 'Behandlung';
     const _treatVal = (v) =>
       window.ReportI18n && ReportI18n.mapTreatment ? ReportI18n.mapTreatment(v, _lang) : v;
-    const rootLabel = `{${_cleanText(_dotRootName(entry))} | P = ${_pStr(entry.kstu)} | I[norm] = ${_fmtNum(entry.i_norm, 2)} | R = ${_score(entry.i_norm, entry.kstu)} | P(RR) = ${showPRR} | RR = ${_score(entry.i_norm, rrRootKstuEff)} | ${_treatKey}: ${_cleanText(_treatVal(rootTreatment))}}`;
-    const rootFill = _colorFromScore(_score(entry.i_norm, rrRootKstuEff));
+    const rootLabel = `{${_cleanText(_dotRootName(entry))} | P = ${_pStr(entry.kstu)} | I[norm] = ${_fmtNum(entry.i_norm, 2)} | R = ${_score(entry.i_norm, entry.kstu, entry.riskValue)} | P(RR) = ${showPRR} | RR = ${_score(entry.i_norm, rrRootKstuEff, rootNoMit ? entry.riskValue : rrClone.riskValue)} | ${_treatKey}: ${_cleanText(_treatVal(rootTreatment))}}`;
+    const rootFill = _colorFromScore(
+      _score(entry.i_norm, rrRootKstuEff, rootNoMit ? entry.riskValue : rrClone.riskValue)
+    );
 
     nodes.push(`    ${rootId} [label="${rootLabel}", style=filled, fillcolor="${rootFill}"]\n`);
     pushRank(0, rootId);
@@ -731,8 +752,10 @@ function generateResidualRiskDotString(analysis, specificTreeId = null) {
       const rrKstuEff = nodeNoMit ? baseNode.kstu : rrKstu;
       const showPRRNode = _pStr(rrKstuEff);
 
-      const label = `{${_cleanText(_dotLoc(baseNode, 'title', baseNode.title))} | P = ${_pStr(baseNode.kstu)} | I[norm] = ${_fmtNum(baseNode.i_norm, 2)} | R = ${_score(baseNode.i_norm, baseNode.kstu)} | P(RR) = ${showPRRNode} | RR = ${_score(baseNode.i_norm, rrKstuEff)} | ${_treatKey}: ${_cleanText(_treatVal(tNode))}}`;
-      const fill = _colorFromScore(_score(baseNode.i_norm, rrKstuEff));
+      const label = `{${_cleanText(_dotLoc(baseNode, 'title', baseNode.title))} | P = ${_pStr(baseNode.kstu)} | I[norm] = ${_fmtNum(baseNode.i_norm, 2)} | R = ${_score(baseNode.i_norm, baseNode.kstu, baseNode.riskValue)} | P(RR) = ${showPRRNode} | RR = ${_score(baseNode.i_norm, rrKstuEff, nodeNoMit ? baseNode.riskValue : rrNode?.riskValue)} | ${_treatKey}: ${_cleanText(_treatVal(tNode))}}`;
+      const fill = _colorFromScore(
+        _score(baseNode.i_norm, rrKstuEff, nodeNoMit ? baseNode.riskValue : rrNode?.riskValue)
+      );
 
       nodes.push(`    ${nid} [label="${label}", style=filled, fillcolor="${fill}"]\n`);
       pushRank(depth, nid);

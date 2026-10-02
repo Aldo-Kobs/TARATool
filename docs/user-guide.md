@@ -241,7 +241,7 @@ The following values are the shipped defaults. If your organisation loads a diff
 | Factor                     | What to assess                                                        | Default choices                                                                                     |
 | -------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | K — Complexity / knowledge | Knowledge and discovery effort needed for the attack.                 | 0.7 known vulnerabilities; 0.6 simple internet research; 0.3 expert research; 0.1 expert knowledge. |
-| S — Scaling                | Scope in which the attack can spread or be repeated.                  | 0.5 complete portfolio; 0.3 product series; 0.1 single device.                 |
+| S — Scaling                | Scope in which the attack can spread or be repeated.                  | 0.5 complete portfolio; 0.3 product series; 0.1 single device.                                      |
 | T — Time / effort          | Effort to prepare and execute the attack under the stated conditions. | 0.5 under 1 week; 0.4 under 4 weeks; 0.2 under 3 months; 0.1 over 3 months.                         |
 | U — Utility                | Visible benefit or incentive for the attacker.                        | 0.5 high; 0.3 medium; 0.1 low.                                                                      |
 
@@ -249,7 +249,7 @@ Larger factors increase the feasibility score; they are not percentages. For ove
 
 ### Read the results correctly
 
-The tool combines each assigned asset’s protection need with its linked damage ratings and uses the highest resulting impact across those assets and scenarios. Parent paths and the root inherit worst-case impact and K/S/T/U values, so a root can combine maxima from different leaves.
+The tool combines each assigned asset’s protection need with its linked damage ratings and uses the highest resulting impact across those assets and scenarios. Each attack path is scored separately. Alternative paths are combined using normalized statistical OR: `R = M × [1 − ∏(1 − Rpath/M)]`, with configured maximum M = 2.20 by default. This assumes independent paths. Parent impact and K/S/T/U remain maximum-value summaries; they are not multiplied to calculate the combined score. Empty or incomplete paths leave the combined score unassessed.
 
 With the shipped defaults, Low, Medium and High damage ratings have severity factors of 0.3, 0.6 and 1.0. Each linked scenario’s normalised impact is its severity factor multiplied by the assigned asset’s overall protection weight. N/A provides no numeric impact; if all linked scenarios are N/A, the leaf is unassessed rather than a scored zero.
 
