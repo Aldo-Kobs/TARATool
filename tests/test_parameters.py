@@ -1,7 +1,7 @@
 """Parameters guide mirrors live choices and remains a read-only final tab."""
 import pytest
 from playwright.sync_api import expect
-from conftest import create_analysis, get_active_analysis, switch_tab
+from conftest import PROJECT_ROOT, create_analysis, get_active_analysis, switch_tab
 
 pytestmark = pytest.mark.core
 
@@ -164,3 +164,42 @@ def test_proposed_level_guidance_is_specific_editable_and_translated(app):
     expect(entry(app,'scenario-description').locator('.parameter-rating-guide summary')).to_have_text(['Bewertungsstufen und Beispiele'] * 5)
     expect(entry(app,'scenario-description')).to_contain_text('Quetschverletzung')
     expect(entry(app,'damage-rating')).to_contain_text('maximal tolerierbare Ausfallzeit')
+
+
+@pytest.mark.parametrize('stored_analyses', [None, '[]'], ids=['fresh-download', 'empty-store'])
+def test_direct_file_initializes_parameters_offline(browser_type, stored_analyses):
+    # Use normal browser permissions, without the suite's file-access override.
+    with browser_type.launch() as browser:
+        context = browser.new_context()
+        context.route('https://**', lambda route: route.abort())
+        if stored_analyses is not None:
+            context.add_init_script("localStorage.setItem('taraAnalyses', '[]')")
+        page = context.new_page()
+        errors = []
+        page.on('pageerror', lambda error: errors.append(str(error)))
+        page.goto((PROJECT_ROOT / 'index.html').as_uri())
+
+        # The reference is ready on startup, before visiting the tab.
+        expect(page.locator('[data-parameter-id]')).to_have_count(51)
+        open_parameters(page)
+        expect(page.locator('#parameterCount')).to_have_text('51 parameters shown')
+        expect(entry(page, 'risk-K')).to_contain_text('Known vulnerabilities')
+        expect(entry(page, 'sl-impact')).to_contain_text('0.6 < x <= 0.8')
+        page.locator('#parameterSearch').fill('cryptographic')
+        expect(entry(page, 'asset-type')).to_be_visible()
+
+        page.evaluate("TaraPrefs.setLang('de')")
+        expect(page.locator('#parameterCount')).to_have_text('51 Parameter angezeigt')
+        expect(entry(page, 'asset-authorization')).to_contain_text('Autorisierung')
+        page.evaluate("TaraPrefs.setLang('en')")
+        page.evaluate("""() => {
+            const config = structuredClone(ASSESSMENT_CONFIG);
+            config.probabilityCriteria.K.options[0].text_en = 'Offline company knowledge';
+            reloadAssessmentConfigFromObject(config, 'offline test');
+        }""")
+        expect(entry(page, 'risk-K')).to_contain_text('Offline company knowledge')
+        if stored_analyses is not None:
+            assert get_active_analysis(page) is None
+            assert page.evaluate('analysisData') == []
+            assert page.evaluate("localStorage.getItem('taraAnalyses')") == '[]'
+        assert errors == []

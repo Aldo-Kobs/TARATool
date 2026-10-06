@@ -2,6 +2,8 @@
 
 ## 2026-10-02
 
+- Show each assigned asset’s individual risk score and classification, rank shared-risk assets by score, and open asset-specific editor previews with only that asset’s damage ratings.
+
 - Calculate attack paths separately and combine alternative paths with normalized statistical OR, including intermediate paths, residual risk, editor summaries and DOT/PDF tree labels. Preserve the configured score scale, reject incomplete path assessments, and add regression tests and updated calculation guidance.
 
 ## 2026-09-30

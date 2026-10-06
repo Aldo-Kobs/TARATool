@@ -1,4 +1,5 @@
 /** Asset assignment, assessment, and migration of previously generated risks. */
+/* exported getRiskAssetAssessments */
 function getRiskAssets(analysis, entry) {
   const assets = analysis?.assets || [];
   if (Array.isArray(entry?.assetUids))
@@ -33,6 +34,26 @@ function refreshRiskAssessment(entry, analysis) {
   applyImpactInheritance(entry, analysis);
   applyWorstCaseInheritance(entry);
   entry.rootRiskValue = entry.riskValue;
+}
+
+/** Derive an asset's score without changing the shared risk or its assignments. */
+function getRiskAssessmentForAsset(analysis, entry, asset) {
+  const scoped = structuredClone(entry);
+  const assigned = getRiskAssets(analysis, entry).includes(asset);
+  setRiskAssets(scoped, assigned ? [asset] : []);
+  refreshRiskAssessment(scoped, analysis);
+  return scoped;
+}
+
+function getRiskAssetAssessments(analysis, entry) {
+  return getRiskAssets(analysis, entry)
+    .map((asset) => ({ asset, entry: getRiskAssessmentForAsset(analysis, entry, asset) }))
+    .sort((a, b) => {
+      const score = (item) => parseFloat(item.entry.rootRiskValue);
+      return (
+        (Number.isFinite(score(b)) ? score(b) : -1) - (Number.isFinite(score(a)) ? score(a) : -1)
+      );
+    });
 }
 
 function riskAssetLabel(analysis, entry, lang) {

@@ -718,7 +718,7 @@
         ? getDisplayDamageScenarios(editor.analysis)
         : [];
     const sourceImpacts = getRiskAssetDamageImpacts(editor.analysis, {
-      assetUids: editor.assetUids,
+      assetUids: editor.previewAssetUid ? [editor.previewAssetUid] : [],
     });
     ds.innerHTML = `
       <span class="ds-checks-label">${_t('impact.rating')}:</span>
@@ -745,11 +745,7 @@
               : dsItem.description || '';
           const label = short ? `${dsItem.id} (${short})` : dsItem.id;
           const sources = sourceImpacts.filter((item) => item.id === dsItem.id);
-          const sourceLevel = sources
-            .map((item) =>
-              editor.assetUids.length > 1 ? `${item.assetId}: ${item.level}` : item.level
-            )
-            .join('; ');
+          const sourceLevel = sources.map((item) => item.level).join('; ');
           const tipTitle = _escapeHtml(`${dsItem.id}: ${name}`);
           const tipCat = short ? `(${_escapeHtml(short)})` : '';
           const tipDesc = _escapeHtml(desc);
@@ -826,7 +822,7 @@
       console.warn('[AT V2] populateAttackTreeDropdowns:', e.message || e);
     }
 
-    const entry = editor.getEntryData({ computeOnly: true });
+    const entry = editor.getPreviewEntryData();
     const securityLevelPreview = document.getElementById('atSecurityLevelPreview');
     if (securityLevelPreview)
       securityLevelPreview.innerHTML = renderSecurityLevelResult(analysis, entry);
@@ -839,13 +835,6 @@
       impactPreview.innerHTML = `<strong>${_t('risk.damageScenarioImpact')}</strong>
         <p class="muted-hint">${_t(asset ? 'risk.impactSetupHint' : 'risk.assetRequired')}</p>
         ${asset ? `<ul>${ratings.map((item) => `<li data-editor-impact-ds="${_escapeHtml(item.id)}" class="${linked.has(item.id) ? 'is-linked' : ''}"><span>${_escapeHtml(item.id)} — ${_escapeHtml(item.name)}</span><b class="risk-impact-level">${_escapeHtml(item.level)}</b>${linked.has(item.id) ? `<small>${_t('risk.linkedImpact')}</small>` : ''}</li>`).join('')}</ul>` : ''}`;
-    }
-
-    try {
-      if (typeof applyImpactInheritance === 'function') applyImpactInheritance(entry, analysis);
-      if (typeof applyWorstCaseInheritance === 'function') applyWorstCaseInheritance(entry);
-    } catch (e) {
-      console.warn('[AT V2] inheritance calc:', e.message || e);
     }
 
     const rootSum = document.getElementById('at_root_kstu_summary');
@@ -878,6 +867,8 @@
       (n.children || []).forEach(walk);
     };
     (entry.treeV2?.children || []).forEach(walk);
+    if (document.getElementById('graph-preview-container')?.hasChildNodes())
+      window.renderCurrentTreePreview();
   }
 
   function createEditor() {
@@ -903,6 +894,8 @@
             ? (analysis?.assets || []).filter((asset) => asset.id === assetId)
             : getRiskAssets(analysis, existingEntry || {});
         this.assetUids = assets.map((asset) => asset.uid);
+        this.previewAssetUid =
+          assets.find((asset) => asset.id === assetId)?.uid || assets[0]?.uid || '';
         const assetSelect = document.getElementById('at_asset');
         if (assetSelect) {
           assetSelect.replaceChildren();
@@ -986,6 +979,30 @@
         }
       },
 
+      syncAssetPreview() {
+        const assets = getRiskAssets(this.analysis, { assetUids: this.assetUids });
+        if (!assets.some((asset) => asset.uid === this.previewAssetUid))
+          this.previewAssetUid = assets[0]?.uid || '';
+        const field = document.getElementById('atPreviewAssetField');
+        if (field) field.hidden = !assets.length;
+        const select = document.getElementById('at_preview_asset');
+        if (!select) return;
+        select.replaceChildren();
+        assets.forEach((asset) => {
+          const option = new Option(
+            `${asset.id}: ${_loc(asset, 'name') || asset.name_en || '-'}`,
+            asset.id
+          );
+          option.selected = asset.uid === this.previewAssetUid;
+          select.add(option);
+        });
+        select.disabled = assets.length < 2;
+        select.onchange = () => {
+          this.previewAssetUid = assets.find((asset) => asset.id === select.value)?.uid || '';
+          this.rerender();
+        };
+      },
+
       rerender() {
         if (!this.host) this.init();
         if (!this.host) return;
@@ -997,6 +1014,7 @@
           _syncHint(rootInput, this.root, 'title', rootPh);
         }
 
+        this.syncAssetPreview();
         render(this, this.root);
         this.updateBreadcrumbs();
 
@@ -1067,6 +1085,14 @@
 
       updateSummaries() {
         computeAndUpdateSummaries(this);
+      },
+
+      getPreviewEntryData() {
+        return getRiskAssessmentForAsset(
+          this.analysis,
+          this.getEntryData({ computeOnly: true }),
+          this.analysis.assets.find((asset) => asset.uid === this.previewAssetUid)
+        );
       },
 
       getEntryData({ computeOnly = false } = {}) {

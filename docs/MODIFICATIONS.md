@@ -4,6 +4,10 @@
 
 This record accompanies the modified TARA Tool under GPL-3.0-or-later. Original work: Copyright (C) 2026 SCHUNK SE & Co. KG. Fork modifications: Copyright (C) 2026 Aldo-Kobs. See [NOTICE.md](../NOTICE.md) for attribution, license and warranty notices and [LICENSE](../LICENSE) for the license terms.
 
+## 2 October 2026 — Individual risk scores by asset
+
+Added per-asset risk scores and classifications to asset coverage and ranked comparisons for shared risks. Asset-row editing now opens a scoped preview; an asset selector changes the displayed damage ratings, tree scores and security-level recommendation. Shared assignments and treatment data are preserved. Added calculation and browser regression coverage and updated user documentation.
+
 ## 2 October 2026 — Statistical OR across attack paths
 
 Changed original and residual aggregation to calculate each path independently and combine alternatives using normalized statistical OR on the configured score scale. Updated tree previews, saved results, exports and calculation guidance; added regression coverage for nested paths, configuration changes, missing assessments and residual treatments.

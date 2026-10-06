@@ -412,6 +412,11 @@
                     <select id="at_asset" name="at_asset" multiple size="4" required aria-describedby="at_asset_hint"></select>
                     <p id="at_asset_hint" class="muted-hint" data-i18n="risk.assetHint">Ein oder mehrere Assets auswählen (Strg/Cmd + Klick). Für das gemeinsame Risiko zählt die höchste Auswirkung der ausgewählten Assets.</p>
                 </div>
+                <div id="atPreviewAssetField" class="form-group" hidden>
+                    <label for="at_preview_asset" data-i18n="risk.previewAsset">Bewertung anzeigen für Asset</label>
+                    <select id="at_preview_asset" aria-describedby="at_preview_asset_hint"></select>
+                    <p id="at_preview_asset_hint" class="muted-hint" data-i18n="risk.previewAssetHint">Werte und Schadensbewertungen beziehen sich auf dieses Asset. Änderungen an Angriffspfaden gelten für alle zugeordneten Assets.</p>
+                </div>
                 <div id="atDamageScenarioImpactPreview" class="at-impact-preview"></div>
                 <div id="atSecurityLevelPreview" aria-live="polite"></div>
                 <div class="at-card at-root-card" style="background:#f0f0f0; border-color:#ccc; margin-bottom:10px;">

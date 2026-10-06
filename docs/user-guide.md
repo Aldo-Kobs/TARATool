@@ -225,14 +225,14 @@ Risks are created manually. A matrix rating does not automatically create a risk
 
 1. Open **Risk analysis** and review the asset coverage list. Identify assets with no attached risk or with insufficiently explored attack paths.
 2. Use **Create risk** for the relevant asset, or choose a previously created risk from **Existing risk** and click **Assign existing risk**. To create a risk for several assets, select its **Assets** in the editor (Ctrl/Cmd + click).
-3. Read the **Damage Scenario impact** preview in the form. It shows the ratings already assigned to each selected asset. The read-only **Recommended SL-T** field updates from the configured matrix as the assessment becomes complete.
+3. Choose **Show assessment for asset** to view one assigned asset’s damage ratings, tree scores and recommended SL-T. Opening the editor from an asset’s row selects that asset automatically. The **Assets** field controls shared assignments; the preview selector only changes the asset being viewed.
 4. Enter the **Attack goal / root**, describing the attacker’s intended outcome.
 5. Add an **Attack path**, describing how that outcome could be reached. Add intermediate paths if they help explain the sequence.
 6. Add an **Impact** leaf for the concrete harmful result.
 7. Tick the damage scenarios relevant to that leaf. At least one linked scenario with an applicable numeric rating is needed for a calculated impact.
 8. Select all four **K, S, T and U** values for each leaf.
 9. Use the path/impact note controls for assumptions, evidence and reasoning. Use whole-risk notes for information applying to the entire risk.
-10. Save and close the risk editor. Review the resulting risk and the asset coverage list.
+10. Save and close the risk editor. Each asset row shows its own risk score and classification. Shared risks show a comparison ordered by score, with the highest score highlighted when every assigned asset is assessed. Click an asset in this comparison to inspect it. Changes to attack paths still apply to every assignment.
 
 ### What to enter for K, S, T and U
 

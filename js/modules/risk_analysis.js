@@ -72,7 +72,15 @@ function renderRiskAnalysis() {
     button.onclick = () => openAttackTreeModal(null, button.dataset.assetCreate);
   });
   riskAnalysisContainerEl.querySelectorAll('[data-risk-edit]').forEach((button) => {
-    button.onclick = () => window.editAttackTree(button.dataset.riskEdit);
+    button.onclick = () =>
+      window.editAttackTree(
+        button.dataset.riskEdit,
+        button.closest('[data-asset-id]')?.dataset.assetId
+      );
+  });
+  riskAnalysisContainerEl.querySelectorAll('[data-risk-view]').forEach((button) => {
+    button.onclick = () =>
+      window.editAttackTree(button.dataset.riskView, button.dataset.scoreAsset);
   });
   riskAnalysisContainerEl.querySelectorAll('[data-risk-unassign]').forEach((button) => {
     button.onclick = () => {
@@ -112,6 +120,9 @@ function renderRiskAnalysis() {
 }
 
 function renderAssetRiskCoverage(analysis) {
+  const assessments = new Map(
+    analysis.riskEntries.map((entry) => [entry, getRiskAssetAssessments(analysis, entry)])
+  );
   const rows = analysis.assets
     .map((asset) => {
       const linked = analysis.riskEntries.filter((entry) =>
@@ -127,7 +138,9 @@ function renderAssetRiskCoverage(analysis) {
           ? `<ul class="asset-risk-links">${linked
               .map(
                 (entry) => `<li class="asset-risk-item">
-              <span class="asset-risk-name">${escapeHtml(entry.id)}: ${escapeHtml(_rootLabel(entry))}</span>
+              <div class="asset-risk-name"><span>${escapeHtml(entry.id)}: ${escapeHtml(_rootLabel(entry))}</span>
+                ${renderAssetRiskScore(assessments.get(entry), asset)}
+              </div>
               <div class="asset-risk-item-actions">
                 <button type="button" class="action-button small" data-risk-edit="${escapeHtml(entry.id)}" title="${escapeHtml(t('btn.edit'))}" aria-label="${escapeHtml(`${t('btn.edit')}: ${entry.id}`)}"><i class="fas fa-pen" aria-hidden="true"></i></button>
                 <button type="button" class="action-button small" data-risk-unassign="${escapeHtml(entry.id)}" title="${escapeHtml(t('risk.removeAssignment'))}" aria-label="${escapeHtml(`${t('risk.removeAssignment')}: ${entry.id} — ${asset.id}`)}"><i class="fas fa-trash" aria-hidden="true"></i></button>
@@ -156,6 +169,36 @@ function renderAssetRiskCoverage(analysis) {
       <thead><tr><th scope="col">${t('risk.asset')}</th><th scope="col">${t('risk.linkedRisks')}</th><th scope="col">${t('risk.actions')}</th></tr></thead>
       <tbody>${rows}</tbody>
     </table></div>
+  </section>`;
+}
+
+function renderAssetRiskScore(assessments, asset) {
+  const assessment = assessments.find((item) => item.asset.uid === asset.uid);
+  const value = assessment?.entry.rootRiskValue ?? '';
+  const meta = getRiskMeta(value);
+  const highest =
+    assessments.length > 1 &&
+    assessments.every((item) => item.entry.rootRiskValue !== '') &&
+    value === assessments[0].entry.rootRiskValue;
+  return `<div class="asset-risk-score">
+    <span>${t('risk.assetScore')} <b data-asset-risk-score style="color:${meta.color}">${escapeHtml(value || '—')}</b></span>
+    <span class="root-overview-badge" style="background:${meta.color}; color:#fff;">${escapeHtml(value === '' ? t('risk.unassessed') : tRiskLabel(meta.label))}</span>
+    ${highest ? `<span class="asset-risk-highest">${t('risk.highestAssetRisk')}</span>` : ''}
+  </div>`;
+}
+
+function renderRiskAssetComparison(analysis, entry) {
+  const assessments = getRiskAssetAssessments(analysis, entry);
+  return `<section class="risk-asset-comparison" data-risk-asset-comparison="${escapeHtml(entry.uid || entry.id)}">
+    <strong>${t('risk.assetComparison')}</strong>
+    <ul>${assessments
+      .map(
+        ({ asset }) => `<li data-score-asset="${escapeHtml(asset.id)}">
+      <button type="button" class="action-button small" data-risk-view="${escapeHtml(entry.id)}" data-score-asset="${escapeHtml(asset.id)}">${escapeHtml(`${asset.id}: ${getLocalizedField(asset, 'name', undefined, { fallback: true }) || asset.name_en || '-'}`)}</button>
+      ${renderAssetRiskScore(assessments, asset)}
+    </li>`
+      )
+      .join('')}</ul>
   </section>`;
 }
 
@@ -247,7 +290,7 @@ function renderExistingRiskEntries(analysis) {
                 <div>
                     <strong>${eId}</strong>: ${eName} <br>
                     <span class="entry-list-meta">${escapeHtml(riskAssetLabel(analysis, entry))}</span><br>
-                    ${renderRiskDamageImpacts(analysis, entry)}
+                    ${getRiskAssets(analysis, entry).length > 1 ? renderRiskAssetComparison(analysis, entry) : renderRiskDamageImpacts(analysis, entry)}
                     ${renderSecurityLevelResult(analysis, entry)}
                     <span class="entry-list-meta">
                         ${_t('risk.score')} <b style="color:${meta.color}">${escapeHtml(meta.display)}</b>
@@ -313,12 +356,12 @@ window.saveTreeNotes = function () {
     showToast(typeof t === 'function' ? t('toast.notesSaved') : 'Notiz gespeichert.', 'success');
 };
 
-window.editAttackTree = function (riskId) {
+window.editAttackTree = function (riskId, assetId = null) {
   const analysis = getActiveAnalysis();
   if (!analysis) return;
   const entry = analysis.riskEntries.find((r) => r.id === riskId);
   if (!entry) return;
-  if (typeof openAttackTreeModal === 'function') openAttackTreeModal(entry);
+  if (typeof openAttackTreeModal === 'function') openAttackTreeModal(entry, assetId);
 };
 
 function reindexRiskIDs(analysis) {

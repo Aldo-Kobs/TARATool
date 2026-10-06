@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const activeTab = document.querySelector('.tab-button.active')?.dataset?.tab || 'tabOverview';
     if (analysis) {
       if (typeof fillAnalysisForm === 'function') fillAnalysisForm(analysis);
-      if (typeof renderActiveTab === 'function') renderActiveTab(analysis, activeTab);
     } else {
       const nameEl = document.getElementById('analysisNameDisplay');
       if (nameEl)
@@ -41,6 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         statusEl.textContent =
           typeof t === 'function' ? t('status.start') : 'Bitte starten Sie eine neue Analyse.';
     }
+    if (typeof renderActiveTab === 'function') renderActiveTab(analysis, activeTab);
     const atModal = document.getElementById('attackTreeModal');
     if (
       atModal &&
@@ -162,6 +162,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         typeof t === 'function' ? t('status.start') : 'Bitte starten Sie eine neue Analyse.';
   }
 
+  // Initialize the reference even before its first tab visit or analysis selection.
+  renderActiveTab(getActiveAnalysis(), 'tabParameters');
+
   // 2. Listener for the analysis selector
   const elSelector = document.getElementById('analysisSelector');
   if (elSelector) {
@@ -219,9 +222,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Render active tab content (shared function – DRY)
       const activeAnalysis = getActiveAnalysis();
-      if (activeAnalysis) {
-        renderActiveTab(activeAnalysis, tabId);
-      }
+      renderActiveTab(activeAnalysis, tabId);
     });
   });
 
@@ -282,7 +283,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const analysis = typeof getActiveAnalysis === 'function' ? getActiveAnalysis() : null;
     if (analysis) syncAssetRisks(analysis);
     const activeTab = document.querySelector('.tab-button.active')?.dataset?.tab || 'tabOverview';
-    if (analysis && typeof renderActiveTab === 'function') {
+    if (typeof renderActiveTab === 'function') {
       renderActiveTab(analysis, activeTab);
     }
   };

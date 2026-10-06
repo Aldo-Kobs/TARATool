@@ -86,7 +86,7 @@ There are several separate judgments: the numerical score, its risk class, the r
 | SL-T                      | A security target level. The interface distinguishes the recommended level for a risk from the seven required targets entered in Settings. |
 | Unassessed / unknown      | A required numerical result cannot be established. It must not be interpreted as zero risk.                                                |
 
-A single tree may contain several paths, and an asset may have several risks. A shared risk retains one tree and one root score across its assigned assets. Assignment count does not multiply that score.
+A single tree may contain several paths, and an asset may have several risks. A shared risk retains one tree and one saved aggregate score; the UI also derives a separate score for each assigned asset. Assignment count does not multiply that score.
 
 ## 3. Assets and protection need
 
@@ -313,7 +313,7 @@ An empty path, an unassessed impact leaf, or a score outside the configured norm
 
 Each impact leaf considers **all assigned assets × all scenarios selected on that leaf**. The highest weighted impact in that set controls the leaf.
 
-The risk has one shared root name, attack tree, K/S/T/U assessment, notes, lifecycle selections, security-goal relationships and residual assessment. Editing it through any asset's pen icon edits that same risk. The application does not calculate or store a separate root score or treatment for each asset assignment.
+The risk has one shared root name, attack tree, K/S/T/U assessment, notes, lifecycle selections, security-goal relationships and residual assessment. Editing it through any asset's pen icon edits that same risk. The application calculates an individual score for each assigned asset by running the same tree calculation using only that asset’s protection weight and damage matrix row. These display results are derived without changing the saved shared score or assignments. Treatment remains shared.
 
 Use a shared risk when those common assessment assumptions are appropriate for all assigned assets. If different assets need different feasibility values, scenario selections or treatments, represent those differences explicitly in the assessment, potentially as separate risks. The current shared assignment model has no per-asset overrides for a leaf.
 
@@ -322,7 +322,7 @@ Use a shared risk when those common assessment assumptions are appropriate for a
 | Action                              | Data effect                                                                          | Calculation effect                                                                        |
 | ----------------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
 | Assign existing risk                | Adds a link to the same risk. Already assigned risks are excluded from the selector. | Adds that asset's relevant matrix cells to every leaf's candidates.                       |
-| Pen icon in a risk block            | Opens the shared risk editor.                                                        | Saved edits affect all its assignments.                                                   |
+| Pen icon in a risk block            | Opens the shared editor with that asset’s assessment preview.                        | Saved edits affect all its assignments.                                                   |
 | Trash icon in an asset's risk block | Removes that particular assignment.                                                  | Removes that asset's candidates and recalculates the risk and residual data.              |
 | Remove final assignment             | Keeps the original risk available in Saved attack trees and Existing risk selectors. | No assigned asset remains, so impact and risk score become unassessed.                    |
 | Delete the saved attack tree        | Deletes the risk itself.                                                             | Removes the risk from every asset's coverage and the active residual-risk list.           |
@@ -560,9 +560,10 @@ Documentary fields can be essential to a defensible assessment even though they 
 
 ### 13.1 Risk Analysis
 
-- **Asset coverage:** shows assignments. A shared risk can appear in several asset rows.
+- **Asset coverage:** shows each assignment with its individual score and classification. A shared risk can have different scores in different asset rows.
 - **Root overview:** shows each saved risk's inherited P vector, I_norm, score and classification once.
-- **Impact from Damage Scenarios:** shows source ratings for the tree's linked scenarios. For shared risks, the asset ID identifies which rating is being shown. This list is not a list of already weighted leaf impacts.
+- **Risk by asset:** shared risks show individual scores in descending order. The highest score is highlighted when all assignments have a numeric assessment; ties are highlighted together. Unassessed assignments remain visible with a dash.
+- **Editor preview:** selecting an asset displays only its damage ratings, calculated tree scores and recommended SL-T. The assignment selector and saved shared assessment remain separate from this viewing choice. Single-asset saved risk cards retain their linked scenario ratings.
 - **Saved attack trees:** holds the risk itself, including an unassigned risk after its last asset link is removed.
 - **Recommended SL-T:** uses the original assessment and configured matrix.
 

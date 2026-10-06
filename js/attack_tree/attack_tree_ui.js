@@ -497,9 +497,9 @@ window.renderCurrentTreePreview = function () {
   const previewContainer = document.getElementById('graph-preview-container');
   if (!analysis || !previewContainer) return;
 
-  if (!(window.atV2 && typeof window.atV2.getEntryData === 'function')) return;
+  if (!(window.atV2 && typeof window.atV2.getPreviewEntryData === 'function')) return;
 
-  const tmpEntry = window.atV2.getEntryData({ computeOnly: true });
+  const tmpEntry = window.atV2.getPreviewEntryData();
   const tmpAnalysis = Object.assign({}, analysis, { riskEntries: [tmpEntry] });
 
   const dot =

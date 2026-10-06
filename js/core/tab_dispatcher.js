@@ -13,17 +13,22 @@
 
 /**
  * Renders the content of the currently active tab for the given analysis.
- * @param {object} analysis - The analysis data object to render
+ * @param {object|null} analysis - The analysis data, optional for the Parameters reference
  * @param {string} [tabId] - Optional explicit tab ID. If omitted, reads from active tab button.
  */
 function renderActiveTab(analysis, tabId) {
-  if (!analysis) return;
-
   if (!tabId) {
     const activeTabBtn = document.querySelector('.tab-button.active');
     if (!activeTabBtn) return;
     tabId = activeTabBtn.dataset.tab;
   }
+
+  // The reference uses configuration defaults when no analysis is selected.
+  if (tabId === 'tabParameters') {
+    if (typeof renderParameters === 'function') renderParameters(analysis);
+    return;
+  }
+  if (!analysis) return;
 
   if (tabId === 'tabOverview') {
     if (typeof renderOverview === 'function') renderOverview(analysis);
@@ -38,8 +43,6 @@ function renderActiveTab(analysis, tabId) {
     if (typeof renderSecurityGoals === 'function') renderSecurityGoals(analysis);
   } else if (tabId === 'tabRiskAnalysis') {
     if (typeof renderRiskAnalysis === 'function') renderRiskAnalysis();
-  } else if (tabId === 'tabParameters') {
-    if (typeof renderParameters === 'function') renderParameters(analysis);
   } else if (tabId === 'tabCraDocumentation') {
     if (typeof renderCraDocumentation === 'function') renderCraDocumentation(analysis);
   } else if (tabId === 'tabResidualRisk') {

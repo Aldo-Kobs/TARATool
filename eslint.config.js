@@ -49,6 +49,8 @@ export default [
         getImpactComment: 'readonly',
         getRiskAsset: 'readonly',
         getRiskAssets: 'readonly',
+        getRiskAssessmentForAsset: 'readonly',
+        getRiskAssetAssessments: 'readonly',
         setRiskAssets: 'readonly',
         getRiskAssetDamageImpacts: 'readonly',
         getAssessedRiskValue: 'readonly',

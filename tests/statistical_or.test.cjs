@@ -199,3 +199,29 @@ test('out-of-range imported path scores remain unassessed', () => {
   ctx.refreshRiskAssessment(entry, analysis);
   assert.equal(entry.rootRiskValue, '');
 });
+
+for (const legacy of [false, true]) {
+  test(`asset-specific assessment preserves shared data (${legacy ? 'legacy' : 'v2'})`, () => {
+    const ctx = setup();
+    const { entry, analysis } = fixture(legacy);
+    analysis.assets[0].schutzbedarf = 'I';
+    analysis.assets.push({ id: 'A02', uid: 'high', schutzbedarf: 'III' });
+    analysis.impactMatrix = { A01: { DS1: '1', DS2: '1' }, A02: { DS1: '3', DS2: '3' } };
+    ctx.setRiskAssets(entry, analysis.assets);
+    ctx.refreshRiskAssessment(entry, analysis);
+    const before = JSON.stringify(analysis);
+    const results = ctx.getRiskAssetAssessments(analysis, entry);
+    assert.equal(results[0].asset.id, 'A02');
+    assert.equal(results[0].entry.rootRiskValue, '1.87');
+    assert.equal(results[1].asset.id, 'A01');
+    assert.equal(results[1].entry.rootRiskValue, '0.44');
+    assert.equal(JSON.stringify(analysis), before);
+    assert.equal(ctx.getRiskAssessmentForAsset(analysis, entry, undefined).rootRiskValue, '');
+    assert.equal(
+      ctx.getRiskAssessmentForAsset(analysis, entry, { id: 'A03', uid: 'other' }).rootRiskValue,
+      ''
+    );
+    analysis.impactMatrix.A01 = { DS1: 'N/A', DS2: 'N/A' };
+    assert.equal(ctx.getRiskAssetAssessments(analysis, entry)[1].entry.rootRiskValue, '');
+  });
+}
