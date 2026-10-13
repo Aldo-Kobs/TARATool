@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-06
+
+- Refresh About with recent development, methodology, modification dates and documentation links. Correct the runtime SBOM dependency/version and license metadata; include the optional local server, renderer services, dependency relationships and explicit inventory limits.
+- Move browser-storage guidance from the red header warning into a neutral English/German Storage section in Settings, preserving actual save-error reporting.
+
 ## 2026-10-02
 
 - Show each assigned asset’s individual risk score and classification, rank shared-risk assets by score, and open asset-specific editor previews with only that asset’s damage ratings.

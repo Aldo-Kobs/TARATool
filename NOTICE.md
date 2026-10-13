@@ -5,7 +5,7 @@ This is a modified version of [TARA Tool by SCHUNK SE & Co. KG](https://github.c
 - Original work: Copyright (C) 2026 SCHUNK SE & Co. KG. Original author credit: Nico Peper; other upstream contributor credits are retained in the source and history.
 - Fork modifications: Copyright (C) 2026 Aldo-Kobs (Git authors “Aldo” and “Aldo-Kobs”).
 - Fork source: <https://github.com/Aldo-Kobs/TARATool>.
-- Modification dates: **10–17 September 2026**. Licensing documentation updated **17 September 2026**.
+- Modification dates: **10 September–6 October 2026**. Licensing documentation updated **17 September 2026**.
 - Upstream baseline: `4bbc354b0be2030daf3acd59a3589dd52207beec` (10 September 2026).
 
 The fork changes assessment workflows, asset-linked risk calculations, lifecycle tracking, security-level settings, residual-risk handling, reports, parameter guidance and CRA documentation support. See [the dated modification record](docs/MODIFICATIONS.md) for commits and affected files. These changes are maintained by Aldo-Kobs and are not an upstream SCHUNK release.

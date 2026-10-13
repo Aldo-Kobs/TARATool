@@ -11,6 +11,19 @@
   const UI = {
     de: {
       'nav.new': 'Neu',
+      'storage.title': 'Speicherung',
+      'storage.browserMode':
+        'Analysen werden in diesem Browser gespeichert. Automatische Speicherung im Ordner analyses/ ist in diesem Modus nicht aktiv. Über Export kannst du eine Dateikopie sichern.',
+      'storage.folderMode':
+        'Automatische Ordnerspeicherung ist aktiv. Analysen werden in analyses/analyses.json gespeichert; Sicherungskopien liegen in analyses/backups/.',
+      'storage.launcher':
+        'Für automatische Ordnerspeicherung starte python3 scripts/server.py im TARA-Tool-Ordner (Windows: python scripts/server.py), öffne http://127.0.0.1:8080 und lasse das Terminal geöffnet. Vorhandene Daten aus dem Dateimodus kannst du einmalig mit der Option --migrate übertragen.',
+      'about.development': 'Entwicklung dieses Forks',
+      'about.developmentDetail':
+        'Erweiterte Asset- und Schadensbewertung, gemeinsame Risiken mit individuellen Asset-Werten, statistisches ODER für Angriffspfade, Restrisiko und Lebenszyklus, SL-T-Einstellungen, CRA-Checkliste, zweisprachige Parameterhilfe und PDF-Berichte. Optionaler Python-Starter mit automatischer Ordnerspeicherung und Sicherungskopien.',
+      'about.changelog': 'Änderungsverlauf',
+      'about.modifications': 'Datierter Änderungsnachweis',
+      'about.calculationReference': 'Referenz zur Risikoberechnung',
       'nav.settings': 'Einstellungen',
       'sl.recommendedTarget': 'Empfohlenes SL-T',
       'sl.goalHint':
@@ -37,7 +50,7 @@
       'sl.notConfigured': 'Matrix in Einstellungen konfigurieren',
       'sl.unassessed': 'Bewertung unvollständig',
       'sl.matrixTitle': 'Matrix für empfohlenes SL-T',
-      'sl.dialogTitle': 'Security-Level-Einstellungen',
+      'sl.dialogTitle': 'Einstellungen',
       'sl.settingsTitle': 'SL-T-Ziele je grundlegender Anforderung',
       'sl.requirement': 'Grundlegende Anforderung',
       'sl.target': 'Ziel-Sicherheitslevel (SL-T)',
@@ -613,7 +626,7 @@
       'about.upstream': 'Ursprüngliches Projekt',
       'about.forkMaintainer': 'Fork-Maintainer',
       'about.forkCopyright': 'Änderungen am Fork: Copyright (C) 2026 Aldo-Kobs.',
-      'about.modified': 'Geänderte Fassung von Aldo-Kobs, 10.–17. September 2026.',
+      'about.modified': 'Geänderte Fassung von Aldo-Kobs, 10. September–6. Oktober 2026.',
       'about.rights':
         'Du darfst dieses Programm unter der GNU General Public License, Version 3 oder (nach deiner Wahl) jeder späteren Version, weitergeben und verändern.',
       'about.warranty':
@@ -625,9 +638,10 @@
       'about.license': 'Lizenz',
       'about.repo': 'Repository',
       'about.method': 'Methodik:',
-      'about.methodDetail': 'Komplexität, Skalierung, Zeitaufwand, Nutzen',
+      'about.methodDetail':
+        'Komplexität, Skalierung, Zeitaufwand und Nutzen; alternative Angriffspfade werden mit normalisiertem statistischem ODER kombiniert.',
       'about.sbomTitle': 'Software Bill of Materials (SBOM)',
-      'about.sbomSub': 'Konform mit <strong>BSI TR-03183-2</strong> – Format: CycloneDX 1.5',
+      'about.sbomSub': 'Direkte Laufzeitkomponenten von TARA Tool – CycloneDX 1.5',
       'about.sbomExport': 'SBOM exportieren',
       'about.sbomExportTip': 'SBOM als CycloneDX-JSON herunterladen',
       'about.col.component': 'Komponente',
@@ -636,10 +650,23 @@
       'about.col.scope': 'Scope',
       'about.col.purl': 'PURL',
       'about.sbomFooter':
-        'Die SBOM wird gemäß <strong>BSI TR-03183-2</strong> im CycloneDX-1.5-Format bereitgestellt. Alle Abhängigkeiten werden über CDN geladen – es gibt keine lokalen node_modules und keinen Build-Prozess. Externe Render-Dienste (Kroki, QuickChart) werden nur für die Graphviz-Vorschau genutzt.',
+        'Diese SBOM erfasst TARA Tool, nicht das bewertete Produkt: direkte Browser-Bibliotheken von CDNs, den optionalen Python-Starter und externe Render-Dienste. Transitive/eingebettete Abhängigkeiten, die Python-/Browser-Umgebung sowie Entwicklungs-, Test-, Dokumentations- und Sicherheitswerkzeuge sind nicht erfasst. Eine Konformität mit BSI TR-03183-2 wird nicht erklärt. Kroki und QuickChart empfangen DOT-Baumdaten als Fallback für Vorschauen und PDF-Berichte, wenn lokales WASM-Rendering fehlschlägt.',
     },
     en: {
       'nav.new': 'New',
+      'storage.title': 'Storage',
+      'storage.browserMode':
+        'Analyses are saved in this browser. Automatic saving to the analyses/ folder is not active in this mode. Use Export to keep a file copy.',
+      'storage.folderMode':
+        'Automatic folder saving is active. Analyses are saved to analyses/analyses.json; recovery backups are kept in analyses/backups/.',
+      'storage.launcher':
+        'For automatic folder saving, run python3 scripts/server.py from the TARA Tool folder (Windows: python scripts/server.py), open http://127.0.0.1:8080 and keep the terminal open. To transfer existing data from file mode, run the launcher once with --migrate.',
+      'about.development': 'Development in this fork',
+      'about.developmentDetail':
+        'Expanded asset and damage assessments, shared risks with individual asset scores, statistical OR across attack paths, residual risk and lifecycle tracking, SL-T settings, CRA checklist, bilingual parameter guidance and PDF reports. Optional Python launcher with automatic folder saving and recovery backups.',
+      'about.changelog': 'Changelog',
+      'about.modifications': 'Dated modification record',
+      'about.calculationReference': 'Risk Calculation Reference',
       'nav.settings': 'Settings',
       'sl.recommendedTarget': 'Recommended SL-T',
       'sl.goalHint':
@@ -666,7 +693,7 @@
       'sl.notConfigured': 'Configure matrix in Settings',
       'sl.unassessed': 'Assessment incomplete',
       'sl.matrixTitle': 'Recommended SL-T matrix',
-      'sl.dialogTitle': 'Security level settings',
+      'sl.dialogTitle': 'Settings',
       'sl.settingsTitle': 'SL-T targets by foundational requirement',
       'sl.requirement': 'Foundational requirement',
       'sl.target': 'Target security level (SL-T)',
@@ -1231,7 +1258,7 @@
       'about.upstream': 'Upstream project',
       'about.forkMaintainer': 'Fork maintainer',
       'about.forkCopyright': 'Fork modifications: Copyright (C) 2026 Aldo-Kobs.',
-      'about.modified': 'Modified version by Aldo-Kobs, 10–17 September 2026.',
+      'about.modified': 'Modified version by Aldo-Kobs, 10 September–6 October 2026.',
       'about.rights':
         'You may redistribute and modify this program under the GNU General Public License, version 3 or (at your option) any later version.',
       'about.warranty':
@@ -1243,9 +1270,10 @@
       'about.license': 'License',
       'about.repo': 'Repository',
       'about.method': 'Methodology:',
-      'about.methodDetail': 'Complexity, scaling, time effort, utility',
+      'about.methodDetail':
+        'Complexity, scaling, time effort and utility; alternative attack paths are combined with normalized statistical OR.',
       'about.sbomTitle': 'Software Bill of Materials (SBOM)',
-      'about.sbomSub': 'Compliant with <strong>BSI TR-03183-2</strong> – format: CycloneDX 1.5',
+      'about.sbomSub': 'Direct runtime components of TARA Tool – CycloneDX 1.5',
       'about.sbomExport': 'Export SBOM',
       'about.sbomExportTip': 'Download SBOM as CycloneDX JSON',
       'about.col.component': 'Component',
@@ -1254,7 +1282,7 @@
       'about.col.scope': 'Scope',
       'about.col.purl': 'PURL',
       'about.sbomFooter':
-        'The SBOM is provided according to <strong>BSI TR-03183-2</strong> in CycloneDX 1.5 format. All dependencies are loaded via CDN – there are no local node_modules and no build process. External render services (Kroki, QuickChart) are used only for the Graphviz preview.',
+        'This SBOM covers TARA Tool, not the assessed product: direct browser libraries from CDNs, the optional Python launcher and external rendering services. Transitive/embedded dependencies, the Python/browser environment, and development, test, documentation and security tools are excluded. BSI TR-03183-2 compliance is not asserted. Kroki and QuickChart receive DOT tree data as fallbacks for previews and PDF reports when local WASM rendering fails.',
     },
   };
 

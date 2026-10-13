@@ -1,8 +1,14 @@
 # Fork modification record
 
-**Modified by Aldo-Kobs, 10–17 September 2026. Notice recorded 17 September 2026.**
+**Modified by Aldo-Kobs, 10 September–6 October 2026. Initial notice recorded 17 September 2026.**
 
 This record accompanies the modified TARA Tool under GPL-3.0-or-later. Original work: Copyright (C) 2026 SCHUNK SE & Co. KG. Fork modifications: Copyright (C) 2026 Aldo-Kobs. See [NOTICE.md](../NOTICE.md) for attribution, license and warranty notices and [LICENSE](../LICENSE) for the license terms.
+
+## 6 October 2026 — About, runtime SBOM and storage guidance
+
+Updated About with recent fork development, statistical-OR methodology, current modification dates and links to the changelog, modification record and calculation reference. Corrected the Graphviz package to the pinned 2.33.2 version, the JSZip license expression and the descriptions of renderer fallbacks. Added the optional local Python server, external rendering services, component references and direct dependency relationships to the CycloneDX 1.5 export. Explicitly marked the inventory incomplete and documented its exclusions instead of asserting BSI compliance. Added regression coverage matching the SBOM to the shipped runtime URLs.
+
+Moved the browser-only storage reminder into a neutral, bilingual Storage section in Settings, with launcher and migration instructions and an active folder-mode description. Normal browser storage no longer displays a red header warning; actual folder-save failures remain visible.
 
 ## 2 October 2026 — Individual risk scores by asset
 

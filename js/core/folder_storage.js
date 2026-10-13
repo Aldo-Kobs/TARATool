@@ -13,6 +13,7 @@ window.folderStorage = (() => {
     if (element) {
       element.textContent = message;
       element.style.color = error ? '#b42318' : '';
+      element.hidden = !message;
     }
   }
   async function request(url, options) {
@@ -100,10 +101,7 @@ window.folderStorage = (() => {
       );
     }
     if (!enabled) {
-      status(
-        'Browser storage only. Start with python3 scripts/server.py for automatic saving to analyses/.',
-        true
-      );
+      status('');
       return null;
     }
     const result = await request('/api/analyses');

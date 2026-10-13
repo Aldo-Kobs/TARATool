@@ -232,7 +232,12 @@ function renderSecurityLevelTargets(analysis) {
     const axis = (name, bounds) =>
       `<fieldset><legend>${t('sl.' + name)}</legend>${bounds.map((value, index) => `<label class="sl-bound-label">${t('sl.band.' + SECURITY_LEVEL_BANDS[index])} — ${t('sl.upperBound')}<input type="number" step="any" min="0" required data-sl-bound="${name}" value="${escapeHtml(Number.isFinite(value) ? String(value) : '')}"></label>`).join('')}<p class="muted-hint">${t('sl.lastBand')}</p></fieldset>`;
 
-    body.innerHTML = `<p>${t('sl.scope')}</p>
+    body.innerHTML = `<section aria-labelledby="storageSettingsTitle">
+      <h3 id="storageSettingsTitle">${t('storage.title')}</h3>
+      <p class="muted-hint">${t(window.folderStorage?.enabled ? 'storage.folderMode' : 'storage.browserMode')}</p>
+      <p class="muted-hint">${t('storage.launcher')}</p>
+      </section>
+      <p>${t('sl.scope')}</p>
       <h3>${t('sl.settingsTitle')}</h3>
       <p class="muted-hint">${t('sl.fixedTargets')}</p>
       ${legacyMatrix ? `<p class="muted-hint">${t('sl.legacyNotice')}</p>` : ''}

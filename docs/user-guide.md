@@ -51,7 +51,7 @@ To transfer analyses previously stored by opening `index.html` directly, stop th
 
 If another window saves first, your stale changes are rejected instead of overwriting newer data. Reload to recover pending edits as separate browser copies. If saving fails, keep the page open and restore the server connection; pending saves retry automatically. **Save** confirms success only after the file is written. To restore a backup manually, stop the server, preserve the current file, and copy the desired backup to `analyses/analyses.json`.
 
-Opening `index.html` directly or using a static web host still uses browser storage only, with a visible warning. Use the local launcher for folder saving. Export/import remains available for sharing with other computers. The Markdown guide describes the new storage flow; the existing PDF guide predates this change.
+Opening `index.html` directly or using a static web host still uses browser storage only. **Settings → Storage** explains the active storage mode and how to start the Python launcher for automatic folder saving; normal browser storage does not show an error warning. Use the local launcher for folder saving. Export/import remains available for sharing with other computers. The Markdown guide describes the new storage flow; the existing PDF guide predates this change.
 
 Finish and save an open form before switching analyses or exporting. Several tab controls save changes immediately, but an unfinished dialog is not a substitute for a saved entry.
 
@@ -393,7 +393,7 @@ The report includes the analysis content and assessment results. It excludes the
 
 **Overview → Export tree data** provides tree data as a ZIP for further use.
 
-**About** identifies the SCHUNK upstream project and the Aldo-Kobs fork, shows the dated modification and warranty notices, and links to the GPLv3-or-later license, copyright/modification notices and fork source. **About → Export SBOM** downloads the tool’s own CycloneDX software bill of materials with the fork’s application metadata and GPL-3.0-or-later declaration. It is not an inventory of your assessed product. Close About with ×, Escape or a click on the backdrop outside the window.
+**About** identifies the SCHUNK upstream project and the Aldo-Kobs fork, shows the dated modification and warranty notices, and links to the GPLv3-or-later license, copyright/modification notices and fork source. **About** also summarizes recent development and links to the changelog, dated modification record and risk-calculation reference. **About → Export SBOM** downloads the tool’s own CycloneDX 1.5 inventory with the fork’s application metadata and GPL-3.0-or-later declaration, pinned direct browser libraries, the optional local Python server, rendering services and direct dependency relationships. The export explicitly marks its inventory incomplete: transitive/embedded dependencies, the Python/browser environment and development, test, documentation and security tooling are excluded. It does not assert BSI TR-03183-2 compliance. Kroki and QuickChart are optional fallbacks for both tree previews and PDF reports and receive DOT tree data if local WASM rendering fails. It is not an inventory of your assessed product. Close About with ×, Escape or a click on the backdrop outside the window.
 
 ## 13. Worked example
 

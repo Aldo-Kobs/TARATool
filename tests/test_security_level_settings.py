@@ -82,7 +82,7 @@ def test_cancel_validation_and_language_preserve_targets(app):
     app.click('#btnSettings')
     fill_targets(app, {'FR1': 4})
     app.evaluate("TaraPrefs.setLang('de')")
-    expect(app.locator('#securityLevelSettingsTitle')).to_have_text('Security-Level-Einstellungen')
+    expect(app.locator('#securityLevelSettingsTitle')).to_have_text('Einstellungen')
     expect(app.locator('[data-sl-target="FR1"]')).to_have_value('4')
     app.locator('#securityLevelSettingsForm button[type="submit"]').click()
     assert targets(app)['FR1'] == 4
