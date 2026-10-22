@@ -20,7 +20,7 @@
         'Für automatische Ordnerspeicherung starte python3 scripts/server.py im TARA-Tool-Ordner (Windows: python scripts/server.py), öffne http://127.0.0.1:8080 und lasse das Terminal geöffnet. Vorhandene Daten aus dem Dateimodus kannst du einmalig mit der Option --migrate übertragen.',
       'about.development': 'Entwicklung dieses Forks',
       'about.developmentDetail':
-        'Erweiterte Asset- und Schadensbewertung, gemeinsame Risiken mit individuellen Asset-Werten, statistisches ODER für Angriffspfade, Restrisiko und Lebenszyklus, SL-T-Einstellungen, CRA-Checkliste, zweisprachige Parameterhilfe und PDF-Berichte. Optionaler Python-Starter mit automatischer Ordnerspeicherung und Sicherungskopien.',
+        'Erweiterte Asset- und Schadensbewertung, gemeinsame Risiken mit individuellen Asset-Werten, statistisches ODER für Angriffspfade, Restrisiko und Lebenszyklus, SL-T-Einstellungen, zweisprachige Parameterhilfe und PDF-Berichte. Optionaler Python-Starter mit automatischer Ordnerspeicherung und Sicherungskopien.',
       'about.changelog': 'Änderungsverlauf',
       'about.modifications': 'Datierter Änderungsnachweis',
       'about.calculationReference': 'Referenz zur Risikoberechnung',
@@ -117,95 +117,6 @@
       'tab.sg': 'Security Ziele',
       'tab.rr': 'Restrisikoanalyse',
       'tab.parameters': 'Parameter',
-      'tab.craDocumentation': 'CRA-Dokumentationscheckliste',
-      'cra.group.V': 'Anhang V — EU-Konformitätserklärung',
-      'cra.group.VII': 'Anhang VII — Technische Unterlagen',
-      'cra.intro':
-        'Die Dokumentation je Punkt prüfen und abhaken. Kommentar, Referenzlink oder beides ergänzen. Bei bedingten Anforderungen eine Nichtanwendbarkeit im Kommentar begründen.',
-      'cra.scope':
-        'Dokumentationsprüfung zu den Anhängen V und VII der Verordnung (EU) 2024/2847. Häkchen dokumentieren die Prüfung, stellen aber keine Produktkonformität fest.',
-      'cra.source': 'Offizieller CRA-Text auf EUR-Lex',
-      'cra.summary': '{checked} von {total} Punkten abgehakt',
-      'cra.checked': 'Abgehakt',
-      'cra.open': 'Offen',
-      'cra.requirement': 'Dokumentationsanforderung',
-      'cra.evidence': 'Kommentar und Referenz',
-      'cra.comment': 'Kommentar (optional)',
-      'cra.commentHint': 'Dokumentenablage, Prüfnotizen oder Begründung der Anwendbarkeit…',
-      'cra.link': 'Referenzlink (optional)',
-      'cra.openLink': 'Referenz öffnen',
-      'cra.invalidLink': 'Zum Öffnen einen vollständigen http://- oder https://-Link eingeben.',
-      'cra.saved':
-        'Änderungen werden mit der Analyse gespeichert. Diese Checkliste ist vom PDF-Bericht ausgeschlossen.',
-      'cra.item.V-1.title': 'Produktidentifikation',
-      'cra.item.V-1.text':
-        'Name, Typ und weitere Angaben dokumentieren, mit denen das Produkt eindeutig identifiziert werden kann.',
-      'cra.item.V-2.title': 'Hersteller oder Bevollmächtigter',
-      'cra.item.V-2.text':
-        'Name und Anschrift des Herstellers oder seines Bevollmächtigten angeben.',
-      'cra.item.V-3.title': 'Erklärung zur alleinigen Verantwortung',
-      'cra.item.V-3.text':
-        'Erklären, dass der Anbieter die alleinige Verantwortung für die Ausstellung der EU-Konformitätserklärung trägt.',
-      'cra.item.V-4.title': 'Rückverfolgbarer Gegenstand der Erklärung',
-      'cra.item.V-4.text':
-        'Das von der Erklärung erfasste Produkt rückverfolgbar identifizieren; gegebenenfalls ein Foto aufnehmen.',
-      'cra.item.V-5.title': 'Konformitätsaussage',
-      'cra.item.V-5.text':
-        'Erklären, dass das identifizierte Produkt den einschlägigen Harmonisierungsrechtsvorschriften der Union entspricht.',
-      'cra.item.V-6.title': 'Verweise auf Normen, Spezifikationen und Zertifizierung',
-      'cra.item.V-6.text':
-        'Die einschlägigen harmonisierten Normen, gemeinsamen Spezifikationen oder Cybersicherheitszertifizierungen angeben, auf die sich die Erklärung stützt.',
-      'cra.item.V-7.title': 'Notifizierte Stelle und Bescheinigung — falls zutreffend',
-      'cra.item.V-7.text':
-        'Bei Beteiligung einer notifizierten Stelle deren Namen und Kennnummer, das durchgeführte Konformitätsbewertungsverfahren und die Kennung der ausgestellten Bescheinigung angeben.',
-      'cra.item.V-8.title': 'Ausstellung und Unterschrift',
-      'cra.item.V-8.text':
-        'Zusätzliche Angaben, die vertretene Organisation, Ausstellungsort und -datum sowie Name, Funktion und Unterschrift der unterzeichnenden Person ergänzen.',
-      'cra.item.VII-1.title': 'Allgemeine Produktbeschreibung',
-      'cra.item.VII-1.text':
-        'Das Produkt mit digitalen Elementen insgesamt beschreiben und die Angaben nach den Nummern 1(a)–1(d) ergänzen.',
-      'cra.item.VII-1-a.title': 'Zweckbestimmung',
-      'cra.item.VII-1-a.text': 'Den vorgesehenen Verwendungszweck des Produkts beschreiben.',
-      'cra.item.VII-1-b.title': 'Softwareversionen',
-      'cra.item.VII-1-b.text':
-        'Die Softwareversionen angeben, die sich auf die Erfüllung der grundlegenden Cybersicherheitsanforderungen auswirken.',
-      'cra.item.VII-1-c.title': 'Hardwareabbildungen — falls zutreffend',
-      'cra.item.VII-1-c.text':
-        'Bei Hardwareprodukten Fotos oder Abbildungen der äußeren Merkmale, Kennzeichnungen und des inneren Aufbaus bereitstellen.',
-      'cra.item.VII-1-d.title': 'Nutzerinformationen und Anleitungen',
-      'cra.item.VII-1-d.text':
-        'Die nach Anhang II erforderlichen Nutzerinformationen und Anleitungen aufnehmen.',
-      'cra.item.VII-2.title': 'Konzeption, Entwicklung, Herstellung und Schwachstellenbehandlung',
-      'cra.item.VII-2.text':
-        'Konzeption, Entwicklung und Herstellung des Produkts sowie die Prozesse zur Behandlung von Schwachstellen beschreiben, einschließlich der Angaben nach 2(a)–2(c).',
-      'cra.item.VII-2-a.title': 'Konzeption und Systemarchitektur',
-      'cra.item.VII-2-a.text':
-        'Erforderliche Konzeptions- und Entwicklungsinformationen dokumentieren. Gegebenenfalls Zeichnungen, Schaltpläne und Systemarchitektur beifügen und erläutern, wie Softwarekomponenten aufeinander aufbauen, ineinandergreifen und in die Gesamtverarbeitung eingebunden sind.',
-      'cra.item.VII-2-b.title': 'Dokumentation der Schwachstellenbehandlung',
-      'cra.item.VII-2-b.text':
-        'Prozesse und Spezifikationen zur Schwachstellenbehandlung beschreiben: Software-Stückliste (SBOM), koordinierte Offenlegungspolitik, Nachweis einer Kontaktadresse für Schwachstellenmeldungen und technische Lösungen zur sicheren Verteilung von Aktualisierungen.',
-      'cra.item.VII-2-c.title': 'Herstellung, Überwachung und Validierung',
-      'cra.item.VII-2-c.text':
-        'Die erforderlichen Informationen und Spezifikationen zu Herstellungs- und Überwachungsprozessen sowie deren Validierung dokumentieren.',
-      'cra.item.VII-3.title': 'Bewertung der Cybersicherheitsrisiken',
-      'cra.item.VII-3.text':
-        'Die Risikobewertung nach Artikel 13 für Konzeption, Entwicklung, Herstellung, Lieferung und Wartung aufnehmen und erläutern, welche grundlegenden Cybersicherheitsanforderungen aus Anhang I Teil I anwendbar sind.',
-      'cra.item.VII-4.title': 'Begründung des Unterstützungszeitraums',
-      'cra.item.VII-4.text':
-        'Die relevanten Informationen dokumentieren, die zur Festlegung des Unterstützungszeitraums nach Artikel 13 Absatz 8 herangezogen wurden.',
-      'cra.item.VII-5.title': 'Angewandte Normen und alternative Lösungen',
-      'cra.item.VII-5.text':
-        'Angewandte harmonisierte Normen mit Fundstelle im EU-Amtsblatt, gemeinsame Spezifikationen nach Artikel 27 oder europäische Cybersicherheitszertifizierungssysteme nach Artikel 27 Absatz 8 auflisten. Bei teilweiser Anwendung die Teile benennen. Andernfalls Lösungen zur Erfüllung von Anhang I Teilen I und II sowie weitere angewandte technische Spezifikationen dokumentieren.',
-      'cra.item.VII-6.title': 'Prüfberichte zur Konformität',
-      'cra.item.VII-6.text':
-        'Prüfberichte zur Erfüllung der anwendbaren grundlegenden Cybersicherheitsanforderungen aus Anhang I Teilen I und II durch das Produkt und die Schwachstellenbehandlungsprozesse aufnehmen.',
-      'cra.item.VII-7.title': 'Kopie der EU-Konformitätserklärung',
-      'cra.item.VII-7.text':
-        'Eine Kopie der EU-Konformitätserklärung in die technischen Unterlagen aufnehmen.',
-      'cra.item.VII-8.title': 'Offenlegung der SBOM — falls zutreffend',
-      'cra.item.VII-8.text':
-        'Die SBOM auf begründetes Verlangen einer Marktüberwachungsbehörde aufnehmen, soweit sie zur Prüfung der Einhaltung von Anhang I erforderlich ist. Diese bedingte Offenlegung ist von den SBOM-Angaben nach Nummer 2(b) zu unterscheiden.',
-
       'btn.report': 'Report (PDF)',
       'btn.exportTrees': 'Export Baumdaten',
       'btn.config': 'Bewertungsconfig laden',
@@ -663,7 +574,7 @@
         'For automatic folder saving, run python3 scripts/server.py from the TARA Tool folder (Windows: python scripts/server.py), open http://127.0.0.1:8080 and keep the terminal open. To transfer existing data from file mode, run the launcher once with --migrate.',
       'about.development': 'Development in this fork',
       'about.developmentDetail':
-        'Expanded asset and damage assessments, shared risks with individual asset scores, statistical OR across attack paths, residual risk and lifecycle tracking, SL-T settings, CRA checklist, bilingual parameter guidance and PDF reports. Optional Python launcher with automatic folder saving and recovery backups.',
+        'Expanded asset and damage assessments, shared risks with individual asset scores, statistical OR across attack paths, residual risk and lifecycle tracking, SL-T settings, bilingual parameter guidance and PDF reports. Optional Python launcher with automatic folder saving and recovery backups.',
       'about.changelog': 'Changelog',
       'about.modifications': 'Dated modification record',
       'about.calculationReference': 'Risk Calculation Reference',
@@ -760,95 +671,6 @@
       'tab.sg': 'Security goals',
       'tab.rr': 'Residual risk',
       'tab.parameters': 'Parameters',
-      'tab.craDocumentation': 'CRA Documentation Checklist',
-      'cra.group.V': 'Annex V — EU declaration of conformity',
-      'cra.group.VII': 'Annex VII — Technical documentation',
-      'cra.intro':
-        'Review the documentation for each item and tick it off. Add a comment, a reference link, or both. For conditional items, record any non-applicability in the comment.',
-      'cra.scope':
-        'Documentation review for Annexes V and VII of Regulation (EU) 2024/2847. Checkmarks track your review; they do not establish product conformity.',
-      'cra.source': 'Official CRA text on EUR-Lex',
-      'cra.summary': '{checked} of {total} items checked',
-      'cra.checked': 'Checked',
-      'cra.open': 'Open',
-      'cra.requirement': 'Documentation requirement',
-      'cra.evidence': 'Comment and reference',
-      'cra.comment': 'Comment (optional)',
-      'cra.commentHint': 'Documentation location, review notes or applicability rationale…',
-      'cra.link': 'Reference link (optional)',
-      'cra.openLink': 'Open reference',
-      'cra.invalidLink': 'Use a complete http:// or https:// link to open the reference.',
-      'cra.saved':
-        'Changes are saved with the analysis. This checklist is excluded from the PDF report.',
-      'cra.item.V-1.title': 'Product identification',
-      'cra.item.V-1.text':
-        'Record the product name, type and further identifiers needed to distinguish the product uniquely.',
-      'cra.item.V-2.title': 'Manufacturer or authorised representative',
-      'cra.item.V-2.text':
-        'Provide the name and address of the manufacturer or its authorised representative.',
-      'cra.item.V-3.title': 'Sole responsibility statement',
-      'cra.item.V-3.text':
-        'Include a statement that the provider takes sole responsibility for issuing the EU declaration of conformity.',
-      'cra.item.V-4.title': 'Traceable declaration subject',
-      'cra.item.V-4.text':
-        'Identify the product covered by the declaration so that it can be traced; include a photograph where appropriate.',
-      'cra.item.V-5.title': 'Conformity statement',
-      'cra.item.V-5.text':
-        'State that the identified product conforms to the relevant Union harmonisation legislation.',
-      'cra.item.V-6.title': 'Standards, specifications and certification references',
-      'cra.item.V-6.text':
-        'Reference the relevant harmonised standards, common specifications or cybersecurity certification used as the basis for the declaration.',
-      'cra.item.V-7.title': 'Notified body and certificate — where applicable',
-      'cra.item.V-7.text':
-        'If a notified body was involved, record its name and number, the conformity assessment procedure it performed and the issued certificate identification.',
-      'cra.item.V-8.title': 'Issuance and signature',
-      'cra.item.V-8.text':
-        'Complete the additional information, the entity on whose behalf the declaration is signed, place and date of issue, and the signatory’s name, function and signature.',
-      'cra.item.VII-1.title': 'General product description',
-      'cra.item.VII-1.text':
-        'Provide an overall description of the product with digital elements, supported by the details in points 1(a)–1(d).',
-      'cra.item.VII-1-a.title': 'Intended purpose',
-      'cra.item.VII-1-a.text': 'Describe the purpose for which the product is intended.',
-      'cra.item.VII-1-b.title': 'Software versions',
-      'cra.item.VII-1-b.text':
-        'Identify the software versions that affect compliance with the essential cybersecurity requirements.',
-      'cra.item.VII-1-c.title': 'Hardware images — where applicable',
-      'cra.item.VII-1-c.text':
-        'For hardware products, provide photos or illustrations of external features, markings and the internal layout.',
-      'cra.item.VII-1-d.title': 'User information and instructions',
-      'cra.item.VII-1-d.text':
-        'Include the user information and instructions required by Annex II.',
-      'cra.item.VII-2.title': 'Design, development, production and vulnerability handling',
-      'cra.item.VII-2.text':
-        'Describe the product’s design, development and production and the vulnerability handling processes, including the details in points 2(a)–2(c).',
-      'cra.item.VII-2-a.title': 'Design and system architecture',
-      'cra.item.VII-2-a.text':
-        'Document the necessary design and development information. Where applicable, include drawings, diagrams and the system architecture, explaining software component relationships, data flows and integration into overall processing.',
-      'cra.item.VII-2-b.title': 'Vulnerability handling documentation',
-      'cra.item.VII-2-b.text':
-        'Describe the vulnerability handling processes and specifications, including the software bill of materials (SBOM), coordinated vulnerability disclosure policy, evidence of a contact address for vulnerability reports, and technical solutions for distributing updates securely.',
-      'cra.item.VII-2-c.title': 'Production, monitoring and validation',
-      'cra.item.VII-2-c.text':
-        'Document the necessary information and specifications for production and monitoring processes, including how these processes are validated.',
-      'cra.item.VII-3.title': 'Cybersecurity risk assessment',
-      'cra.item.VII-3.text':
-        'Include the Article 13 risk assessment covering design, development, production, delivery and maintenance, and explain which Annex I Part I essential cybersecurity requirements apply.',
-      'cra.item.VII-4.title': 'Support period rationale',
-      'cra.item.VII-4.text':
-        'Document the relevant information used to determine the product’s support period under Article 13(8).',
-      'cra.item.VII-5.title': 'Applied standards and alternative solutions',
-      'cra.item.VII-5.text':
-        'List applied harmonised standards whose references appear in the EU Official Journal, Article 27 common specifications or European cybersecurity certification schemes under Article 27(8). Identify any parts applied only partially. Where these are not used, describe solutions meeting Annex I Parts I and II and list other technical specifications applied.',
-      'cra.item.VII-6.title': 'Conformity test reports',
-      'cra.item.VII-6.text':
-        'Include test reports verifying the product and vulnerability handling processes against the applicable essential cybersecurity requirements in Annex I Parts I and II.',
-      'cra.item.VII-7.title': 'Copy of the EU declaration of conformity',
-      'cra.item.VII-7.text':
-        'Include a copy of the EU declaration of conformity in the technical documentation.',
-      'cra.item.VII-8.title': 'SBOM disclosure — where applicable',
-      'cra.item.VII-8.text':
-        'Include the SBOM following a reasoned request from a market surveillance authority when needed to check Annex I compliance. This conditional disclosure is separate from the SBOM information in point 2(b).',
-
       'btn.report': 'Report (PDF)',
       'btn.exportTrees': 'Export tree data',
       'btn.config': 'Load assessment config',

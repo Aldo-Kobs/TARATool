@@ -33,7 +33,6 @@ TAB_IDS = {
     "risk_lifecycle":    "tabRiskLifecycle",
     "security_goals":    "tabSecurityGoals",
     "residual_risk":     "tabResidualRisk",
-    "cra_documentation": "tabCraDocumentation",
     "parameters":        "tabParameters",
 }
 

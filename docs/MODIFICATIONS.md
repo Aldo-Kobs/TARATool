@@ -1,8 +1,12 @@
 # Fork modification record
 
-**Modified by Aldo-Kobs, 10 September–6 October 2026. Initial notice recorded 17 September 2026.**
+**Modified by Aldo-Kobs, 10 September–13 October 2026. Initial notice recorded 17 September 2026.**
 
 This record accompanies the modified TARA Tool under GPL-3.0-or-later. Original work: Copyright (C) 2026 SCHUNK SE & Co. KG. Fork modifications: Copyright (C) 2026 Aldo-Kobs. See [NOTICE.md](../NOTICE.md) for attribution, license and warranty notices and [LICENSE](../LICENSE) for the license terms.
+
+## 13 October 2026 — Remove CRA checklist tab
+
+Removed the CRA Documentation Checklist tab, renderer, translations and styles because CRA documentation is maintained in separate documents. Updated the navigation fixtures and current Markdown guides; retained saved checklist data for compatibility with existing analyses and version history. The existing PDF guides predate this removal.
 
 ## 6 October 2026 — About, runtime SBOM and storage guidance
 

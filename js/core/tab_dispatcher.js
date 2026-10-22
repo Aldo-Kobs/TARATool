@@ -43,8 +43,6 @@ function renderActiveTab(analysis, tabId) {
     if (typeof renderSecurityGoals === 'function') renderSecurityGoals(analysis);
   } else if (tabId === 'tabRiskAnalysis') {
     if (typeof renderRiskAnalysis === 'function') renderRiskAnalysis();
-  } else if (tabId === 'tabCraDocumentation') {
-    if (typeof renderCraDocumentation === 'function') renderCraDocumentation(analysis);
   } else if (tabId === 'tabResidualRisk') {
     if (typeof renderResidualRisk === 'function') renderResidualRisk(analysis);
   }

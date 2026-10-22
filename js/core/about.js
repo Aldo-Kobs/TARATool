@@ -306,7 +306,7 @@ function openAboutModal() {
 
         <div class="about-development-block">
             <h3>${_t('about.development', 'Entwicklung dieses Forks')}</h3>
-            <p>${_t('about.developmentDetail', 'Erweiterte Asset- und Schadensbewertung, gemeinsame Risiken mit individuellen Asset-Werten, statistisches ODER für Angriffspfade, Restrisiko und Lebenszyklus, SL-T-Einstellungen, CRA-Checkliste, zweisprachige Parameterhilfe und PDF-Berichte. Optionaler Python-Starter mit automatischer Ordnerspeicherung und Sicherungskopien.')}</p>
+            <p>${_t('about.developmentDetail', 'Erweiterte Asset- und Schadensbewertung, gemeinsame Risiken mit individuellen Asset-Werten, statistisches ODER für Angriffspfade, Restrisiko und Lebenszyklus, SL-T-Einstellungen, zweisprachige Parameterhilfe und PDF-Berichte. Optionaler Python-Starter mit automatischer Ordnerspeicherung und Sicherungskopien.')}</p>
             <p><a href="CHANGELOG.md" target="_blank" rel="noopener">${_t('about.changelog', 'Änderungsverlauf')}</a> ·
                 <a href="docs/MODIFICATIONS.md" target="_blank" rel="noopener">${_t('about.modifications', 'Datierter Änderungsnachweis')}</a> ·
                 <a href="docs/risk-calculation-guide.md" target="_blank" rel="noopener">${_t('about.calculationReference', 'Referenz zur Risikoberechnung')}</a></p>

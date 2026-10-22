@@ -2,7 +2,7 @@
 
 > **Geänderte Fassung von Aldo-Kobs, 10.–17. September 2026.** Grundlage ist [TARA Tool von SCHUNK SE & Co. KG](https://github.com/SCHUNK-SE-Co-KG/TARATool), Commit `4bbc354`. Dieser Fork wird unter **GPL-3.0-or-later** bereitgestellt. [Urheber- und Lizenzhinweise](NOTICE.md) · [Datierte Änderungen](docs/MODIFICATIONS.md) · [Weitergabe und Quellcode](docs/DISTRIBUTION.md).
 
-Die fork-spezifischen Abläufe (assetbezogene Risiken, Lebenszyklusphasen, SL-T-Einstellungen, CRA-Checkliste und Parameterhilfe) sind im aktuellen [User Guide](docs/user-guide.md) beschrieben.
+Die fork-spezifischen Abläufe (assetbezogene Risiken, Lebenszyklusphasen, SL-T-Einstellungen und Parameterhilfe) sind im aktuellen [User Guide](docs/user-guide.md) beschrieben.
 
 **Browser-basiertes Werkzeug für Bedrohungs- und Risikoanalysen (TARA) im Kontext des EU Cyber Resilience Act (CRA)**
 

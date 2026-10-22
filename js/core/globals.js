@@ -282,6 +282,7 @@ function createDefaultAnalysis() {
     impactComments: {},
     riskEntries: [],
     securityLevelSettings: null,
+    // Retained for compatibility with saved analyses from before the checklist tab was removed.
     craDocumentationChecklist: null,
     matrixRiskArchive: [],
     securityGoals: [],

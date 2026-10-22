@@ -18,7 +18,7 @@ Targets apply to the active analysis. A blank selection means **Not set**, which
 
 SL-T expresses the required protection. These user-defined targets remain fixed as attack feasibility, impact and residual risk scores change. Risk Analysis displays a matrix-derived recommended SL-T for each original risk. Security Goals shows the recommendations for its linked risks and the seven required targets from Settings. Residual Risk retains the shared targets but has no SL-C calculations or displays. Targets do not demonstrate implemented security capability.
 
-Targets persist through saves, JSON exports/imports, analysis copies and version snapshots. The PDF includes all seven requirements with their targets. The blank CRA Documentation Checklist remains excluded from the PDF.
+Targets persist through saves, JSON exports/imports, analysis copies and version snapshots. The PDF includes all seven requirements with their targets.
 
 Older feasibility/impact matrices do not establish per-requirement targets. They remain untouched until new targets are saved; when that happens, the former matrix is retained in `securityLevelSettings.legacyMatrix`. Restoring an old matrix version leaves the target values unset instead of deriving unsupported defaults.
 

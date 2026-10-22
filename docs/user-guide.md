@@ -1,11 +1,11 @@
 # TARA Tool — User Guide
 
 **Step-by-step instructions for creating, reviewing and exporting an analysis**  
-Edition: 22 September 2026 · Language: English
+Edition: 13 October 2026 · Language: English
 
-Updated with automatic folder storage on 22 September 2026. Earlier feature review: fork revision `fac28fc`.
+Updated after removal of the CRA Documentation Checklist tab on 13 October 2026; CRA documentation is maintained in separate documents. Automatic folder storage was added on 22 September 2026. Earlier feature review: fork revision `fac28fc`.
 
-This guide describes the current tool, including asset-linked risks, lifecycle phases, security goals, residual assessment, security-level settings and the CRA Documentation Checklist. It uses the English interface labels. The **EN/DE** switch changes the display language.
+This guide describes the current tool, including asset-linked risks, lifecycle phases, security goals, residual assessment and security-level settings. It uses the English interface labels. The **EN/DE** switch changes the display language.
 
 Follow the steps in order for a new analysis. Return to earlier steps whenever the product, assumptions, damage ratings or attack paths change. Examples illustrate how to enter information; adapt the decisions to your company and operating context.
 
@@ -30,12 +30,11 @@ Fork source: <https://github.com/Aldo-Kobs/TARATool>. [Attribution](../NOTICE.md
 7. [Assign lifecycle phases](#7-assign-lifecycle-phases)
 8. [Define security goals](#8-define-security-goals)
 9. [Evaluate residual risks](#9-evaluate-residual-risks)
-10. [Review CRA documentation](#10-review-cra-documentation)
-11. [Use the Parameters reference](#11-use-the-parameters-reference)
-12. [Save versions and export deliverables](#12-save-versions-and-export-deliverables)
-13. [Worked example](#13-worked-example)
-14. [Troubleshooting and final review](#14-troubleshooting-and-final-review)
-15. [Maintain the guidance](#15-maintain-the-guidance)
+10. [Use the Parameters reference](#10-use-the-parameters-reference)
+11. [Save versions and export deliverables](#11-save-versions-and-export-deliverables)
+12. [Worked example](#12-worked-example)
+13. [Troubleshooting and final review](#13-troubleshooting-and-final-review)
+14. [Maintain the guidance](#14-maintain-the-guidance)
 
 ## 1. Start and protect your work
 
@@ -51,13 +50,13 @@ To transfer analyses previously stored by opening `index.html` directly, stop th
 
 If another window saves first, your stale changes are rejected instead of overwriting newer data. Reload to recover pending edits as separate browser copies. If saving fails, keep the page open and restore the server connection; pending saves retry automatically. **Save** confirms success only after the file is written. To restore a backup manually, stop the server, preserve the current file, and copy the desired backup to `analyses/analyses.json`.
 
-Opening `index.html` directly or using a static web host still uses browser storage only. **Settings → Storage** explains the active storage mode and how to start the Python launcher for automatic folder saving; normal browser storage does not show an error warning. Use the local launcher for folder saving. Export/import remains available for sharing with other computers. The Markdown guide describes the new storage flow; the existing PDF guide predates this change.
+Opening `index.html` directly or using a static web host still uses browser storage only. **Settings → Storage** explains the active storage mode and how to start the Python launcher for automatic folder saving; normal browser storage does not show an error warning. Use the local launcher for folder saving. Export/import remains available for sharing with other computers. The Markdown guide describes the new storage flow; the existing PDF guide predates the storage changes and the removal of the CRA Documentation Checklist tab.
 
 Finish and save an open form before switching analyses or exporting. Several tab controls save changes immediately, but an unfinished dialog is not a substitute for a saved entry.
 
 Some features load external libraries, particularly PDF generation and tree rendering. If these are unavailable, see the troubleshooting section.
 
-**Recommended workflow:** Overview → Settings → Assets → Damage scenarios → Risk analysis → Risk Lifecycle → Security goals → Residual risk → CRA Documentation Checklist → final review and export. Use **Parameters** whenever you need a field definition.
+**Recommended workflow:** Overview → Settings → Assets → Damage scenarios → Risk analysis → Risk Lifecycle → Security goals → Residual risk → final review and export. Use **Parameters** whenever you need a field definition.
 
 ## 2. Define the scope in Overview
 
@@ -329,21 +328,7 @@ The **evaluated** checkbox is a manual review status, separate from field comple
 
 The Residual Risk tab retains the analysis’s shared **SL-T** targets. It has no SL-C calculation or display. Mitigation changes residual risk scores without lowering the original risk’s recommended SL-T.
 
-## 10. Review CRA documentation
-
-Open **CRA Documentation Checklist** to track the documentation review organised under **Annex V** and **Annex VII**.
-
-1. Read each item and locate the relevant document or evidence.
-2. Add a comment, a reference link, or both. Useful comments identify the document version, reviewer, outstanding action or applicability reasoning.
-3. Use a complete `https://` or `http://` URL when you want the link to open from the tool.
-4. Tick the item when your review of it is complete.
-5. For conditional items that do not apply, record the reason in the comment.
-
-The counters track reviewed checklist items, rather than establishing product conformity. Clearing a checkmark preserves its comment and link. The checklist is saved with the analysis and included in JSON exports and version snapshots.
-
-**The CRA Documentation Checklist is excluded from the analysis PDF.** Retain the JSON backup and the referenced evidence for this part of the work.
-
-## 11. Use the Parameters reference
+## 10. Use the Parameters reference
 
 **Known issue in reviewed revision `fac28fc`:** the parameter guidance file contains unresolved merge-conflict markers, which prevent it from loading. The Parameters tab can therefore be blank. Sections 3–6 of this guide provide the key settings, protection-level and damage-rating guidance while that issue is resolved. The workflow below describes the reference when its guidance file loads successfully.
 
@@ -358,7 +343,7 @@ The latest guidance text broadens the examples to hardware and software products
 
 Parameters is a reference, not an additional entry form. It is not an analysis PDF chapter.
 
-## 12. Save versions and export deliverables
+## 11. Save versions and export deliverables
 
 ### Save a review milestone
 
@@ -377,7 +362,7 @@ Versions store snapshots of the analysis. **Restore** replaces the working state
 3. Store the downloaded JSON with the project’s review records.
 4. Another browser on this computer can open **http://127.0.0.1:8080** to resume directly. On another computer, use **Import** and select this JSON.
 
-The export contains the selected analysis, including its settings, checklist and history. Keep the company assessment configuration alongside it when that configuration has been customised; the running app’s global scoring configuration is separate from the analysis data.
+The export contains the selected analysis, including its settings and history. Keep the company assessment configuration alongside it when that configuration has been customised; the running app’s global scoring configuration is separate from the analysis data.
 
 ### Generate the analysis PDF
 
@@ -387,7 +372,7 @@ The export contains the selected analysis, including its settings, checklist and
 4. Open **Overview** and click **Report (PDF)**.
 5. Open the downloaded PDF and check its name/version, images, matrix comments, risk details, security goals, lifecycle information and residual results/settings.
 
-The report includes the analysis content and assessment results. It excludes the CRA checklist and Parameters reference. A successful export confirms that a report was generated; it does not establish that the assessment is complete or approved. The PDF is a review deliverable, while JSON is the editable backup.
+The report includes the analysis content and assessment results. It excludes the Parameters reference. A successful export confirms that a report was generated; it does not establish that the assessment is complete or approved. The PDF is a review deliverable, while JSON is the editable backup.
 
 ### Other exports and About
 
@@ -395,7 +380,7 @@ The report includes the analysis content and assessment results. It excludes the
 
 **About** identifies the SCHUNK upstream project and the Aldo-Kobs fork, shows the dated modification and warranty notices, and links to the GPLv3-or-later license, copyright/modification notices and fork source. **About** also summarizes recent development and links to the changelog, dated modification record and risk-calculation reference. **About → Export SBOM** downloads the tool’s own CycloneDX 1.5 inventory with the fork’s application metadata and GPL-3.0-or-later declaration, pinned direct browser libraries, the optional local Python server, rendering services and direct dependency relationships. The export explicitly marks its inventory incomplete: transitive/embedded dependencies, the Python/browser environment and development, test, documentation and security tooling are excluded. It does not assert BSI TR-03183-2 compliance. Kroki and QuickChart are optional fallbacks for both tree previews and PDF reports and receive DOT tree data if local WASM rendering fails. It is not an inventory of your assessed product. Close About with ×, Escape or a click on the backdrop outside the window.
 
-## 13. Worked example
+## 12. Worked example
 
 Use the following as a practice exercise with the shipped scoring defaults. It describes a single risk against a fictional industrial controller; the ratings are illustrative assumptions.
 
@@ -413,7 +398,7 @@ With the shipped factors, protection II contributes 0.8 and High severity contri
 
 These numbers change if the configuration or linked scenarios change. With the shipped recommended SL-T matrix, the original feasibility 1.6 and impact 0.8 fall in the High/High cell, giving **recommended SL-T 3**. This recommendation remains based on the original risk after mitigation. The seven required SL-T targets remain **Not set** until you select them separately; the example does not prescribe those targets.
 
-## 14. Troubleshooting and final review
+## 13. Troubleshooting and final review
 
 | Symptom                                                   | What to check                                                                                                                                                                      |
 | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -441,10 +426,9 @@ Before handing the assessment to a reviewer, confirm:
 - [ ] Lifecycle phases and security goals are linked to the appropriate risks.
 - [ ] Residual treatments, measures, evidence, notes and review statuses are complete.
 - [ ] SL-T and matrix settings reflect the agreed assessment approach, where used.
-- [ ] CRA checklist comments/links point to the reviewed documentation.
 - [ ] A milestone version, JSON backup and checked PDF report are available.
 
-## 15. Maintain the guidance
+## 14. Maintain the guidance
 
 The editable source of this document is **`docs/user-guide.md`**. The companion **`docs/user-guide.pdf`** is the formatted reading copy. Regenerate the PDF after changing the Markdown so both versions stay consistent. From the repository root, use a Python environment with the documentation dependencies installed:
 
@@ -460,4 +444,4 @@ For company-specific in-app guidance, edit **`config/parameter_guide.js`**. The 
 
 For actual scoring choices and defaults, edit **`config/assessment_config.json`**, then run `python3 scripts/sync_assessment_config.py` from the project root and reload the app. Changing explanatory text alone does not change scoring.
 
-See **`docs/parameters-customization.md`** for exact field keys and source locations. The user workflow in this edition was checked against the forms, scoring defaults, settings, analysis persistence, risk editors, About notices and report export code at `fac28fc` plus the accompanying licensing changes. The known Parameters loading problem is recorded in sections 11 and 14; the customization document also contains unresolved conflict text. Recheck these limitations and the instructions when the application changes.
+See **`docs/parameters-customization.md`** for exact field keys and source locations. The user workflow in this edition was checked against the forms, scoring defaults, settings, analysis persistence, risk editors, About notices and report export code at `fac28fc` plus the accompanying licensing changes. The known Parameters loading problem is recorded in sections 10 and 13; the customization document also contains unresolved conflict text. Recheck these limitations and the instructions when the application changes.
