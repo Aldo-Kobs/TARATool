@@ -32,3 +32,7 @@ python3 scripts/build_user_guide.py --source docs/risk-calculation-guide.md
 ```
 
 Der Titel wird aus der ersten Markdown-Überschrift gelesen; die PDF-Datei wird neben der Quelldatei gespeichert.
+
+## Installer und Launcher
+
+Der eigenständige Installer liegt im Projektstamm: `python install.py`. Er installiert die neueste stabile GitHub-Veröffentlichung einschließlich lokaler Browser-Abhängigkeiten und erzeugt Plattform-Launcher. `python install.py install --no-auto-update` installiert ohne Start und deaktiviert automatische Updates. Siehe [Installations- und IT-Dokumentation](../docs/INSTALLATION.md).

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-06
+
+- Add a Python installer and platform launchers with stable GitHub release updates, persistent update opt-out, verified local browser dependencies, offline installation, analysis snapshots, an IT deployment guide, and cross-platform installer CI.
+
 ## 2026-10-06
 
 - Refresh About with recent development, methodology, modification dates and documentation links. Correct the runtime SBOM dependency/version and license metadata; include the optional local server, renderer services, dependency relationships and explicit inventory limits.

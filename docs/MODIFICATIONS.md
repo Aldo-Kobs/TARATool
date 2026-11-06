@@ -1,8 +1,12 @@
 # Fork modification record
 
-**Modified by Aldo-Kobs, 10 September–13 October 2026. Initial notice recorded 17 September 2026.**
+**Modified by Aldo-Kobs, 10 September–6 November 2026. Initial notice recorded 17 September 2026.**
 
 This record accompanies the modified TARA Tool under GPL-3.0-or-later. Original work: Copyright (C) 2026 SCHUNK SE & Co. KG. Fork modifications: Copyright (C) 2026 Aldo-Kobs. See [NOTICE.md](../NOTICE.md) for attribution, license and warranty notices and [LICENSE](../LICENSE) for the license terms.
+
+## 6 November 2026 — Installer and managed launcher
+
+Added a standalone Python installer and platform launchers with stable GitHub release checks, persistent automatic-update opt-out, SHA-256-verified local browser dependencies, approved-source/offline installation, staged activation, and pre-update analysis snapshots. Installed pages use local dependencies and restrict browser network connections to the local application. Added the IT deployment guide and installer/storage CI tests for Windows, macOS, and Linux.
 
 ## 13 October 2026 — Remove CRA checklist tab
 

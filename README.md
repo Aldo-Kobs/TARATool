@@ -75,6 +75,18 @@ Die aktuelle englische Schritt-für-Schritt-Anleitung ist als [Markdown](docs/us
 
 Eine ausführliche Erklärung aller Risikoberechnungen, Eingabefelder, gemeinsamen Asset-Zuordnungen und Restrisiken mit Rechenbeispielen ist als [Risk Calculation Reference (Markdown)](docs/risk-calculation-guide.md) und [PDF](docs/risk-calculation-guide.pdf) verfügbar.
 
+### Installer und Launcher für IT-Freigaben
+
+Der Python-Installer lädt die neueste stabile GitHub-Veröffentlichung und alle benötigten Browser-Bibliotheken mit SHA-256-Prüfung herunter. Python 3.10+ und ein Browser müssen vorhanden sein; zusätzliche Python-Pakete sind nicht nötig. Installation ohne automatische Updates:
+
+```sh
+python install.py install --no-auto-update
+```
+
+Ohne Unterbefehl (`python install.py`) wird nach der Installation direkt gestartet. Im Installationsordner stehen anschließend `Launch TARA Tool.cmd` (Windows), `Launch TARA Tool.command` (macOS) und `Launch TARA Tool.sh` (Linux) zur Verfügung. Automatische Updates sind standardmäßig aktiv und lassen sich dauerhaft mit `python launcher.py configure --no-auto-update` abschalten.
+
+Die [Installations- und IT-Dokumentation](docs/INSTALLATION.md) beschreibt Freigabe, Netzwerkziele, Datenhaltung, manuelle Updates und Offline-Installation aus geprüftem Quellcode.
+
 ### Voraussetzungen
 
 - Ein moderner Webbrowser (Chrome, Firefox, Edge, Safari)
